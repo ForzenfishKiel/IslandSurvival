@@ -41,6 +41,7 @@ AISCharacter::AISCharacter()
 	ArmMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CharacterInventory = CreateDefaultSubobject<UISCharacterInventory>(TEXT("CharacterInventory"));  //玩家背包组件
+	CharacterInventory->SetIsReplicated(true);
 	ISInteractionComponent = CreateDefaultSubobject<UISInteractionComponent>(TEXT("ISInteractionComponent")); //玩家交互组件
 }
 

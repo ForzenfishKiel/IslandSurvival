@@ -8,6 +8,7 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdate);
 UCLASS()
 class ISLANDSURVIVAL_API UISCharacterInventory : public UISItemsContainer
 {
@@ -18,6 +19,8 @@ public:
 	FItemInformation ItemInfo;
 	UPROPERTY(BlueprintAssignable)
 	FWhenItemPickUp ItemPickup;
+	UPROPERTY(BlueprintAssignable)
+	FOnInventoryUpdate InventoryUpdate;
 	void InitializeBackPackSpace();
 protected:
 	virtual void BeginPlay() override;

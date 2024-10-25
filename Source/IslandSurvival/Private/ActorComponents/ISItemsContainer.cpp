@@ -2,11 +2,24 @@
 
 
 #include "ActorComponents/ISItemsContainer.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UISItemsContainer::UISItemsContainer()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+}
+
+bool UISItemsContainer::CheckEmptySlotInInventory(const TArray<FItemInformation>&TargetInventory)
+{
+	for (FItemInformation Item : TargetInventory)
+	{
+		if(Item.ItemID==-1)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInformation Information)
@@ -51,6 +64,7 @@ void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInform
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("背包已满！！"));
 }
+
 // Called when the game starts
 void UISItemsContainer::BeginPlay()
 {
@@ -62,5 +76,11 @@ void UISItemsContainer::BeginPlay()
 void UISItemsContainer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+void UISItemsContainer::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UISItemsContainer,InventoryContainer);
 }
 

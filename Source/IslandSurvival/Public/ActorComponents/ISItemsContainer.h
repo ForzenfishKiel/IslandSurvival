@@ -15,12 +15,14 @@ class ISLANDSURVIVAL_API UISItemsContainer : public UActorComponent
 
 public:	
 	UISItemsContainer();
+	bool CheckEmptySlotInInventory(const TArray<FItemInformation>&TargetInventory);
 	UFUNCTION(Server,Reliable)
 	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在服务器上运行
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	TArray<FItemInformation>InventoryContainer;  //背包
 protected:
 	virtual void BeginPlay() override;
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };
