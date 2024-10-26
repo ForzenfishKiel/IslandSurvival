@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "ISItemInterface.generated.h"
 
+enum class EItemType : uint8;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UISItemInterface : public UInterface

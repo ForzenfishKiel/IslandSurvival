@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ActorComponents/ISCharacterInventory.h"
-void UISCharacterInventory::BeginPlay()
+#include "ActorComponents/ISHotBarInventory.h"
+
+void UISHotBarInventory::BeginPlay()
 {
 	Super::BeginPlay();
 	if(GetOwner()->HasAuthority())
 	{
-		InitializeBackPackSpace(InventorySpace);  //初始化背包
+		InitializeBackPackSpace(InventorySpace);
 	}
 	ItemPickup.AddDynamic(this,&UISItemsContainer::ToPickUpItemsInBackPack);
 }

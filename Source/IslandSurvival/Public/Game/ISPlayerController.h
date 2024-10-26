@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
+#include "DataAsset/ISChooseInventoryInputData.h"
 #include "ISPlayerController.generated.h"
 
 /**
@@ -21,6 +22,8 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 private:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UISChooseInventoryInputData>ChooseHotBarInputData;
 	UPROPERTY()
 	TObjectPtr<UEnhancedInputLocalPlayerSubsystem> InputSubsystem;
 	UPROPERTY(EditAnywhere,Category = "Input")
@@ -38,6 +41,7 @@ private:
 	void Move(const struct FInputActionValue&InputActionValue);
 	void LookUp(const struct FInputActionValue&InputActionValue);
 	void PrimaryInteract();
+	void ChooseHotBar(int32 InputIndex);
 	UFUNCTION(Client,Reliable)
 	void OpenUI(); //打开UI应该在客户端完成，因为其他客户端不需要被打开
 };

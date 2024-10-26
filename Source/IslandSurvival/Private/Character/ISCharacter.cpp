@@ -41,7 +41,11 @@ AISCharacter::AISCharacter()
 	ArmMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CharacterInventory = CreateDefaultSubobject<UISCharacterInventory>(TEXT("CharacterInventory"));  //玩家背包组件
-	CharacterInventory->SetIsReplicated(true);
+	CharacterInventory->SetIsReplicated(true);  //背包组件设定为可复制
+	CharacterHotBarInventory = CreateDefaultSubobject<UISHotBarInventory>(TEXT("CharacterHotBarInventory"));
+	CharacterHotBarInventory->SetIsReplicated(true);  //物品栏组件设定为可复制
+	CharacterEquipment = CreateDefaultSubobject<UISEquipmentComponent>(TEXT("CharacterEquipment"));
+	CharacterEquipment->SetIsReplicated(true);  //装备系统也设定为可复制
 	ISInteractionComponent = CreateDefaultSubobject<UISInteractionComponent>(TEXT("ISInteractionComponent")); //玩家交互组件
 }
 

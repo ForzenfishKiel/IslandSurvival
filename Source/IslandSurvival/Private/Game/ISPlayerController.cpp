@@ -3,6 +3,7 @@
 
 #include "Game/ISPlayerController.h"
 
+#include "ActorComponents/ISHotBarInventory.h"
 #include "Character/ISCharacter.h"
 #include "Game/ISEnhancedInputComponent.h"
 #include "Game/ISPlayerMainHUD.h"
@@ -31,6 +32,7 @@ void AISPlayerController::SetupInputComponent()
 	ISEnhanceInputComponent->BindAction(IA_LookUp,ETriggerEvent::Triggered,this,&AISPlayerController::LookUp);
 	ISEnhanceInputComponent->BindAction(IA_Interact,ETriggerEvent::Started,this,&AISPlayerController::PrimaryInteract);
 	ISEnhanceInputComponent->BindAction(IA_OpenUI,ETriggerEvent::Started,this,&AISPlayerController::OpenUI);
+	ISEnhanceInputComponent->BindChooseItemActions(ChooseHotBarInputData,this,&AISPlayerController::ChooseHotBar);
 }
 
 void AISPlayerController::Move(const struct FInputActionValue& InputActionValue)
@@ -68,6 +70,15 @@ void AISPlayerController::PrimaryInteract()
 	if(!OwingCharacter) return;
 	UISInteractionComponent*TargetInteraction = Cast<UISInteractionComponent>(OwingCharacter->ISInteractionComponent);
 	TargetInteraction->PrimaryIntract();
+}
+
+void AISPlayerController::ChooseHotBar(int32 InputIndex)
+{
+	if(InputIndex==-1) return;  //系统错误
+	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetPawn());
+	UISHotBarInventory*PlayerHotBar = SourceCharacter->CharacterHotBarInventory;  //获取角色的物品栏系统
+	//选取位置可用
+	PlayerHotBar->WhenInventoryChange(PlayerHotBar,InputIndex);
 }
 
 void AISPlayerController::OpenUI_Implementation()

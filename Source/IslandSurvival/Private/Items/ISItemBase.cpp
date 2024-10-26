@@ -59,3 +59,13 @@ void AISItemBase::PickUpItemToInventory_Implementation(APawn* TargetPawn, AActor
 		}
 	}
 }
+
+void AISItemBase::UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const
+{
+	
+}
+
+void AISItemBase::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const
+{
+	
+}

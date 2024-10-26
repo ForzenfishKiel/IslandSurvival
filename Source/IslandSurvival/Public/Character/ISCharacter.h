@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "ActorComponents/ISCharacterInventory.h"
+#include "ActorComponents/ISEquipmentComponent.h"
+#include "ActorComponents/ISHotBarInventory.h"
 #include "ActorComponents/ISInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Character/ISCharacterBase.h"
@@ -28,8 +30,12 @@ public:
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UISCharacterInventory>CharacterInventory;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UISHotBarInventory>CharacterHotBarInventory;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UISEquipmentComponent>CharacterEquipment;  //角色装备组件
 	UPROPERTY()
 	TObjectPtr<UISInteractionComponent> ISInteractionComponent;
 protected:
