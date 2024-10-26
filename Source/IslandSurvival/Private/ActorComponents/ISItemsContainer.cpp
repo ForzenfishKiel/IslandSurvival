@@ -32,7 +32,8 @@ void UISItemsContainer::WhenInventoryChange_Implementation(UISItemsContainer* Ta
 		const EItemType ItemType = TargetContainer->InventoryContainer[TargetIndex].ItemType;  //获取对方的物品种类
 		if(ItemType==EItemType::Equipable)
 		{
-			
+			CharacterEquipment->OnUnEquip.Broadcast();
+			CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);
 		}
 	}
 }

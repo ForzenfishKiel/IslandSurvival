@@ -23,9 +23,15 @@ public:
 	FOnEquip OnEquip;
 	UPROPERTY(BlueprintAssignable, Category="Custom Events")
 	FOnUnEquip OnUnEquip;
-	
 	UPROPERTY()
-	TObjectPtr<AISEquipable> Equipable = nullptr;  //用于储存角色可装备的物品
+	TObjectPtr<AISEquipable> Equipable = nullptr;//用于储存角色可装备的物品
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent>SourceASC;
+public:
+	UFUNCTION(Server, Reliable)
+	void Equip(TSubclassOf<AISItemBase> InTargetItem);
+	UFUNCTION(Server, Reliable)
+	void UnEquip();
 protected:
 	virtual void BeginPlay() override;
 public:	

@@ -13,5 +13,10 @@ UCLASS()
 class ISLANDSURVIVAL_API AISEquipable : public AISItemBase
 {
 	GENERATED_BODY()
-	
+public:
+	USceneComponent*GetAttachTarget(APawn*TargetPawn) const;
+	void SetEquipableCollision();
+public:
+	virtual void UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const override;
+	virtual void UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const override;
 };
