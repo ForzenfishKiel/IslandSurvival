@@ -50,9 +50,20 @@ void AISItemBase::PickUpItemToInventory_Implementation(APawn* TargetPawn, AActor
 		AISCharacter*SourceCharacter = Cast<AISCharacter>(TargetPawn);
 		if(!SourceCharacter) return;
 		UISCharacterInventory*TargetInventory = SourceCharacter->CharacterInventory;
-		if(!TargetInventory) return;
+		UISHotBarInventory*TargetHotBar = SourceCharacter->CharacterHotBarInventory;
+		if(!TargetInventory&&!TargetHotBar) return;
+		//物品添加进物品栏
+		if(TargetHotBar->CheckEmptySlotInInventory(TargetHotBar->InventoryContainer))
+		{
+			TargetHotBar->ItemPickup.Broadcast(*UserInfo);
+			TargetHotBar->InventoryUpdate.Broadcast();
+			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);
+		}
 		//物品加进角色背包
-		if(TargetInventory->CheckEmptySlotInInventory(TargetInventory->InventoryContainer)){TargetInventory->ItemPickup.Broadcast(*UserInfo);
+		else if(TargetInventory->CheckEmptySlotInInventory(TargetInventory->InventoryContainer))
+		{
+			TargetInventory->ItemPickup.Broadcast(*UserInfo);
 			TargetInventory->InventoryUpdate.Broadcast();
 			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);

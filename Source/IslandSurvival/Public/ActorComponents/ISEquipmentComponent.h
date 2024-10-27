@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/ISCharacterBase.h"
 #include "Components/ActorComponent.h"
 #include "Items/ISEquipable.h"
 #include "ISEquipmentComponent.generated.h"
@@ -23,17 +24,18 @@ public:
 	FOnEquip OnEquip;
 	UPROPERTY(BlueprintAssignable, Category="Custom Events")
 	FOnUnEquip OnUnEquip;
+	UPROPERTY(BlueprintReadOnly)
+	ECharacterEquipState CharacterEquipState = ECharacterEquipState::None;
 	UPROPERTY()
 	TObjectPtr<AISEquipable> Equipable = nullptr;//用于储存角色可装备的物品
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent>SourceASC;
 public:
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void Equip(TSubclassOf<AISItemBase> InTargetItem);
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void UnEquip();
-protected:
-	virtual void BeginPlay() override;
+	void InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC);
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

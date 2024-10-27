@@ -53,6 +53,7 @@ void AISCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();  //服务器调用初始化操作
+	SetOwner(NewController);
 }
 
 void AISCharacter::OnRep_PlayerState()
@@ -63,13 +64,13 @@ void AISCharacter::OnRep_PlayerState()
 
 void AISCharacter::InitAbilityActorInfo()
 {
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState); //找不到角色游戏状态则停止
+	ISPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(ISPlayerState,this);  //初始化设定角色ASC
+	SourceASC = ISPlayerState->GetAbilitySystemComponent();
+	UAttributeSet*SourceAS = ISPlayerState->GetAttributeSet();
 	if(AISPlayerController*ISPlayerController = Cast<AISPlayerController>(GetController()))
 	{
-		AISPlayerState*ISPlayerState = Cast<AISPlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0));
-		check(ISPlayerState); //找不到角色游戏状态则停止
-		ISPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(ISPlayerState,this);  //初始化设定角色ASC
-		SourceASC = ISPlayerState->GetAbilitySystemComponent();
-		UAttributeSet*SourceAS = ISPlayerState->GetAttributeSet();
 		FCharacterParams CharacterParams(SourceASC,SourceAS,ISPlayerController,ISPlayerState);  //初始化好角色的属性数据
 		AISPlayerMainHUD*PlayerHUD = Cast<AISPlayerMainHUD>(ISPlayerController->GetHUD());  //获取HUD
 		if(PlayerHUD)
@@ -77,4 +78,16 @@ void AISCharacter::InitAbilityActorInfo()
 			PlayerHUD->InitUserWidget(CharacterParams);
 		}
 	}
+	CharacterEquipment->InitializeEquipmentComponent(SourceASC);
+	InitializePlayerAttribute(SourceASC,PlayerDefaultAttribute);
+	InitializePlayerAttribute(SourceASC,PlayerSecondaryAttribute);
+}
+
+void AISCharacter::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubclassOf<UGameplayEffect> AttributeClass)
+{
+	check(ASC&&AttributeClass);
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AttributeClass,1,EffectContextHandle);
+	const FActiveGameplayEffectHandle ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(),ASC);
 }

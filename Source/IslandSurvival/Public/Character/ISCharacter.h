@@ -23,6 +23,11 @@ public:
 	AISCharacter();
 	virtual void PossessedBy(AController* NewController) override;  //设定服务器同步数据，也是角色控制器调用时调用
 	virtual void OnRep_PlayerState() override;  //客户端同步玩家数据
+
+	UPROPERTY(EditAnywhere,Category = "Attributes")
+	TSubclassOf<UGameplayEffect>PlayerDefaultAttribute;
+	UPROPERTY(EditAnywhere,Category = "Attributes")
+	TSubclassOf<UGameplayEffect>PlayerSecondaryAttribute;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UCameraComponent> CameraComponent;
@@ -43,4 +48,5 @@ protected:
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
 private:
 	void InitAbilityActorInfo();
+	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
 };

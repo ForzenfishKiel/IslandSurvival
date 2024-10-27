@@ -2,7 +2,6 @@
 
 
 #include "ActorComponents/ISEquipmentComponent.h"
-#include "Game/ISPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -11,14 +10,9 @@ UISEquipmentComponent::UISEquipmentComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UISEquipmentComponent::BeginPlay()
+void UISEquipmentComponent::InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC)
 {
-	Super::BeginPlay();
-	AISPlayerState* SourcePlayerState = Cast<AISPlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0));
-	check(SourcePlayerState);
-	SourceASC = SourcePlayerState->GetAbilitySystemComponent();
-	check(SourceASC);
-	
+	SourceASC = TargetASC;
 }
 void UISEquipmentComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -31,6 +25,7 @@ void UISEquipmentComponent::Equip_Implementation(TSubclassOf<AISItemBase> InTarg
 	if(Equipable!=nullptr)
 	{
 		Equipable = NewObject<AISEquipable>(GetOwner(),InTargetItem);
+		CharacterEquipState = Equipable->CurrentEquipState;
 		Equipable->UseItem(GetOwner(),SourceASC);
 		Equipable = GetWorld()->SpawnActorDeferred<AISEquipable>(InTargetItem,FTransform::Identity,GetOwner());
 		UGameplayStatics::FinishSpawningActor(Equipable,FTransform::Identity);
@@ -44,6 +39,7 @@ void UISEquipmentComponent::Equip_Implementation(TSubclassOf<AISItemBase> InTarg
 void UISEquipmentComponent::UnEquip_Implementation()
 {
 	if(Equipable==nullptr) return;  //本来就是空的话就跳过该进程
+	CharacterEquipState = ECharacterEquipState::None;
 	Equipable->UnUseItem(GetOwner(),SourceASC);
 	Equipable->Destroy();
 	Equipable = nullptr;
