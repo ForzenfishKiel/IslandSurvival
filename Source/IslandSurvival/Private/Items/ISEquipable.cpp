@@ -4,8 +4,17 @@
 #include "Items/ISEquipable.h"
 
 #include "Character/ISCharacter.h"
-
 USceneComponent* AISEquipable::GetAttachTarget(APawn* TargetPawn) const
+{
+	USceneComponent*AttachTarget = TargetPawn->GetRootComponent();
+	if(AISCharacter*TargetCharacter = Cast<AISCharacter>(TargetPawn))
+	{
+		AttachTarget = TargetCharacter->ArmMesh;
+	}
+	return AttachTarget;
+}
+
+USceneComponent* AISEquipable::GetAttachThirdPersonParent(APawn* TargetPawn) const
 {
 	USceneComponent*AttachTarget = TargetPawn->GetRootComponent();
 	if(AISCharacter*TargetCharacter = Cast<AISCharacter>(TargetPawn))

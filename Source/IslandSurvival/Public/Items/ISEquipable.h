@@ -25,6 +25,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="EquipState")
 	ECharacterEquipState CurrentEquipState = ECharacterEquipState::None;
 	USceneComponent*GetAttachTarget(APawn*TargetPawn) const;
+	USceneComponent* GetAttachThirdPersonParent(APawn*TargetPawn) const;
 	void SetEquipableCollision();
 public:
 	virtual void UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const override;

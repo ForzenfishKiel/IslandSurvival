@@ -77,7 +77,6 @@ void AISPlayerController::ChooseHotBar(int32 InputIndex)
 	if(InputIndex==-1) return;  //系统错误
 	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetPawn());
 	UISHotBarInventory*PlayerHotBar = SourceCharacter->CharacterHotBarInventory;  //获取角色的物品栏系统
-	//选取位置可用
 	PlayerHotBar->WhenInventoryChange(PlayerHotBar,InputIndex);
 }
 

@@ -26,16 +26,19 @@ public:
 	FOnUnEquip OnUnEquip;
 	UPROPERTY(BlueprintReadOnly)
 	ECharacterEquipState CharacterEquipState = ECharacterEquipState::None;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	TObjectPtr<AISEquipable> Equipable = nullptr;//用于储存角色可装备的物品
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent>SourceASC;
 public:
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void Equip(TSubclassOf<AISItemBase> InTargetItem);
+	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
+	void SpawnEquip(USceneComponent*AttachEquip);
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void UnEquip();
 	void InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC);
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };

@@ -20,13 +20,11 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnInventoryUpdate InventoryUpdate;
 	UISItemsContainer();
-	bool CheckEmptySlotInInventory(const TArray<FItemInformation>&TargetInventory);
-	UFUNCTION(BlueprintCallable,Client,Reliable)
 	void WhenInventoryChange(UISItemsContainer*TargetContainer,const int32 TargetIndex);
 	UFUNCTION(BlueprintCallable,Client,Reliable)
 	void WhenItemExchanged(UISItemsContainer*TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex);
-	UFUNCTION(Server,Reliable)
-	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在服务器上运行
+	UFUNCTION(Client,Reliable)
+	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
 	UFUNCTION()
 	void InitializeBackPackSpace(const int32 Space);
 	UPROPERTY(BlueprintReadOnly,Replicated)

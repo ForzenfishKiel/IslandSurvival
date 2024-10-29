@@ -11,33 +11,28 @@ UISItemsContainer::UISItemsContainer()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-bool UISItemsContainer::CheckEmptySlotInInventory(const TArray<FItemInformation>&TargetInventory)
-{
-	for (FItemInformation Item : TargetInventory)
-	{
-		if(Item.ItemID==-1)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-void UISItemsContainer::WhenInventoryChange_Implementation(UISItemsContainer* TargetContainer, const int32 TargetIndex)
+void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, const int32 TargetIndex)
 {
 	//若目标位置可用
-	if(TargetContainer->InventoryContainer[TargetIndex].ItemID==-1&&IsValid(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef))
+	if(TargetContainer->InventoryContainer[TargetIndex].ItemID!=-1&&IsValid(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef))
 	{
-		const UISEquipmentComponent*CharacterEquipment = GetOwner()->GetComponentByClass<UISEquipmentComponent>();
+		UISEquipmentComponent*CharacterEquipment = GetOwner()->GetComponentByClass<UISEquipmentComponent>();
 		const EItemType ItemType = TargetContainer->InventoryContainer[TargetIndex].ItemType;  //获取对方的物品种类
 		if(ItemType==EItemType::Equipable)
 		{
-			CharacterEquipment->OnUnEquip.Broadcast();
-			CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);
+			if(CharacterEquipment->Equipable==nullptr)
+			{
+				CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);
+				return;
+			}
+			else
+			{
+				CharacterEquipment->OnUnEquip.Broadcast();
+				return;
+			}
 		}
 	}
 }
-
 void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex)
 {
 	/*当物品放置到另一个物品的时候的几种情况
@@ -125,7 +120,7 @@ void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInform
 			}
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("背包已满！！"));
+	
 }
 
 // Called when the game starts

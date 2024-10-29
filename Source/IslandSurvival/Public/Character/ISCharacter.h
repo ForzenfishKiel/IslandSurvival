@@ -43,9 +43,10 @@ public:
 	TObjectPtr<UISEquipmentComponent>CharacterEquipment;  //角色装备组件
 	UPROPERTY()
 	TObjectPtr<UISInteractionComponent> ISInteractionComponent;
-protected:
 	UPROPERTY(EditAnywhere,Category = "Combine")
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
+protected:
+
 private:
 	void InitAbilityActorInfo();
 	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
