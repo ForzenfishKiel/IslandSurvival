@@ -21,7 +21,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet*GetAttributeSet() const{return ISAttributeSet;}
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAbilitySystemComponent> ISAbilitySystemComponent;
 	UPROPERTY()
 	TObjectPtr<UAttributeSet>ISAttributeSet;

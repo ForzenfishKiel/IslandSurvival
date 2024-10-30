@@ -40,9 +40,17 @@ public:
 	FGameplayTag Input_Attack_FastRun;
 
 	/*状态相关*/
+	FGameplayTag State_Attacking;
 	FGameplayTag State_Equip;
 	FGameplayTag State_UnEquip;
 	FGameplayTag State_VigorRecover;
+
+	/*连招判定*/
+	FGameplayTag Input_Combo_Combo01;
+	FGameplayTag Input_Combo_Combo02;
+	FGameplayTag Input_Combo_Combo03;
+	FGameplayTag Input_Combo_Combo04;
+	FGameplayTag Input_Combo_CanCombo;
 private:
 	static FGameplayTagsManager GameplayTags;
 };

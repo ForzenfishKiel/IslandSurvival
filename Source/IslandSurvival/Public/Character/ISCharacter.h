@@ -43,7 +43,7 @@ public:
 	TObjectPtr<UISEquipmentComponent>CharacterEquipment;  //角色装备组件
 	UPROPERTY()
 	TObjectPtr<UISInteractionComponent> ISInteractionComponent;
-	UPROPERTY(EditAnywhere,Category = "Combine")
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = "Combine")
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
 protected:
 

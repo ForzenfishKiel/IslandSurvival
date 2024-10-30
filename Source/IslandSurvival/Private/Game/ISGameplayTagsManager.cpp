@@ -42,6 +42,8 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("State.Equip"),FString("装备标签"));
 	GameplayTags.State_VigorRecover = 
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("State.VigorRecover"),FString("体力回复标签"));
+	GameplayTags.State_Attacking =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("State.Attacking"),FString("正在攻击状态"));
 
 	GameplayTags.Input_Attack_Roll = 
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Attack.Roll"),FString("翻滚标签"));
@@ -49,4 +51,15 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Attack.FastRun"),FString("疾跑标签"));
 	GameplayTags.Input_Attack_LMB = 
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Attack.LMB"),FString("左键触发标签"));
+
+	GameplayTags.Input_Combo_Combo01 = 
+	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Combo.Combo01"),FString("连招第一段"));
+	GameplayTags.Input_Combo_Combo02 = 
+	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Combo.Combo02"),FString("连招第二段"));
+	GameplayTags.Input_Combo_Combo03 = 
+	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Combo.Combo03"),FString("连招第三段"));
+	GameplayTags.Input_Combo_Combo04 = 
+	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Combo.Combo04"),FString("连招第四段"));
+	GameplayTags.Input_Combo_CanCombo = 
+	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Combo.CanCombo"),FString("连击窗口"));
 }

@@ -33,11 +33,18 @@ void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 	{
 		if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
+			//左键触发
 			if(InputTag==GameplayTagsManager.Input_Attack_LMB&&!Cast<AISCharacter>(GetAvatarActor())->GetCharacterMovement()->IsFalling())
 			{
-				if(!AbilitySpec.IsActive())
+				//第一次攻击触发
+				if(!HasMatchingGameplayTag(GameplayTagsManager.State_Attacking)&&
+					AbilitySpec.Ability->AbilityTags.HasTagExact(GameplayTagsManager.Input_Combo_Combo01))
 				{
-					TryActivateAbility(AbilitySpec.Handle);  //尝试启动
+					TryActivateAbility(AbilitySpec.Handle);
+				}
+				else if(HasMatchingGameplayTag(AbilitySpec.Ability->AbilityTags.First()))
+				{
+					TryActivateAbility(AbilitySpec.Handle);
 				}
 			}
 		}
