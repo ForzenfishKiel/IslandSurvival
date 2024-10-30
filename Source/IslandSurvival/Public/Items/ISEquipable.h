@@ -23,11 +23,25 @@ class ISLANDSURVIVAL_API AISEquipable : public AISItemBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="EquipState")
-	ECharacterEquipState CurrentEquipState = ECharacterEquipState::None;
+	ECharacterEquipState CurrentEquipState = ECharacterEquipState::None;  //装备武器类型
 	USceneComponent*GetAttachTarget(APawn*TargetPawn) const;
 	USceneComponent* GetAttachThirdPersonParent(APawn*TargetPawn) const;
-	void SetEquipableCollision();
+	void SetEquipableCollision();  //设置武器的碰撞条件
+
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="EquipState")
+	TSubclassOf<UGameplayEffect>EquipableDefaultAttribute;  //武器默认属性的提供
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Animation")
+	TArray<UAnimMontage*>EquipableActivateAnimations; //武器调用的攻击动画
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Ability")
+	TArray<TSubclassOf<UGameplayAbility>>EquipableActivateAbilities;  //武器主动能力
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Ability")
+	TArray<TSubclassOf<UGameplayAbility>>EquibablePassiveAbilities;//武器被动能力
 public:
-	virtual void UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const override;
-	virtual void UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const override;
+	virtual void UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) override;
+	virtual void UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) override;
+	virtual void ApplyEffectToTarget(UAbilitySystemComponent* InASC, TSubclassOf<UGameplayEffect> EffectClass) override;
+	virtual void AddTargetAbility(UAbilitySystemComponent* TargetASC, TArray<TSubclassOf<UGameplayAbility>>& TargetArray) override;
+	virtual void RemoveTargetAbility(UAbilitySystemComponent* TargetASC, TArray<TSubclassOf<UGameplayAbility>>& TargetArray) override;
+	virtual void RemoveTargetEffect(UAbilitySystemComponent* TargetASC, TSubclassOf<UGameplayEffect> EffectClass) override;
 };

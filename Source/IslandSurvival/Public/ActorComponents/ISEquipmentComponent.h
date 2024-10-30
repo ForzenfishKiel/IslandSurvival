@@ -24,10 +24,12 @@ public:
 	FOnEquip OnEquip;
 	UPROPERTY(BlueprintAssignable, Category="Custom Events")
 	FOnUnEquip OnUnEquip;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	ECharacterEquipState CharacterEquipState = ECharacterEquipState::None;
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	TObjectPtr<AISEquipable> Equipable = nullptr;//用于储存角色可装备的物品
+	UPROPERTY()
+	TObjectPtr<AISEquipable> EquipableClient = nullptr;
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent>SourceASC;
 public:
@@ -35,8 +37,12 @@ public:
 	void Equip(TSubclassOf<AISItemBase> InTargetItem);
 	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
 	void SpawnEquip(USceneComponent*AttachEquip);
+	UFUNCTION(BlueprintCallable,Client, Reliable)
+	void SpawnEquipOnClient(TSubclassOf<AISItemBase> InTargetItem);
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void UnEquip();
+	UFUNCTION(BlueprintCallable,Client, Reliable)
+	void UnEquipOnClient();
 	void InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC);
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

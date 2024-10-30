@@ -49,15 +49,19 @@ public:
 	FName ItemID;
 	UPROPERTY(EditAnywhere,Category = "ItemConfig")
 	EItemType ItemType = EItemType::None;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> ItemsStaticMesh;
 protected:
 	virtual void BeginPlay() override;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USphereComponent>PickUpCheckSphere;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TObjectPtr<UStaticMeshComponent> ItemsStaticMesh;
 public:	
 	virtual void Tick(float DeltaTime) override;
 	virtual void PickUpItemToInventory_Implementation(APawn* TargetPawn, AActor* TargetActor) override;
-	virtual void UseItem(AActor*TargetCharacter,UAbilitySystemComponent*TargetASC) const;  //使用物品和不使用物品都要在服务器上运行
-	virtual void UnUseItem(AActor*TargetCharacter,UAbilitySystemComponent*TargetASC) const;
+	virtual void UseItem(AActor*TargetCharacter,UAbilitySystemComponent*TargetASC);  //使用物品和不使用物品都要在服务器上运行
+	virtual void UnUseItem(AActor*TargetCharacter,UAbilitySystemComponent*TargetASC);
+	virtual void ApplyEffectToTarget(UAbilitySystemComponent*InASC,TSubclassOf<UGameplayEffect>EffectClass){return;}
+	virtual void AddTargetAbility(UAbilitySystemComponent*TargetASC,TArray<TSubclassOf<UGameplayAbility>>&TargetArray){return;}
+	virtual void RemoveTargetAbility(UAbilitySystemComponent*TargetASC,TArray<TSubclassOf<UGameplayAbility>>&TargetArray){return;}
+	virtual void RemoveTargetEffect(UAbilitySystemComponent*TargetASC,TSubclassOf<UGameplayEffect>EffectClass){return;}
 };

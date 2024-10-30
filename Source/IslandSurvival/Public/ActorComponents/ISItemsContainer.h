@@ -14,6 +14,8 @@ class ISLANDSURVIVAL_API UISItemsContainer : public UActorComponent,public IISCo
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int32 InventorySpace = 0;  //背包空间
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int32 LastChooseIndex = -1;
 	FItemInformation ItemInfo;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	EContainerType ContainerType = EContainerType::None;
@@ -27,6 +29,7 @@ public:
 	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
 	UFUNCTION()
 	void InitializeBackPackSpace(const int32 Space);
+	bool CheckInventoryEmpty(const FItemInformation Information);
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	TArray<FItemInformation>InventoryContainer;//背包
 protected:

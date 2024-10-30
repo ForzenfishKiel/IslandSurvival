@@ -25,7 +25,6 @@ AISItemBase::AISItemBase()
 void AISItemBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -53,7 +52,7 @@ void AISItemBase::PickUpItemToInventory_Implementation(APawn* TargetPawn, AActor
 		UISHotBarInventory*TargetHotBar = SourceCharacter->CharacterHotBarInventory;
 		if(!TargetInventory&&!TargetHotBar) return;
 		//物品添加进物品栏
-		if(!TargetHotBar->InventoryContainer.IsEmpty())
+		if(TargetHotBar->CheckInventoryEmpty(*UserInfo))
 		{
 			TargetHotBar->ItemPickup.Broadcast(*UserInfo);
 			TargetHotBar->InventoryUpdate.Broadcast();
@@ -62,7 +61,7 @@ void AISItemBase::PickUpItemToInventory_Implementation(APawn* TargetPawn, AActor
 			return;
 		}
 		//物品加进角色背包
-		else if(!TargetInventory->InventoryContainer.IsEmpty())
+		else if(TargetInventory->CheckInventoryEmpty(*UserInfo))
 		{
 			TargetInventory->ItemPickup.Broadcast(*UserInfo);
 			TargetInventory->InventoryUpdate.Broadcast();
@@ -74,12 +73,12 @@ void AISItemBase::PickUpItemToInventory_Implementation(APawn* TargetPawn, AActor
 	}
 }
 
-void AISItemBase::UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const
+void AISItemBase::UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)
 {
 	
 }
 
-void AISItemBase::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) const
+void AISItemBase::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)
 {
 	
 }

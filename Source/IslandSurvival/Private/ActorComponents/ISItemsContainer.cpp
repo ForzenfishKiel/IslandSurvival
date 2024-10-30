@@ -20,14 +20,29 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 		const EItemType ItemType = TargetContainer->InventoryContainer[TargetIndex].ItemType;  //获取对方的物品种类
 		if(ItemType==EItemType::Equipable)
 		{
-			if(CharacterEquipment->Equipable==nullptr)
+			if(CharacterEquipment->Equipable==nullptr)  //当前处于未装备
 			{
-				CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);
-				return;
+				if(LastChooseIndex==-1)
+				{
+					LastChooseIndex=TargetIndex;  //记录当前的Index
+					CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);
+					return;
+				}
 			}
 			else
 			{
-				CharacterEquipment->OnUnEquip.Broadcast();
+				if(LastChooseIndex!=TargetIndex)
+				{
+					LastChooseIndex=TargetIndex;
+					CharacterEquipment->OnUnEquip.Broadcast();  //删除当前装备的武器
+					CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);  //然后装上新的武器
+					return;
+				}
+				if(LastChooseIndex==TargetIndex)
+				{
+					LastChooseIndex=-1;
+					CharacterEquipment->OnUnEquip.Broadcast();
+				}
 				return;
 			}
 		}
@@ -78,6 +93,22 @@ void UISItemsContainer::InitializeBackPackSpace(const int32 Space)
 	{
 		InventoryContainer.Add(ItemInfo);  //添加背包空位栏
 	}
+}
+
+bool UISItemsContainer::CheckInventoryEmpty(const FItemInformation Information)
+{
+	for(int32 Index = 0;Index<InventoryContainer.Num();Index++)
+	{
+		if(InventoryContainer[Index].ItemID==Information.ItemID&&InventoryContainer[Index].CanStack)
+		{
+			return true;  //找到可堆叠
+		}
+		if(InventoryContainer[Index].ItemID==-1)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInformation Information)

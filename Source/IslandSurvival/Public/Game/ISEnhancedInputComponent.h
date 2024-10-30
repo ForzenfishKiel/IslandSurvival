@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "EnhancedInputComponent.h"
 #include "DataAsset/ISChooseInventoryInputData.h"
+#include "DataAsset/ISInputAbilityData.h"
 #include "ISEnhancedInputComponent.generated.h"
 
 /**
@@ -15,9 +16,32 @@ class ISLANDSURVIVAL_API UISEnhancedInputComponent : public UEnhancedInputCompon
 {
 	GENERATED_BODY()
 public:
+	template<class UserClass,typename PressedFuncType,typename HeldFuncType,typename ReleaseFuncType>
+	void BindAbilityActions(UISInputAbilityData*InputAbilityData,UserClass*UObject,PressedFuncType PressedFunc,HeldFuncType HeldFunc,ReleaseFuncType ReleaseFunc);
 	template<class UserClass,typename PressedFuncType>
 	void BindChooseItemActions(UISChooseInventoryInputData*InputData,UserClass*UserObject,PressedFuncType PressedFunc);
 };
+template <class UserClass, typename PressedFuncType, typename HeldFuncType, typename ReleaseFuncType>
+void UISEnhancedInputComponent::BindAbilityActions(UISInputAbilityData* InputAbilityData, UserClass* UObject, PressedFuncType PressedFunc, HeldFuncType HeldFunc, ReleaseFuncType ReleaseFunc)
+{
+	check(InputAbilityData);
+	for(FInputData&InputData : InputAbilityData->InputData)
+	{
+		if(PressedFunc)
+		{
+			BindAction(InputData.InputAction,ETriggerEvent::Started,UObject,PressedFunc,InputData.InputTag);
+		}
+		if(HeldFunc)
+		{
+			BindAction(InputData.InputAction,ETriggerEvent::Triggered,UObject,HeldFunc,InputData.InputTag);
+		}
+		if(ReleaseFunc)
+		{
+			BindAction(InputData.InputAction,ETriggerEvent::Completed,UObject,ReleaseFunc,InputData.InputTag);
+		}
+	}
+}
+
 template <class UserClass, typename PressedFuncType>
 void UISEnhancedInputComponent::BindChooseItemActions(UISChooseInventoryInputData* InputData, UserClass* UserObject, PressedFuncType PressedFunc)
 {

@@ -2,11 +2,14 @@
 
 
 #include "Game/ISPlayerController.h"
-
+#include "AbilitySystemBlueprintLibrary.h"
 #include "ActorComponents/ISHotBarInventory.h"
 #include "Character/ISCharacter.h"
+#include "Game/ISAbilitySystemComponent.h"
+#include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISEnhancedInputComponent.h"
 #include "Game/ISPlayerMainHUD.h"
+#include "Game/ISPlayerState.h"
 
 AISPlayerController::AISPlayerController()
 {
@@ -33,6 +36,8 @@ void AISPlayerController::SetupInputComponent()
 	ISEnhanceInputComponent->BindAction(IA_Interact,ETriggerEvent::Started,this,&AISPlayerController::PrimaryInteract);
 	ISEnhanceInputComponent->BindAction(IA_OpenUI,ETriggerEvent::Started,this,&AISPlayerController::OpenUI);
 	ISEnhanceInputComponent->BindChooseItemActions(ChooseHotBarInputData,this,&AISPlayerController::ChooseHotBar);
+	ISEnhanceInputComponent->BindAbilityActions(InputAbilityData,this,&AISPlayerController::InputPressedAbility
+		,&AISPlayerController::InputHeldAbility,&AISPlayerController::InputHeldAbility);
 }
 
 void AISPlayerController::Move(const struct FInputActionValue& InputActionValue)
@@ -101,4 +106,25 @@ void AISPlayerController::OpenUI_Implementation()
 		InputSubsystem->RemoveMappingContext(CharacterInputMapping);
 		InputSubsystem->AddMappingContext(CharacterInputMenuMapping,0);
 	}
+}
+
+void AISPlayerController::InputPressedAbility(const FGameplayTag InputTag)
+{
+	AISPlayerState*LocalPlayerState = Cast<AISPlayerState>(Cast<AISCharacter>(GetPawn())->GetPlayerState());
+	if(LocalPlayerState)
+	{
+		UISAbilitySystemComponent*LocalASC =Cast<UISAbilitySystemComponent>( UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(LocalPlayerState));
+		if(!LocalASC) return;
+		LocalASC->InputPressedFunc(InputTag);
+	}
+}
+
+void AISPlayerController::InputHeldAbility(const FGameplayTag InputTag)
+{
+	
+}
+
+void AISPlayerController::InputReleasedAbility(const FGameplayTag InputTag)
+{
+	
 }
