@@ -23,6 +23,7 @@ class ISLANDSURVIVAL_API IISCollectibleInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	ECollectibleClass GetTargetCollectibleClass();
+	virtual FName GetTargetName() = 0;
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	ECollectibleClass GetTargetClass();
 };

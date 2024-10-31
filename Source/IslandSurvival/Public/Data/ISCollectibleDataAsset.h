@@ -14,7 +14,7 @@ UENUM(BlueprintType)
 enum class ECollectibleClass : uint8
 {
 	None = 0 UMETA(DisplayName = "None"),
-	Palm = 1 UMETA(DisplayName = "Palm"),
+	Tree = 1 UMETA(DisplayName = "Tree"),
 };
 USTRUCT(BlueprintType)
 struct FDropConfig
@@ -22,7 +22,7 @@ struct FDropConfig
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 DropID = -1;
+	FName TargetName;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FScalableFloat DropRate = FScalableFloat();  //掉落几率，和角色等级有关
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
