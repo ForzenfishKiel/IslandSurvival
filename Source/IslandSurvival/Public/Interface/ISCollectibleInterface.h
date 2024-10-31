@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/ISCollectibleDataAsset.h"
 #include "UObject/Interface.h"
-#include "ISItemInterface.generated.h"
+#include "ISCollectibleInterface.generated.h"
 
-enum class EItemType : uint8;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UISItemInterface : public UInterface
+class UISCollectibleInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -17,14 +17,12 @@ class UISItemInterface : public UInterface
 /**
  * 
  */
-class ISLANDSURVIVAL_API IISItemInterface
+class ISLANDSURVIVAL_API IISCollectibleInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void PickUpItemToInventory(APawn*TargetPawn,AActor* TargetActor);
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void EquipableAbilityActivate();
+	ECollectibleClass GetTargetCollectibleClass();
 };

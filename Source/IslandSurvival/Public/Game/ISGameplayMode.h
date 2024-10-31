@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/ISCollectibleDataAsset.h"
 #include "GameFramework/GameModeBase.h"
 #include "ISGameplayMode.generated.h"
 
@@ -13,4 +14,7 @@ UCLASS()
 class ISLANDSURVIVAL_API AISGameplayMode : public AGameModeBase
 {
 	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
+	TObjectPtr<UISCollectibleDataAsset> CollectibleDataAsset;
 };

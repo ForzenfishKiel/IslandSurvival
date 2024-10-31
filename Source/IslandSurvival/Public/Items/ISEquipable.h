@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interface/ISEquipableInterface.h"
 #include "Items/ISItemBase.h"
 #include "ISEquipable.generated.h"
 
@@ -18,7 +19,7 @@ enum class ECharacterEquipState:uint8
 	EquipBow = 3 UMETA(DisplayName = "EquipBow"),
 };
 UCLASS()
-class ISLANDSURVIVAL_API AISEquipable : public AISItemBase
+class ISLANDSURVIVAL_API AISEquipable : public AISItemBase,public IISEquipableInterface
 {
 	GENERATED_BODY()
 public:
@@ -27,7 +28,6 @@ public:
 	USceneComponent*GetAttachTarget(APawn*TargetPawn) const;
 	USceneComponent* GetAttachThirdPersonParent(APawn*TargetPawn) const;
 	void SetEquipableCollision();  //设置武器的碰撞条件
-
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="EquipState")
 	TSubclassOf<UGameplayEffect>EquipableDefaultAttribute;  //武器默认属性的提供
@@ -44,4 +44,5 @@ public:
 	virtual void AddTargetAbility(UAbilitySystemComponent* TargetASC, TArray<TSubclassOf<UGameplayAbility>>& TargetArray) override;
 	virtual void RemoveTargetAbility(UAbilitySystemComponent* TargetASC, TArray<TSubclassOf<UGameplayAbility>>& TargetArray) override;
 	virtual void RemoveTargetEffect(UAbilitySystemComponent* TargetASC, TSubclassOf<UGameplayEffect> EffectClass) override;
+	virtual ECharacterEquipState GetTargetEquipState() override;
 };

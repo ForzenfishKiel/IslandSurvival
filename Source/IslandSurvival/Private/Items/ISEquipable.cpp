@@ -85,3 +85,8 @@ void AISEquipable::RemoveTargetEffect(UAbilitySystemComponent* TargetASC, TSubcl
 	if(!LocalASC&&!IsValid(EffectClass))return;
 	LocalASC->RemoveCharacterAttribute(EffectClass);
 }
+
+ECharacterEquipState AISEquipable::GetTargetEquipState()
+{
+	return CurrentEquipState;
+}

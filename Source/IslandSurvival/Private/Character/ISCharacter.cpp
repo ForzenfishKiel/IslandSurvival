@@ -2,7 +2,7 @@
 
 
 #include "Character/ISCharacter.h"
-
+#include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Game/ISPlayerController.h"
 #include "Game/ISPlayerMainHUD.h"
@@ -17,7 +17,7 @@ AISCharacter::AISCharacter()
 	bUseControllerRotationRoll = false;
 
 	//使用控制器去控制角色
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->RotationRate = FRotator(0, 0, 0);  //设定旋转速率
 
 	GetCharacterMovement()->JumpZVelocity = 700.f;  //设置跳跃高度
@@ -26,6 +26,7 @@ AISCharacter::AISCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.f;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);  //胶囊体忽视摄像机
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("CharacterSpringArmComp"));
@@ -34,10 +35,10 @@ AISCharacter::AISCharacter()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
-	CameraComponent->bUsePawnControlRotation = false;
+	CameraComponent->bUsePawnControlRotation = true;
 
 	ArmMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ArmorMesh"));
-	ArmMesh->SetupAttachment(GetMesh());
+	ArmMesh->SetupAttachment(CameraComponent);
 	ArmMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CharacterInventory = CreateDefaultSubobject<UISCharacterInventory>(TEXT("CharacterInventory"));  //玩家背包组件

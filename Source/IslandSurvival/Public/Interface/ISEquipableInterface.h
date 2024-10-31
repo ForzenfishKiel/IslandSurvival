@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "ISItemInterface.generated.h"
+#include "ISEquipableInterface.generated.h"
 
-enum class EItemType : uint8;
+enum class ECharacterEquipState : uint8;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UISItemInterface : public UInterface
+class UISEquipableInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -17,14 +17,11 @@ class UISItemInterface : public UInterface
 /**
  * 
  */
-class ISLANDSURVIVAL_API IISItemInterface
+class ISLANDSURVIVAL_API IISEquipableInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void PickUpItemToInventory(APawn*TargetPawn,AActor* TargetActor);
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void EquipableAbilityActivate();
+	virtual ECharacterEquipState GetTargetEquipState() = 0;
 };
