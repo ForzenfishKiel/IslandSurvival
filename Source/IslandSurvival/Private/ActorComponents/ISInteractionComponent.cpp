@@ -31,7 +31,9 @@ void UISInteractionComponent::PrimaryIntract()
 		if(HitActor->Implements<UISItemInterface>())
 		{
 			APawn*MyPawn = Cast<APawn>(GetOwner());
-			IISItemInterface::Execute_PickUpItemToInventory(HitActor,MyPawn,HitActor);
+			AISCharacter*SourceCharacter = Cast<AISCharacter>(GetOwner());
+			UISItemsContainer*UIItems = Cast<UISItemsContainer>(SourceCharacter->GetComponentByClass<UISItemsContainer>());
+			UIItems->PickUpItemForActor(SourceCharacter, HitActor);
 		}
 	}
 	

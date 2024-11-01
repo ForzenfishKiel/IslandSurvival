@@ -12,9 +12,6 @@ UCLASS()
 class ISLANDSURVIVAL_API UISCharacterInventory : public UISItemsContainer
 {
 	GENERATED_BODY()
-public:
-	UPROPERTY(BlueprintAssignable)
-	FWhenItemPickUp ItemPickup;
 protected:
 	virtual void BeginPlay() override;
 };

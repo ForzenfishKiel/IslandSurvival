@@ -14,8 +14,5 @@ class ISLANDSURVIVAL_API UISHotBarInventory : public UISItemsContainer
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintAssignable)
-	FWhenItemPickUp ItemPickup;
-public:
 	virtual void BeginPlay() override;
 };

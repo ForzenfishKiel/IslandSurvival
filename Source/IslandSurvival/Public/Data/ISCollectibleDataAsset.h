@@ -16,6 +16,19 @@ enum class ECollectibleClass : uint8
 	None = 0 UMETA(DisplayName = "None"),
 	Tree = 1 UMETA(DisplayName = "Tree"),
 };
+
+USTRUCT(BlueprintType)
+struct FDropAble
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EdItDefaultsOnly, BlueprintReadWrite)
+	FName TargetID = FName("None");
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FScalableFloat DropRate = FScalableFloat();  //掉落几率，和角色等级有关
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FScalableFloat DropNums = FScalableFloat();  //掉落数量，与角色等级有关(暂定)
+};
 USTRUCT(BlueprintType)
 struct FDropConfig
 {
@@ -24,9 +37,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FName TargetName;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FScalableFloat DropRate = FScalableFloat();  //掉落几率，和角色等级有关
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FScalableFloat DropNums = FScalableFloat();  //掉落数量，与角色等级有关(暂定)
+	TArray<FDropAble> Drops;
 };
 USTRUCT(BlueprintType)
 struct FDropInformation
@@ -39,6 +50,7 @@ UCLASS()
 class ISLANDSURVIVAL_API UISCollectibleDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
+public:
 	UPROPERTY(EditDefaultsOnly)
 	TMap<ECollectibleClass, FDropInformation> DropConfigs;
 	FDropInformation GetDropConfig(ECollectibleClass TargetClass);

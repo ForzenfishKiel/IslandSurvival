@@ -26,4 +26,6 @@ public:
 	virtual FName GetTargetName() = 0;
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	ECollectibleClass GetTargetClass();
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void CollectionExecution(AActor*TargetActor,AActor*TargetTool);
 };

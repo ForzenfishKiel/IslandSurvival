@@ -57,7 +57,6 @@ protected:
 	TObjectPtr<USphereComponent>PickUpCheckSphere;
 public:	
 	virtual void Tick(float DeltaTime) override;
-	virtual void PickUpItemToInventory_Implementation(APawn* TargetPawn, AActor* TargetActor) override;
 	virtual void UseItem(AActor*TargetCharacter,UAbilitySystemComponent*TargetASC);  //使用物品和不使用物品都要在服务器上运行
 	virtual void UnUseItem(AActor*TargetCharacter,UAbilitySystemComponent*TargetASC);
 	virtual void ApplyEffectToTarget(UAbilitySystemComponent*InASC,TSubclassOf<UGameplayEffect>EffectClass){return;}

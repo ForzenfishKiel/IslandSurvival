@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Interface/ISCollectibleInterface.h"
 #include "ISHarvestingBase.generated.h"
-
 UCLASS()
 class ISLANDSURVIVAL_API AISHarvestingBase : public AActor,public IISCollectibleInterface
 {
@@ -18,20 +17,22 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> HarvestStaticMesh;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
 	ECollectibleClass CollectibleClass = ECollectibleClass::None;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Config")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category="Config")
 	float CollectibleHP = 0.f;  //采集物血量
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Config")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
 	float CollectibleMaxHP = 100.f; //采集物最大血量
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Config")
-	FName CollectibleName;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
+	FName CollectibleName;  //采集物名字
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 public:	
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual FName GetTargetName() override;
 	virtual ECollectibleClass GetTargetClass_Implementation();
+	virtual void CollectionExecution_Implementation(AActor* TargetActor, AActor* TargetTool) override;
 };

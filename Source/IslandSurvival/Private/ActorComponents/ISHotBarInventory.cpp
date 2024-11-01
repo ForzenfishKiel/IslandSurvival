@@ -2,7 +2,7 @@
 
 
 #include "ActorComponents/ISHotBarInventory.h"
-
+#include "Net/UnrealNetwork.h"
 void UISHotBarInventory::BeginPlay()
 {
 	Super::BeginPlay();

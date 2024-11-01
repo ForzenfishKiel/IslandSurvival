@@ -2,7 +2,13 @@
 
 
 #include "ActorComponents/ISItemsContainer.h"
+
+#include "ActorComponents/ISCharacterInventory.h"
 #include "ActorComponents/ISEquipmentComponent.h"
+#include "ActorComponents/ISHotBarInventory.h"
+#include "Character/ISCharacter.h"
+#include "Game/ISGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -176,6 +182,52 @@ void UISItemsContainer::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 EContainerType UISItemsContainer::GetTargetContainerType()
 {
 	return ContainerType;
+}
+
+void UISItemsContainer::PickUpItemForActor(APawn* TargetPawn, AActor* TargetActor)
+{
+	AISItemBase*SourceItem = Cast<AISItemBase>(TargetActor);
+	FName TargetItemID = SourceItem->ItemID;
+	PickUpItemForID_Implementation(TargetPawn,TargetItemID,1);
+}
+
+//客户端运行
+void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName TargetID, const int32 TargetNums)
+{
+	UISGameInstance* TargetGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!TargetGameInstance&&TargetNums<1) return;
+	const UDataTable*UserDT = TargetGameInstance->ItemDataTable;
+	check(UserDT);
+	const FItemInformation*UserInfo = UserDT->FindRow<FItemInformation>(TargetID,TEXT("name"));
+	if (UserInfo)
+	{
+		FItemInformation TargetItemInfo = *UserInfo;
+		TargetItemInfo.ItemQuantity+=TargetNums - 1;  //数量相加
+		AISCharacter*SourceCharacter = Cast<AISCharacter>(TargetPawn);
+		if(!SourceCharacter) return;
+		UISCharacterInventory*TargetInventory = SourceCharacter->CharacterInventory;
+		UISHotBarInventory*TargetHotBar = SourceCharacter->CharacterHotBarInventory;
+		if(!TargetInventory&&!TargetHotBar) return;
+		//物品添加进物品栏
+		if(TargetHotBar->CheckInventoryEmpty(TargetItemInfo))
+		{
+			TargetHotBar->ItemPickup.Broadcast(TargetItemInfo);
+			TargetHotBar->InventoryUpdate.Broadcast();
+			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);
+			return;
+		}
+		//物品加进角色背包
+		else if(TargetInventory->CheckInventoryEmpty(TargetItemInfo))
+		{
+			TargetInventory->ItemPickup.Broadcast(TargetItemInfo);
+			TargetInventory->InventoryUpdate.Broadcast();
+			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);
+			return;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("背包已满！！"));
+	}
 }
 
 

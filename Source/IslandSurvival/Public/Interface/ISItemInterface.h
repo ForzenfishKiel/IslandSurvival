@@ -24,7 +24,5 @@ class ISLANDSURVIVAL_API IISItemInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void PickUpItemToInventory(APawn*TargetPawn,AActor* TargetActor);
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void EquipableAbilityActivate();
 };

@@ -19,8 +19,10 @@ public:
 	FItemInformation ItemInfo;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	EContainerType ContainerType = EContainerType::None;
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
 	FOnInventoryUpdate InventoryUpdate;
+	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
+	FWhenItemPickUp ItemPickup;
 	UISItemsContainer();
 	void WhenInventoryChange(UISItemsContainer*TargetContainer,const int32 TargetIndex);
 	UFUNCTION(BlueprintCallable,Client,Reliable)
@@ -38,4 +40,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual EContainerType GetTargetContainerType() override;
+	void PickUpItemForActor(APawn* TargetPawn, AActor* TargetActor);
+	UFUNCTION(Client,Reliable)
+	void PickUpItemForID(APawn*TargetPawn,FName TargetID,const int32 TargetNums);
 };
