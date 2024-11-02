@@ -31,7 +31,7 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 				if(LastChooseIndex==-1)
 				{
 					LastChooseIndex=TargetIndex;  //记录当前的Index
-					CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);
+					CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex]);
 					return;
 				}
 			}
@@ -41,7 +41,7 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 				{
 					LastChooseIndex=TargetIndex;
 					CharacterEquipment->OnUnEquip.Broadcast();  //删除当前装备的武器
-					CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);  //然后装上新的武器
+					CharacterEquipment->OnEquip.Broadcast(TargetContainer->InventoryContainer[TargetIndex]);  //然后装上新的武器
 					return;
 				}
 				if(LastChooseIndex==TargetIndex)
@@ -188,7 +188,7 @@ void UISItemsContainer::PickUpItemForActor(APawn* TargetPawn, AActor* TargetActo
 {
 	AISItemBase*SourceItem = Cast<AISItemBase>(TargetActor);
 	FName TargetItemID = SourceItem->ItemID;
-	PickUpItemForID_Implementation(TargetPawn,TargetItemID,1);
+	PickUpItemForID(TargetPawn,TargetItemID,1);
 }
 
 //客户端运行
@@ -212,15 +212,17 @@ void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName 
 		if(TargetHotBar->CheckInventoryEmpty(TargetItemInfo))
 		{
 			TargetHotBar->ItemPickup.Broadcast(TargetItemInfo);
+			ItemPickupOnUI.Broadcast(TargetItemInfo);
 			TargetHotBar->InventoryUpdate.Broadcast();
 			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);
 			return;
 		}
 		//物品加进角色背包
-		else if(TargetInventory->CheckInventoryEmpty(TargetItemInfo))
+		if(TargetInventory->CheckInventoryEmpty(TargetItemInfo))
 		{
 			TargetInventory->ItemPickup.Broadcast(TargetItemInfo);
+			ItemPickupOnUI.Broadcast(TargetItemInfo);
 			TargetInventory->InventoryUpdate.Broadcast();
 			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);

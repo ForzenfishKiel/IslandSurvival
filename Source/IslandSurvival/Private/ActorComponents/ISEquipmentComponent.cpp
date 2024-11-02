@@ -27,14 +27,15 @@ void UISEquipmentComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	DOREPLIFETIME(UISEquipmentComponent,CharacterEquipState);
 }
 
-void UISEquipmentComponent::Equip_Implementation(TSubclassOf<AISItemBase> InTargetItem)
+//在服务器完成武器的初始化
+void UISEquipmentComponent::Equip_Implementation(const FItemInformation TargetInformation)
 {
 	//确定储存的武器数据不为空
-	Equipable = NewObject<AISEquipable>(GetOwner(),InTargetItem);
-	CharacterEquipState = Equipable->CurrentEquipState;
-	Equipable->UseItem(GetOwner(),SourceASC);
-	Equipable = GetWorld()->SpawnActorDeferred<AISEquipable>(InTargetItem,FTransform::Identity,GetOwner());
+	Equipable = GetWorld()->SpawnActorDeferred<AISEquipable>(TargetInformation.ItemClassRef,FTransform::Identity,GetOwner());
 	UGameplayStatics::FinishSpawningActor(Equipable,FTransform::Identity);
+	Equipable->InitializeEquipableConfig(TargetInformation);  //初始化其配置
+	CharacterEquipState = Equipable->EquipState;
+	Equipable->UseItem(GetOwner(),SourceASC);
 	USceneComponent*AttachThirdPerson = Equipable->GetAttachThirdPersonParent(Cast<APawn>(Equipable->GetOwner()));
 	SpawnEquip_Implementation(AttachThirdPerson);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Owner: %s"), *Equipable->GetOwner()->GetName()));
@@ -49,9 +50,9 @@ void UISEquipmentComponent::SpawnEquip_Implementation(USceneComponent* AttachEqu
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("多播触发！！"));
 }
 
-void UISEquipmentComponent::SpawnEquipOnClient_Implementation(TSubclassOf<AISItemBase> InTargetItem)
+void UISEquipmentComponent::SpawnEquipOnClient_Implementation(const FItemInformation TargetInformation)
 {
-	EquipableClient = GetWorld()->SpawnActorDeferred<AISEquipable>(InTargetItem,FTransform::Identity,GetOwner());
+	EquipableClient = GetWorld()->SpawnActorDeferred<AISEquipable>(TargetInformation.ItemClassRef,FTransform::Identity,GetOwner());
 	UGameplayStatics::FinishSpawningActor(EquipableClient,FTransform::Identity);
 	EquipableClient->SetEquipableCollision();
 	EquipableClient->ItemsStaticMesh->bOnlyOwnerSee = true;

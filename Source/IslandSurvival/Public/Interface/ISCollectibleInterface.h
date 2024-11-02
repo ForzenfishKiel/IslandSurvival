@@ -28,4 +28,8 @@ public:
 	ECollectibleClass GetTargetClass();
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void CollectionExecution(AActor*TargetActor,AActor*TargetTool);
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void ApplyDamageToTarget(AActor*TargetActor);  //应用武器伤害
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	int32 GetNumsFromMultiplier(AActor*TargetTool,int32 TargetNums);
 };

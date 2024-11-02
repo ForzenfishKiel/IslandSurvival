@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/ISPlayerItemDataTable.h"
 #include "Interface/ISEquipableInterface.h"
 #include "Items/ISItemBase.h"
 #include "ISEquipable.generated.h"
@@ -10,6 +11,7 @@
 /**
  * 
  */
+
 UENUM(BlueprintType)
 enum class ECharacterEquipState:uint8
 {
@@ -23,19 +25,21 @@ class ISLANDSURVIVAL_API AISEquipable : public AISItemBase,public IISEquipableIn
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="EquipState")
-	ECharacterEquipState CurrentEquipState = ECharacterEquipState::None;  //装备武器类型
 	USceneComponent*GetAttachTarget(APawn*TargetPawn) const;
 	USceneComponent* GetAttachThirdPersonParent(APawn*TargetPawn) const;
+	UPROPERTY(EditDefaultsOnly,Category="ItemConfig")
+	ECharacterEquipState EquipState = ECharacterEquipState::None;
+	UPROPERTY(EditDefaultsOnly,Category="ItemConfig")
+	EItemRarity ItemRarity = EItemRarity::None;
 	void SetEquipableCollision();  //设置武器的碰撞条件
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="EquipState")
+	void InitializeEquipableConfig(const FItemInformation&TargetInfo);
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ItemConfig")
 	TSubclassOf<UGameplayEffect>EquipableDefaultAttribute;  //武器默认属性的提供
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Animation")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ItemConfig")
 	TArray<UAnimMontage*>EquipableActivateAnimations; //武器调用的攻击动画
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Ability")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ItemConfig")
 	TArray<TSubclassOf<UGameplayAbility>>EquipableActivateAbilities;  //武器主动能力
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Ability")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ItemConfig")
 	TArray<TSubclassOf<UGameplayAbility>>EquibablePassiveAbilities;//武器被动能力
 public:
 	virtual void UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) override;
@@ -45,4 +49,5 @@ public:
 	virtual void RemoveTargetAbility(UAbilitySystemComponent* TargetASC, TArray<TSubclassOf<UGameplayAbility>>& TargetArray) override;
 	virtual void RemoveTargetEffect(UAbilitySystemComponent* TargetASC, TSubclassOf<UGameplayEffect> EffectClass) override;
 	virtual ECharacterEquipState GetTargetEquipState() override;
+	virtual EItemRarity GetItemRarity_Implementation() override;
 };

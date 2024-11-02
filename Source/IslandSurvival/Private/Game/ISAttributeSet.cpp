@@ -14,6 +14,7 @@ void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxHealth,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,Vigor,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxVigor,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,WeaponAttack,COND_None,REPNOTIFY_Always);
 }
 
 
@@ -96,4 +97,9 @@ void UISAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
 void UISAttributeSet::OnRep_MaxVigor(const FGameplayAttributeData& OldMaxVigor) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,MaxVigor,OldMaxVigor);
+}
+
+void UISAttributeSet::OnRep_WeaponAttack(const FGameplayAttributeData& OldWeaponAttack) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,WeaponAttack,OldWeaponAttack);  //武器伤害
 }

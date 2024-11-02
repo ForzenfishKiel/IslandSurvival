@@ -26,6 +26,9 @@ public:
 	float CollectibleMaxHP = 100.f; //采集物最大血量
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
 	FName CollectibleName;  //采集物名字
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void EnableHarvestionBreak(AActor*TargetActor);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,4 +38,6 @@ public:
 	virtual FName GetTargetName() override;
 	virtual ECollectibleClass GetTargetClass_Implementation();
 	virtual void CollectionExecution_Implementation(AActor* TargetActor, AActor* TargetTool) override;
+	virtual void ApplyDamageToTarget_Implementation(AActor* TargetActor) override;
+	virtual int32 GetNumsFromMultiplier_Implementation(AActor* TargetTool,int32 TargetNums) override;
 };

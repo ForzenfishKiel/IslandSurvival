@@ -25,4 +25,6 @@ class ISLANDSURVIVAL_API IISItemInterface
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void EquipableAbilityActivate();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FName GetName();
 };

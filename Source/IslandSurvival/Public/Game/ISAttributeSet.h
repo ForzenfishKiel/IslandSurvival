@@ -75,6 +75,10 @@ public:
 	FGameplayAttributeData MaxVigor;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxVigor)
 
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_WeaponAttack,Category = "SecondaryAttributes")
+	FGameplayAttributeData WeaponAttack;
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,WeaponAttack);  //武器伤害
+
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
@@ -86,6 +90,8 @@ public:
 	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
 	UFUNCTION()
 	void OnRep_MaxVigor(const FGameplayAttributeData& OldMaxVigor) const;
+	UFUNCTION()
+	void OnRep_WeaponAttack(const FGameplayAttributeData&OldWeaponAttack) const;
 protected:
 	void SetEffectContext(const FGameplayEffectModCallbackData& Data,FEffectProperties&Properties);
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;

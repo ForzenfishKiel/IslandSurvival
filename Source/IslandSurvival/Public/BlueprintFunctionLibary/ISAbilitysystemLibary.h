@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Data/ISCollectibleDataAsset.h"
+#include "DataAsset/ISEquipableDataAsset.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ISAbilitysystemLibary.generated.h"
 
@@ -16,4 +17,5 @@ class ISLANDSURVIVAL_API UISAbilitysystemLibary : public UBlueprintFunctionLibra
 	GENERATED_BODY()
 public:
 	static UISCollectibleDataAsset* GetCollectibleDataAsset(const UObject* WorldContextObject);
+	static UISEquipableDataAsset*GetEquipableDataAsset(const UObject* WorldContextObject);
 };

@@ -2,12 +2,7 @@
 
 
 #include "Items/ISItemBase.h"
-
 #include "Character/ISCharacter.h"
-#include "Data/ISPlayerItemDataTable.h"
-#include "Game/ISGameInstance.h"
-#include "Game/ISGameplayMode.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AISItemBase::AISItemBase()
@@ -18,6 +13,7 @@ AISItemBase::AISItemBase()
 	PrimaryActorTick.bCanEverTick = true;
 	ItemsStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("ItemsStaticMesh");
 	ItemsStaticMesh->SetupAttachment(PickUpCheckSphere);
+	ItemsStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	bReplicates = true;  //设置为可复制
 }
 
@@ -36,6 +32,11 @@ void AISItemBase::Tick(float DeltaTime)
 void AISItemBase::UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)
 {
 	
+}
+
+FName AISItemBase::GetName_Implementation()
+{
+	return ItemID;
 }
 
 void AISItemBase::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)

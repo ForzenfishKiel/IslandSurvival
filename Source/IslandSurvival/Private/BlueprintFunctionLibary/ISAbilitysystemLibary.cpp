@@ -11,3 +11,10 @@ UISCollectibleDataAsset* UISAbilitysystemLibary::GetCollectibleDataAsset(const U
 	if(!SourceGameMode) return nullptr;
 	return SourceGameMode->CollectibleDataAsset;
 }
+
+UISEquipableDataAsset* UISAbilitysystemLibary::GetEquipableDataAsset(const UObject* WorldContextObject)
+{
+	AISGameplayMode*SourceGameMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(!SourceGameMode) return nullptr;
+	return SourceGameMode->EquipableDataAsset;
+}

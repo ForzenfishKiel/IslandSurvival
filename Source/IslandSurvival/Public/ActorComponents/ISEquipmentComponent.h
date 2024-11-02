@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "Character/ISCharacterBase.h"
 #include "Components/ActorComponent.h"
+#include "Data/ISPlayerItemDataTable.h"
 #include "Items/ISEquipable.h"
 #include "ISEquipmentComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquip,TSubclassOf<AISItemBase>,TargetItemClass);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquip,FItemInformation,TargetItemInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquip);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ISLANDSURVIVAL_API UISEquipmentComponent : public UActorComponent
@@ -34,11 +35,11 @@ public:
 	TObjectPtr<UAbilitySystemComponent>SourceASC;
 public:
 	UFUNCTION(BlueprintCallable,Server, Reliable)
-	void Equip(TSubclassOf<AISItemBase> InTargetItem);
+	void Equip(const FItemInformation TargetInformation);
 	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
 	void SpawnEquip(USceneComponent*AttachEquip);
 	UFUNCTION(BlueprintCallable,Client, Reliable)
-	void SpawnEquipOnClient(TSubclassOf<AISItemBase> InTargetItem);
+	void SpawnEquipOnClient(const FItemInformation TargetInformation);
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void UnEquip();
 	UFUNCTION(BlueprintCallable,Client, Reliable)

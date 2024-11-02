@@ -27,7 +27,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInformation")
 	int32 ItemDamage = 0;  //这个不是武器造成的伤害，这个是一些工具会造成的固定伤害，例如镐子，斧子等
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInformation")
-	EItemRarity ItemRarity = EItemRarity::None;
+	EItemRarity TargetItemRarity = EItemRarity::None;  //武器稀有度
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInformation")
 	int32 ItemCurHP = 0;  //物品当前耐久度
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInformation")

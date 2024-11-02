@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Data/ISCollectibleDataAsset.h"
+#include "DataAsset/ISEquipableDataAsset.h"
 #include "GameFramework/GameModeBase.h"
 #include "ISGameplayMode.generated.h"
 
@@ -17,4 +18,6 @@ class ISLANDSURVIVAL_API AISGameplayMode : public AGameModeBase
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
 	TObjectPtr<UISCollectibleDataAsset> CollectibleDataAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
+	TObjectPtr<UISEquipableDataAsset> EquipableDataAsset;
 };

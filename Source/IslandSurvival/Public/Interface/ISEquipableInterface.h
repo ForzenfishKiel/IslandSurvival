@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "ISEquipableInterface.generated.h"
 
+enum class EItemRarity : uint8;
+struct FEquipInfoConfig;
 enum class ECharacterEquipState : uint8;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
@@ -26,4 +28,6 @@ public:
 	virtual ECharacterEquipState GetTargetEquipState() = 0;
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void EndAbilityActivate();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	EItemRarity GetItemRarity();
 };

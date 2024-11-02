@@ -2,9 +2,9 @@
 
 
 #include "Items/ISEquipable.h"
-
 #include "Character/ISCharacter.h"
 #include "Game/ISAbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Game/ISGameplayTagsManager.h"
 
 USceneComponent* AISEquipable::GetAttachTarget(APawn* TargetPawn) const
@@ -29,7 +29,7 @@ USceneComponent* AISEquipable::GetAttachThirdPersonParent(APawn* TargetPawn) con
 
 void AISEquipable::SetEquipableCollision()
 {
-	PickUpCheckSphere->SetCollisionResponseToChannel(ECC_GameTraceChannel1,ECR_Ignore);
+	PickUpCheckSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AISEquipable::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)
@@ -39,6 +39,14 @@ void AISEquipable::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* Tar
 	ApplyEffectToTarget(TargetASC,EquipableDefaultAttribute);
 	AddTargetAbility(TargetASC,EquipableActivateAbilities);//应用主动技能
 	AddTargetAbility(TargetASC,EquibablePassiveAbilities);  //应用被动技能
+}
+
+//初始化加载武器配置
+void AISEquipable::InitializeEquipableConfig(const FItemInformation&TargetInfo)
+{
+	ItemID = FName(FString::Printf(TEXT("%d"),TargetInfo.ItemID));
+	ItemType = TargetInfo.ItemType;
+	ItemRarity = TargetInfo.TargetItemRarity;
 }
 
 void AISEquipable::UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)
@@ -88,5 +96,10 @@ void AISEquipable::RemoveTargetEffect(UAbilitySystemComponent* TargetASC, TSubcl
 
 ECharacterEquipState AISEquipable::GetTargetEquipState()
 {
-	return CurrentEquipState;
+	return EquipState;
+}
+
+EItemRarity AISEquipable::GetItemRarity_Implementation()
+{
+	return ItemRarity;
 }

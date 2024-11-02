@@ -63,4 +63,5 @@ public:
 	virtual void AddTargetAbility(UAbilitySystemComponent*TargetASC,TArray<TSubclassOf<UGameplayAbility>>&TargetArray){return;}
 	virtual void RemoveTargetAbility(UAbilitySystemComponent*TargetASC,TArray<TSubclassOf<UGameplayAbility>>&TargetArray){return;}
 	virtual void RemoveTargetEffect(UAbilitySystemComponent*TargetASC,TSubclassOf<UGameplayEffect>EffectClass){return;}
+	virtual FName GetName_Implementation() override;
 };
