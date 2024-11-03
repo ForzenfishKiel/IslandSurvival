@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
+#include "Interface/ISCombatInterface.h"
 #include "ISCharacterBase.generated.h"
 
 //初始化结构体
@@ -24,7 +25,7 @@ struct FCharacterParams
 	TObjectPtr<APlayerState> SourcePS = nullptr;
 };
 UCLASS()
-class ISLANDSURVIVAL_API AISCharacterBase : public ACharacter
+class ISLANDSURVIVAL_API AISCharacterBase : public ACharacter,public IISCombatInterface
 {
 	GENERATED_BODY()
 
@@ -36,5 +37,6 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual void ActivateCharacterAbility_Implementation() override;
+	virtual void EndActivateCharacterAbility_Implementation() override;
 };

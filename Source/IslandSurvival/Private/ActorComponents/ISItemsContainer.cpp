@@ -2,7 +2,6 @@
 
 
 #include "ActorComponents/ISItemsContainer.h"
-
 #include "ActorComponents/ISCharacterInventory.h"
 #include "ActorComponents/ISEquipmentComponent.h"
 #include "ActorComponents/ISHotBarInventory.h"

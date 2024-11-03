@@ -4,6 +4,7 @@
 #include "Character/ISCharacter.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISPlayerController.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Game/ISPlayerState.h"
@@ -48,6 +49,7 @@ AISCharacter::AISCharacter()
 	CharacterEquipment = CreateDefaultSubobject<UISEquipmentComponent>(TEXT("CharacterEquipment"));
 	CharacterEquipment->SetIsReplicated(true);  //装备系统也设定为可复制
 	ISInteractionComponent = CreateDefaultSubobject<UISInteractionComponent>(TEXT("ISInteractionComponent")); //玩家交互组件
+	ISInteractionComponent->SetIsReplicated(true);
 }
 
 void AISCharacter::PossessedBy(AController* NewController)
@@ -55,6 +57,7 @@ void AISCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();  //服务器调用初始化操作
 	SetOwner(NewController);
+	AddCharacterActivateAbility(CharacterActivateAbilities);
 }
 
 void AISCharacter::OnRep_PlayerState()
@@ -91,4 +94,11 @@ void AISCharacter::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubc
 	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AttributeClass,1,EffectContextHandle);
 	const FActiveGameplayEffectHandle ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(),ASC);
+}
+
+void AISCharacter::AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>& TargetActivateAbilities)
+{
+	UISAbilitySystemComponent*LocalASC = Cast<UISAbilitySystemComponent>(SourceASC);
+	if(!LocalASC)return;
+	LocalASC->AddCharacterAbility(TargetActivateAbilities);  //添加角色可激活执行的技能
 }

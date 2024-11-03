@@ -41,8 +41,6 @@ private:
 	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction>IA_LookUp;
 	UPROPERTY(EditAnywhere,Category = "Input")
-	TObjectPtr<UInputAction>IA_Interact;  //交互判定
-	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction>IA_OpenUI;
 	void Move(const struct FInputActionValue&InputActionValue);
 	void LookUp(const struct FInputActionValue&InputActionValue);

@@ -38,6 +38,10 @@ public:
 	FGameplayTag Input_Attack_LMB;
 	FGameplayTag Input_Attack_Roll;
 	FGameplayTag Input_Attack_FastRun;
+	/*输入事件结束*/
+
+	/*输入触发状态事件*/
+	FGameplayTag Input_State_Collecting;  //采集中
 
 	/*状态相关*/
 	FGameplayTag State_Attacking;

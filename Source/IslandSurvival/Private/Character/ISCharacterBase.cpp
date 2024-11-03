@@ -22,3 +22,13 @@ void AISCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void AISCharacterBase::ActivateCharacterAbility_Implementation()
+{
+	IISCombatInterface::ActivateCharacterAbility_Implementation();
+}
+
+void AISCharacterBase::EndActivateCharacterAbility_Implementation()
+{
+	IISCombatInterface::EndActivateCharacterAbility_Implementation();
+}
+

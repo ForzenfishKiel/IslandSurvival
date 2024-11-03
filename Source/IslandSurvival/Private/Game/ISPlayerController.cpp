@@ -33,7 +33,6 @@ void AISPlayerController::SetupInputComponent()
 	check(ISEnhanceInputComponent);
 	ISEnhanceInputComponent->BindAction(IA_Move,ETriggerEvent::Triggered,this,&AISPlayerController::Move);  //绑定移动事件
 	ISEnhanceInputComponent->BindAction(IA_LookUp,ETriggerEvent::Triggered,this,&AISPlayerController::LookUp);
-	ISEnhanceInputComponent->BindAction(IA_Interact,ETriggerEvent::Started,this,&AISPlayerController::PrimaryInteract);
 	ISEnhanceInputComponent->BindAction(IA_OpenUI,ETriggerEvent::Started,this,&AISPlayerController::OpenUI);
 	ISEnhanceInputComponent->BindChooseItemActions(ChooseHotBarInputData,this,&AISPlayerController::ChooseHotBar);
 	ISEnhanceInputComponent->BindAbilityActions(InputAbilityData,this,&AISPlayerController::InputPressedAbility
@@ -68,15 +67,6 @@ void AISPlayerController::LookUp(const struct FInputActionValue& InputActionValu
 	OwingCharacter->AddControllerYawInput(LookAxisVector.X);
 	OwingCharacter->AddControllerPitchInput(-(LookAxisVector.Y));
 }
-
-void AISPlayerController::PrimaryInteract()
-{
-	AISCharacter*OwingCharacter = Cast<AISCharacter>(GetPawn());
-	if(!OwingCharacter) return;
-	UISInteractionComponent*TargetInteraction = Cast<UISInteractionComponent>(OwingCharacter->ISInteractionComponent);
-	TargetInteraction->PrimaryIntract();
-}
-
 void AISPlayerController::ChooseHotBar(int32 InputIndex)
 {
 	if(InputIndex==-1) return;  //系统错误

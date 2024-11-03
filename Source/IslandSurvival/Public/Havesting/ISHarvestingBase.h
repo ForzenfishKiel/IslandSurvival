@@ -27,6 +27,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void EnableHarvestionBreak(AActor*TargetActor);
+	UFUNCTION(BlueprintImplementableEvent)
+	void CallMulticastDelegates();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

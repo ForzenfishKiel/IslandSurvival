@@ -24,9 +24,9 @@ public:
 	virtual void PossessedBy(AController* NewController) override;  //设定服务器同步数据，也是角色控制器调用时调用
 	virtual void OnRep_PlayerState() override;  //客户端同步玩家数据
 
-	UPROPERTY(EditAnywhere,Category = "Attributes")
+	UPROPERTY(EditAnywhere,Category = "Config")
 	TSubclassOf<UGameplayEffect>PlayerDefaultAttribute;
-	UPROPERTY(EditAnywhere,Category = "Attributes")
+	UPROPERTY(EditAnywhere,Category = "Config")
 	TSubclassOf<UGameplayEffect>PlayerSecondaryAttribute;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
@@ -41,13 +41,15 @@ public:
 	TObjectPtr<UISHotBarInventory>CharacterHotBarInventory;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UISEquipmentComponent>CharacterEquipment;  //角色装备组件
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UISInteractionComponent> ISInteractionComponent;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = "Combine")
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
-protected:
 
 private:
 	void InitAbilityActorInfo();
 	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
+	void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	UPROPERTY(EditAnywhere,Category = "Config")
+	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;
 };

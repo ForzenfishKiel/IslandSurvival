@@ -2,8 +2,8 @@
 
 
 #include "ActorComponents/ISInteractionComponent.h"
-
 #include "Character/ISCharacter.h"
+#include "Net/UnrealNetwork.h"
 #include "Interface/ISItemInterface.h"
 
 // Sets default values for this component's properties
@@ -12,7 +12,7 @@ UISInteractionComponent::UISInteractionComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UISInteractionComponent::PrimaryIntract()
+void UISInteractionComponent::PrimaryInteract_Implementation()
 {
 	AISCharacter*ISCharacter = Cast<AISCharacter>(GetOwner());
 	if(!ISCharacter) return;
@@ -24,10 +24,11 @@ void UISInteractionComponent::PrimaryIntract()
 	FHitResult Hit;
 	GetWorld()->LineTraceSingleByChannel(Hit,EyeLocation,End,ECC_GameTraceChannel1);  //待添加一个自定义通道
 	DrawDebugLine(GetWorld(), EyeLocation, Hit.GetActor() ? Hit.Location : End, FColor::Red, false, 1.0f);
-
 	AActor*HitActor = Hit.GetActor();
-	if(HitActor)
+	if(LastActor==HitActor) return;
+	else
 	{
+		LastActor = HitActor;
 		if(HitActor->Implements<UISItemInterface>())
 		{
 			APawn*MyPawn = Cast<APawn>(GetOwner());
@@ -37,7 +38,6 @@ void UISInteractionComponent::PrimaryIntract()
 		}
 	}
 }
-
 void UISInteractionComponent::TickInteractline()
 {
 	AISCharacter*ISCharacter = Cast<AISCharacter>(GetOwner());
@@ -69,5 +69,11 @@ void UISInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	TickInteractline();
+}
+
+void UISInteractionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UISInteractionComponent,LastActor);
 }
 

@@ -79,6 +79,10 @@ public:
 	FGameplayAttributeData WeaponAttack;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,WeaponAttack);  //武器伤害
 
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_GatheringDamage,Category = "SecondaryAttributes")
+	FGameplayAttributeData GatheringDamage;  //角色本身自带的采集伤害
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,GatheringDamage)
+	
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
@@ -92,6 +96,8 @@ public:
 	void OnRep_MaxVigor(const FGameplayAttributeData& OldMaxVigor) const;
 	UFUNCTION()
 	void OnRep_WeaponAttack(const FGameplayAttributeData&OldWeaponAttack) const;
+	UFUNCTION()
+	void OnRep_GatheringDamage(const FGameplayAttributeData&OldGatheringDamage) const;
 protected:
 	void SetEffectContext(const FGameplayEffectModCallbackData& Data,FEffectProperties&Properties);
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;

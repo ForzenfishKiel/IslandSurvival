@@ -38,7 +38,7 @@ void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 			{
 				//第一次攻击触发
 				if(!HasMatchingGameplayTag(GameplayTagsManager.State_Attacking)&&
-					AbilitySpec.Ability->AbilityTags.HasTagExact(GameplayTagsManager.Input_Combo_Combo01))
+					AbilitySpec.Ability->AbilityTags.HasTagExact(GameplayTagsManager.Input_Combo_Combo01)&&!AbilitySpec.IsActive())
 				{
 					TryActivateAbility(AbilitySpec.Handle);
 				}
@@ -46,6 +46,10 @@ void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 				{
 					TryActivateAbility(AbilitySpec.Handle);
 				}
+			}
+			else if(InputTag==GameplayTagsManager.Input_State_Collecting&&!AbilitySpec.IsActive())
+			{
+				TryActivateAbility(AbilitySpec.Handle);
 			}
 		}
 	}

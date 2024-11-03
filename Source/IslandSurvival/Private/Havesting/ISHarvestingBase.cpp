@@ -71,6 +71,7 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 					if(bCanDrop)
 					{
 						Execute_ApplyDamageToTarget(this,TargetActor);
+						CallMulticastDelegates();  //广播播放效果
 						ItemContainer->PickUpItemForID
 						(SourceCharacter,TargetDropRef.TargetID,Execute_GetNumsFromMultiplier(this,TargetTool,TargetDropRef.DropNums.GetValueAtLevel(1.f)));
 					}
@@ -89,7 +90,7 @@ void AISHarvestingBase::ApplyDamageToTarget_Implementation(AActor* TargetActor)
 	if(!SourcePlayerState&&!SourceCharacter) return;
 	UAbilitySystemComponent*SourceASC = SourcePlayerState->GetAbilitySystemComponent();
 	UISAttributeSet*SourceAS = Cast<UISAttributeSet>( SourcePlayerState->GetAttributeSet());  //获取角色的属性
-	const float ToolDamage = SourceAS->GetWeaponAttack();
+	const float ToolDamage = SourceAS->GetGatheringDamage();  //角色使用工具采集，计算工具的伤害
 	if(ToolDamage>0)  //如果武器伤害大于0
 	{
 		CollectibleHP = FMath::Clamp(CollectibleHP-ToolDamage,0.f,CollectibleMaxHP) ;  //血量相减
@@ -106,8 +107,18 @@ void AISHarvestingBase::ApplyDamageToTarget_Implementation(AActor* TargetActor)
 //计算实际采集的数量（提供武器，人物等级等）
 int32 AISHarvestingBase::GetNumsFromMultiplier_Implementation(AActor* TargetTool, int32 TargetNums)
 {
+
 	UISEquipableDataAsset*TargetDataAsset = UISAbilitysystemLibary::GetEquipableDataAsset(TargetTool);
 	if(!TargetDataAsset) return 0;
+	//角色不使用工具采集
+	if(TargetTool->Implements<UISCombatInterface>())
+	{
+		FEquipItemRarityContainer EquipItemRarity = TargetDataAsset->GetTargetItemRarityContainer(FName("0"));
+		const float BoostMultiplier = EquipItemRarity.RarityContainer[0].BootMultiplier.GetValueAtLevel(1.f);
+		const int32 Result = FMath::RoundToFloat(TargetNums * BoostMultiplier);
+		return Result;
+	}
+	//角色使用工具采集
 	FEquipItemRarityContainer EquipItemRarity = TargetDataAsset->GetTargetItemRarityContainer(IISItemInterface::Execute_GetName(TargetTool));
 	for(auto&EquipItemRarityContainer:EquipItemRarity.RarityContainer)
 	{

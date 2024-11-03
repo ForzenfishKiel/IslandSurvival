@@ -62,4 +62,7 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Combo.Combo04"),FString("连招第四段"));
 	GameplayTags.Input_Combo_CanCombo = 
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Combo.CanCombo"),FString("连击窗口"));
+
+	GameplayTags.Input_State_Collecting =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.State.Collecting"),FString("采集中"));
 }
