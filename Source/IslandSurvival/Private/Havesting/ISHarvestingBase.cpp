@@ -103,6 +103,7 @@ void AISHarvestingBase::ApplyDamageToTarget_Implementation(AActor* TargetActor)
 		EnableHarvestionBreak(TargetActor);
 	}
 }
+//计算实际采集的数量（提供武器，人物等级等）
 int32 AISHarvestingBase::GetNumsFromMultiplier_Implementation(AActor* TargetTool, int32 TargetNums)
 {
 	UISEquipableDataAsset*TargetDataAsset = UISAbilitysystemLibary::GetEquipableDataAsset(TargetTool);

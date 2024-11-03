@@ -36,7 +36,6 @@ void UISInteractionComponent::PrimaryIntract()
 			UIItems->PickUpItemForActor(SourceCharacter, HitActor);
 		}
 	}
-	
 }
 
 void UISInteractionComponent::TickInteractline()

@@ -16,10 +16,8 @@ public:
 	AISHarvestingBase();
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> HarvestStaticMesh;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
 	ECollectibleClass CollectibleClass = ECollectibleClass::None;
-
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category="Config")
 	float CollectibleHP = 0.f;  //采集物血量
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
