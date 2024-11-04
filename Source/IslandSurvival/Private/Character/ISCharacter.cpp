@@ -5,6 +5,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
+#include "Game/ISGameInstance.h"
 #include "Game/ISPlayerController.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Game/ISPlayerState.h"
@@ -101,4 +102,41 @@ void AISCharacter::AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbili
 	UISAbilitySystemComponent*LocalASC = Cast<UISAbilitySystemComponent>(SourceASC);
 	if(!LocalASC)return;
 	LocalASC->AddCharacterAbility(TargetActivateAbilities);  //添加角色可激活执行的技能
+}
+
+int32 AISCharacter::FindCheckCharacterBackPack(const UDataTable*TargetDT,const int32 TargetID,const int32 RequireID)
+{
+	//本地运行
+	UISGameInstance*ISGameplayInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));  //获取本地游戏实例
+	if(!ISGameplayInstance) return 0;
+	UISCraftingContainer*CraftingContainer = ISGameplayInstance->ItemContainer;
+	if(!CraftingContainer) return 0;
+	if(!CharacterHotBarInventory&&CraftingContainer) return 0;
+	int32 Result = 0;
+	FName Trans = FName(FString::Printf(TEXT("%d"),TargetID));
+	
+	if(FItemRecipe*UserInfo = TargetDT->FindRow<FItemRecipe>(Trans,TEXT("name")))
+	{
+		for(auto&DataTableRef:UserInfo->ItemRequired)
+		{
+			for(int32 Index = 0;Index<CharacterHotBarInventory->InventoryContainer.Num();Index++)
+			{
+				if(CharacterHotBarInventory->InventoryContainer[Index].ItemID==RequireID)
+				{
+					const int32 Value = CharacterHotBarInventory->InventoryContainer[Index].ItemQuantity;
+					Result += Value;
+				}
+			}
+			for(int32 Index = 0;Index<CharacterInventory->InventoryContainer.Num();Index++)
+			{
+				if(CharacterInventory->InventoryContainer[Index].ItemID==RequireID)
+				{
+					const int32 Value = CharacterInventory->InventoryContainer[Index].ItemQuantity;
+					Result += Value;
+				}
+			}
+			return Result;
+		}
+	}
+	return 0;
 }

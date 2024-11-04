@@ -50,6 +50,8 @@ private:
 	void InitAbilityActorInfo();
 	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
 	void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	UFUNCTION(BlueprintCallable)
+	int32 FindCheckCharacterBackPack(const UDataTable*TargetDT,const int32 TargetID,const int32 RequireID);
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;
 };

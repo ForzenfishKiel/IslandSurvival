@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/ISCraftingContainer.h"
 #include "Engine/GameInstance.h"
 #include "ISGameInstance.generated.h"
 
@@ -16,4 +17,6 @@ class ISLANDSURVIVAL_API UISGameInstance : public UGameInstance
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DataTable")
 	TObjectPtr<UDataTable>ItemDataTable;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DataTable")
+	TObjectPtr<UISCraftingContainer>ItemContainer;
 };

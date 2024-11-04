@@ -183,6 +183,11 @@ EContainerType UISItemsContainer::GetTargetContainerType()
 	return ContainerType;
 }
 
+FName UISItemsContainer::GetContainerName()
+{
+	return ContainerName;
+}
+
 void UISItemsContainer::PickUpItemForActor(APawn* TargetPawn, AActor* TargetActor)
 {
 	AISItemBase*SourceItem = Cast<AISItemBase>(TargetActor);

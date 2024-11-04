@@ -13,6 +13,11 @@ enum class EContainerType : uint8
 	Storage = 1 UMETA(DisplayName = "Storage"),  //储存箱
 	HotBar = 2 UMETA(DisplayName = "HotBar"),  //快捷栏
 	BackPack = 3 UMETA(DisplayName = "BackPack"), //背包
+	CookingPot = 4 UMETA(DisplayName = "CookingPot"),//烹饪锅
+	CratingBench = 5 UMETA(DisplayName = "CratingBench"),//工作台
+	Forge = 6 UMETA(DisplayName = "Forge"),//熔炉
+	Advanced = 7 UMETA(DisplayName = "Advanced"),
+	StorageBox = 8 UMETA(DisplayName = "StorageBox"),
 };
 UINTERFACE(MinimalAPI)
 class UISContainerInterface : public UInterface
@@ -28,4 +33,5 @@ class ISLANDSURVIVAL_API IISContainerInterface
 	GENERATED_BODY()
 public:
 	virtual EContainerType GetTargetContainerType() = 0;
+	virtual FName GetContainerName() = 0;
 };

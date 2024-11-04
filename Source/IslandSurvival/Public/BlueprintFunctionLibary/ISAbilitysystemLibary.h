@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Data/ISCollectibleDataAsset.h"
+#include "DataAsset/ISCraftingContainer.h"
 #include "DataAsset/ISEquipableDataAsset.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ISAbilitysystemLibary.generated.h"

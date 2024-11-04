@@ -6,7 +6,6 @@
 #include "ActorComponents/ISHotBarInventory.h"
 #include "Character/ISCharacter.h"
 #include "Game/ISAbilitySystemComponent.h"
-#include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISEnhancedInputComponent.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Game/ISPlayerState.h"
@@ -79,10 +78,13 @@ void AISPlayerController::OpenUI_Implementation()
 {
 	AISPlayerMainHUD*SourceHUD = Cast<AISPlayerMainHUD>(GetHUD()); //获取角色HUD
 	UISMenuUIBase*MenuUI = SourceHUD->ISMenuUI;
+	AISCharacter*SourceChar = Cast<AISCharacter>(GetPawn());
+	UISItemsContainer*CharacterInventory = SourceChar->GetComponentByClass<UISItemsContainer>();
 	if(!SourceHUD&&!MenuUI) return;
 	if(MenuUI->IsVisible())
 	{
 		MenuUI->RemoveFromParent();
+		MenuUI->SafeToClearData();
 		bShowMouseCursor = false;  //不显示鼠标，回归正常的游戏状态
 		SetInputMode(FInputModeGameOnly());
 		InputSubsystem->RemoveMappingContext(CharacterInputMenuMapping);
@@ -90,6 +92,7 @@ void AISPlayerController::OpenUI_Implementation()
 	}
 	else
 	{
+		MenuUI->InitializeCraftingData(CharacterInventory);
 		MenuUI->AddToViewport();
 		SetInputMode(FInputModeGameAndUI());
 		bShowMouseCursor = true;

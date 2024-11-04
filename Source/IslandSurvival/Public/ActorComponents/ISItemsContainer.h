@@ -13,6 +13,8 @@ class ISLANDSURVIVAL_API UISItemsContainer : public UActorComponent,public IISCo
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName ContainerName;  //背包名字
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int32 InventorySpace = 0;  //背包空间
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
@@ -43,7 +45,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual EContainerType GetTargetContainerType() override;
+	virtual FName GetContainerName() override;
 	void PickUpItemForActor(APawn* TargetPawn, AActor* TargetActor);
 	UFUNCTION(Client,Reliable)
 	void PickUpItemForID(APawn*TargetPawn,FName TargetID,const int32 TargetNums);
+
 };
