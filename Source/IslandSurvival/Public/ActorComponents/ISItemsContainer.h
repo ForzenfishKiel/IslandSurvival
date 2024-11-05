@@ -34,6 +34,8 @@ public:
 	void WhenItemExchanged(UISItemsContainer*TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex);
 	UFUNCTION(Client,Reliable)
 	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
+	UFUNCTION(Client,Reliable)
+	void DiscardItem(const int32 TargetIndex,const int32 TargetQuantity);  //丢弃物品
 	UFUNCTION()
 	void InitializeBackPackSpace(const int32 Space);
 	bool CheckInventoryEmpty(const FItemInformation Information);

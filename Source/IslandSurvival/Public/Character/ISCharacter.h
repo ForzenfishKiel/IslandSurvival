@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ActorComponents/ISCharacterInventory.h"
+#include "ActorComponents/ISCraftingComponent.h"
 #include "ActorComponents/ISEquipmentComponent.h"
 #include "ActorComponents/ISHotBarInventory.h"
 #include "ActorComponents/ISInteractionComponent.h"
@@ -43,6 +44,8 @@ public:
 	TObjectPtr<UISEquipmentComponent>CharacterEquipment;  //角色装备组件
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UISInteractionComponent> ISInteractionComponent;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UISCraftingComponent>ISCraftingComponent;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = "Combine")
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
 
@@ -50,8 +53,6 @@ private:
 	void InitAbilityActorInfo();
 	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
 	void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
-	UFUNCTION(BlueprintCallable)
-	int32 FindCheckCharacterBackPack(const UDataTable*TargetDT,const int32 TargetID,const int32 RequireID);
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;
 };

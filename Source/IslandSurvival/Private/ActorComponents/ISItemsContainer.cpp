@@ -92,6 +92,22 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 		return;
 	}
 }
+
+void UISItemsContainer::DiscardItem_Implementation(const int32 TargetIndex, const int32 TargetQuantity)
+{
+	if(TargetIndex>=0&&TargetQuantity>=1)
+	{
+		InventoryContainer[TargetIndex].ItemQuantity-=TargetQuantity;
+		if(InventoryContainer[TargetIndex].ItemQuantity==0)
+		{
+			InventoryContainer[TargetIndex] = ItemInfo;
+			InventoryUpdate.Broadcast(); //更新背包
+			return;
+		}
+		InventoryUpdate.Broadcast();
+	}
+}
+
 void UISItemsContainer::InitializeBackPackSpace(const int32 Space)
 {
 	for(int32 Index = 0;Index<Space;Index++)
