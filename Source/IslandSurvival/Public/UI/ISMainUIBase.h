@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "WidgetController/ISWidgetController.h"
 #include "ISMainUIBase.generated.h"
 
 /**
@@ -13,5 +14,10 @@ UCLASS()
 class ISLANDSURVIVAL_API UISMainUIBase : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	void SetWidgetController(UObject*InWidgetController);
+	UPROPERTY(BlueprintReadOnly, Category = "UIModel")
+	TObjectPtr<UObject> WidgetController;
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetControllerWasSet();
 };

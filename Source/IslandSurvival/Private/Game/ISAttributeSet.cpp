@@ -16,6 +16,10 @@ void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxVigor,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,WeaponAttack,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,GatheringDamage,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,Hunger,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxHunger,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,Thirst,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxThirst,COND_None,REPNOTIFY_Always);
 }
 
 
@@ -54,6 +58,8 @@ void UISAttributeSet::SetEffectContext(const FGameplayEffectModCallbackData& Dat
 void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+	FEffectProperties Properties;
+	SetEffectContext(Data, Properties);
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		
@@ -108,4 +114,24 @@ void UISAttributeSet::OnRep_WeaponAttack(const FGameplayAttributeData& OldWeapon
 void UISAttributeSet::OnRep_GatheringDamage(const FGameplayAttributeData& OldGatheringDamage) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,GatheringDamage,OldGatheringDamage);
+}
+
+void UISAttributeSet::OnRep_Hunger(const FGameplayAttributeData& OldHunger) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,Hunger,OldHunger);
+}
+
+void UISAttributeSet::OnRep_MaxHunger(const FGameplayAttributeData& OldMaxHunger) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,MaxHunger,OldMaxHunger);
+}
+
+void UISAttributeSet::OnRep_Thirst(const FGameplayAttributeData& OldThirst) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,Thirst,OldThirst);
+}
+
+void UISAttributeSet::OnRep_MaxThirst(const FGameplayAttributeData& OldMaxThirst) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,MaxThirst,OldMaxThirst);
 }

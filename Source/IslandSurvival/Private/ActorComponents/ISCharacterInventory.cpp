@@ -7,7 +7,7 @@ void UISCharacterInventory::BeginPlay()
 	Super::BeginPlay();
 	if(GetOwner()->HasAuthority())
 	{
-		InitializeBackPackSpace(InventorySpace);  //初始化背包
+		InitializeContainerSpace(InventorySpace);  //初始化背包
 	}
 	ItemPickup.AddDynamic(this,&UISItemsContainer::ToPickUpItemsInBackPack);
 }

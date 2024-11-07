@@ -3,3 +3,8 @@
 
 #include "UI/ISMainUIBase.h"
 
+void UISMainUIBase::SetWidgetController(UObject* InWidgetController)
+{
+	WidgetController = InWidgetController;
+	WidgetControllerWasSet();
+}

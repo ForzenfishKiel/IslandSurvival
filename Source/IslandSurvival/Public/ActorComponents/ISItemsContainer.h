@@ -37,7 +37,7 @@ public:
 	UFUNCTION(Client,Reliable)
 	void DiscardItem(const int32 TargetIndex,const int32 TargetQuantity);  //丢弃物品
 	UFUNCTION()
-	void InitializeBackPackSpace(const int32 Space);
+	void InitializeContainerSpace(const int32 Space);
 	bool CheckInventoryEmpty(const FItemInformation Information);
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	TArray<FItemInformation>InventoryContainer;//背包

@@ -83,6 +83,22 @@ public:
 	FGameplayAttributeData GatheringDamage;  //角色本身自带的采集伤害
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,GatheringDamage)
 	
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Hunger,Category = "SecondaryAttributes")
+	FGameplayAttributeData Hunger; //人物饱食度
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,Hunger)
+	
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxHunger,Category = "SecondaryAttributes")
+	FGameplayAttributeData MaxHunger;  //饱食度最大值
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxHunger)
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Thirst,Category = "SecondaryAttributes")
+	FGameplayAttributeData Thirst;  //口渴值
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,Thirst);
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxThirst,Category = "SecondaryAttributes")
+	FGameplayAttributeData MaxThirst;
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxThirst);
+	
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
@@ -98,6 +114,14 @@ public:
 	void OnRep_WeaponAttack(const FGameplayAttributeData&OldWeaponAttack) const;
 	UFUNCTION()
 	void OnRep_GatheringDamage(const FGameplayAttributeData&OldGatheringDamage) const;
+	UFUNCTION()
+	void OnRep_Hunger(const FGameplayAttributeData&OldHunger) const;
+	UFUNCTION()
+	void OnRep_MaxHunger(const FGameplayAttributeData&OldMaxHunger) const;
+	UFUNCTION()
+	void OnRep_Thirst(const FGameplayAttributeData&OldThirst) const;
+	UFUNCTION()
+	void OnRep_MaxThirst(const FGameplayAttributeData&OldMaxThirst) const;
 protected:
 	void SetEffectContext(const FGameplayEffectModCallbackData& Data,FEffectProperties&Properties);
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;

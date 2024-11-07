@@ -76,3 +76,8 @@ void UISAbilitySystemComponent::RemoveCharacterAttribute(const TSubclassOf<UGame
 {
 	RemoveActiveGameplayEffectBySourceEffect(AbilityToRemoveEffect,this,1);  //移除一个单位的属性
 }
+
+void UISAbilitySystemComponent::OnRep_ActivateAbilities()
+{
+	Super::OnRep_ActivateAbilities();
+}

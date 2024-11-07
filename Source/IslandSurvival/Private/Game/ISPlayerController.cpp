@@ -84,7 +84,6 @@ void AISPlayerController::OpenUI_Implementation()
 	if(MenuUI->IsVisible())
 	{
 		MenuUI->RemoveFromParent();
-		MenuUI->SafeToClearData();
 		bShowMouseCursor = false;  //不显示鼠标，回归正常的游戏状态
 		SetInputMode(FInputModeGameOnly());
 		InputSubsystem->RemoveMappingContext(CharacterInputMenuMapping);

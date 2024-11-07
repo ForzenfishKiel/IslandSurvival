@@ -93,6 +93,7 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 	}
 }
 
+//丢弃/销毁物品
 void UISItemsContainer::DiscardItem_Implementation(const int32 TargetIndex, const int32 TargetQuantity)
 {
 	if(TargetIndex>=0&&TargetQuantity>=1)
@@ -108,7 +109,7 @@ void UISItemsContainer::DiscardItem_Implementation(const int32 TargetIndex, cons
 	}
 }
 
-void UISItemsContainer::InitializeBackPackSpace(const int32 Space)
+void UISItemsContainer::InitializeContainerSpace(const int32 Space)
 {
 	for(int32 Index = 0;Index<Space;Index++)
 	{
