@@ -24,6 +24,18 @@ void UISAbilitySystemComponent::AddCharacterAbility(TArray<TSubclassOf<UGameplay
 	}
 }
 
+void UISAbilitySystemComponent::AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>& CharacterAbilities)
+{
+	if(CharacterAbilities.Num() > 0)
+	{
+		for(const TSubclassOf<UGameplayAbility>&AbilityClass:CharacterAbilities)
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass,1.f);
+			GiveAbilityAndActivateOnce(AbilitySpec);
+		}
+	}
+}
+
 void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 {
 	if(!InputTag.IsValid()) return;

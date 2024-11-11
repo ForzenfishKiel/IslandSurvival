@@ -15,6 +15,7 @@ class ISLANDSURVIVAL_API UISAbilitySystemComponent : public UAbilitySystemCompon
 	GENERATED_BODY()
 public:
 	void AddCharacterAbility(TArray<TSubclassOf<UGameplayAbility>>&CharacterAbilities);
+	void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&CharacterAbilities);
 	void InputPressedFunc(const FGameplayTag&InputTag);
 	void RemoveCharacterAbility(TArray<TSubclassOf<UGameplayAbility>>&CharacterAbilities);
 	void RemoveCharacterAttribute(const TSubclassOf<UGameplayEffect>AbilityToRemoveEffect);

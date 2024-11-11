@@ -11,8 +11,7 @@ void UISMainUIWidgetController::BindCallBackDependencies()
 	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetHealthAttribute()).AddLambda([this]
 		(const FOnAttributeChangeData& Data)
 	{
-		FString HealthText = FString::Printf(TEXT("Health Changed: %f"), Data.NewValue);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, HealthText);  // -1表示消息唯一标识，5.0f表示显示时长
+
 		OnHealthChange.Broadcast(Data.NewValue);
 	});
 	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetMaxHealthAttribute()).AddLambda([this]
@@ -33,6 +32,8 @@ void UISMainUIWidgetController::BindCallBackDependencies()
 	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetHungerAttribute()).AddLambda([this]
 	(const FOnAttributeChangeData& Data)
 	{
+		FString HealthText = FString::Printf(TEXT("Health Changed: %f"), Data.NewValue);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, HealthText);  // -1表示消息唯一标识，5.0f表示显示时长
 		OnHungerChange.Broadcast(Data.NewValue);
 	});
 	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetMaxHungerAttribute()).AddLambda([this]
@@ -43,6 +44,8 @@ void UISMainUIWidgetController::BindCallBackDependencies()
 	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetThirstAttribute()).AddLambda([this]
 	(const FOnAttributeChangeData& Data)
 	{
+		FString HealthText = FString::Printf(TEXT("Health Changed: %f"), Data.NewValue);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, HealthText);  // -1表示消息唯一标识，5.0f表示显示时长
 		OnThirstChange.Broadcast(Data.NewValue);
 	});
 	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetMaxThirstAttribute()).AddLambda([this]

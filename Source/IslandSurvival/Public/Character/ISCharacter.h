@@ -53,6 +53,9 @@ private:
 	void InitAbilityActorInfo();
 	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
 	void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;
+	UPROPERTY(EditAnywhere,Category = "Config")
+	TArray<TSubclassOf<UGameplayAbility>> CharacterPassiveAbilities;  //被动技能序列
 };

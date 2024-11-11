@@ -58,9 +58,12 @@ AISCharacter::AISCharacter()
 void AISCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	InitAbilityActorInfo();  //服务器调用初始化操作
-	SetOwner(NewController);
+	if(HasAuthority())
+	{
+		InitAbilityActorInfo();  //服务器调用初始化操作
+	}
 	AddCharacterActivateAbility(CharacterActivateAbilities);
+	AddCharacterPassiveAbility(CharacterPassiveAbilities);
 }
 
 void AISCharacter::OnRep_PlayerState()
@@ -96,7 +99,7 @@ void AISCharacter::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubc
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AttributeClass,1,EffectContextHandle);
-	const FActiveGameplayEffectHandle ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(),ASC);
+	ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(),ASC);
 }
 
 void AISCharacter::AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>& TargetActivateAbilities)
@@ -104,4 +107,11 @@ void AISCharacter::AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbili
 	UISAbilitySystemComponent*LocalASC = Cast<UISAbilitySystemComponent>(SourceASC);
 	if(!LocalASC)return;
 	LocalASC->AddCharacterAbility(TargetActivateAbilities);  //添加角色可激活执行的技能
+}
+
+void AISCharacter::AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>& TargetActivateAbilities)
+{
+	UISAbilitySystemComponent*LocalASC = Cast<UISAbilitySystemComponent>(SourceASC);
+	if(!LocalASC) return;
+	LocalASC->AddCharacterPassiveAbility(TargetActivateAbilities); //应用并激活被动技能
 }

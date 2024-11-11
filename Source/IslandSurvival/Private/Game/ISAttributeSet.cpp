@@ -62,7 +62,7 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 	SetEffectContext(Data, Properties);
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		
+		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
 	}
 }
 
