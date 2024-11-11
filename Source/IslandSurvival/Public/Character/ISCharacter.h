@@ -11,19 +11,29 @@
 #include "Camera/CameraComponent.h"
 #include "Character/ISCharacterBase.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Interface/ISPlayerInterface.h"
 #include "ISCharacter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ISLANDSURVIVAL_API AISCharacter : public AISCharacterBase
+class ISLANDSURVIVAL_API AISCharacter : public AISCharacterBase,public IISPlayerInterface
 {
 	GENERATED_BODY()
 public:
 	AISCharacter();
 	virtual void PossessedBy(AController* NewController) override;  //设定服务器同步数据，也是角色控制器调用时调用
 	virtual void OnRep_PlayerState() override;  //客户端同步玩家数据
+	virtual void AddToXP_Implementation(int32 XP) override;
+	virtual int32 FindLevelFromXP_Implementation(int32 InXP) override;
+	virtual int32 GetXP_Implementation() override;
+	virtual int32 GetLevel_Implementation() override;
+	virtual int32 GetAttributePointsReward_Implementation(int32 Level) const override;  //获取奖励的属性点
+	virtual int32 GetSpellPointsReward_Implementation(int32 Level) const override;  //获取奖励的技能点
+	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
+	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
+	virtual void LevelUp_Implementation() override;  //角色升级，播放粒子特效或音效等
 
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TSubclassOf<UGameplayEffect>PlayerDefaultAttribute;

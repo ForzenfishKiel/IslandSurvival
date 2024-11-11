@@ -72,6 +72,68 @@ void AISCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();  //客户端也调用同样的初始化
 }
 
+void AISCharacter::AddToXP_Implementation(int32 XP)
+{
+	IISPlayerInterface::AddToXP_Implementation(XP);
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState);
+	ISPlayerState->AddToXP(XP);
+}
+
+int32 AISCharacter::FindLevelFromXP_Implementation(int32 InXP)
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState);
+	return ISPlayerState->ISLevelUpInformation->FindLevelFromXP(InXP);
+}
+
+int32 AISCharacter::GetXP_Implementation()
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState);
+	return ISPlayerState->GetXP();  //获取当前的XP
+}
+
+int32 AISCharacter::GetLevel_Implementation()
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState);
+	return ISPlayerState->GetPlayerLevel();
+}
+
+int32 AISCharacter::GetAttributePointsReward_Implementation(int32 Level) const
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState);
+	return ISPlayerState->ISLevelUpInformation->LevelUpArray[Level].AttributePointAward;  //从对应等级中获取当前属性点
+}
+
+int32 AISCharacter::GetSpellPointsReward_Implementation(int32 Level) const
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState);
+	return ISPlayerState->ISLevelUpInformation->LevelUpArray[Level].SpellPointAward;
+}
+
+void AISCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState);
+	ISPlayerState->AddToAttributePoint(InAttributePoints);
+}
+
+void AISCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	check(ISPlayerState);
+	ISPlayerState->AddToLevel(InPlayerLevel);  //添加角色等级
+}
+
+void AISCharacter::LevelUp_Implementation()
+{
+	IISPlayerInterface::LevelUp_Implementation();
+}
+
 void AISCharacter::InitAbilityActorInfo()
 {
 	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
@@ -95,11 +157,9 @@ void AISCharacter::InitAbilityActorInfo()
 
 void AISCharacter::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubclassOf<UGameplayEffect> AttributeClass)
 {
-	check(ASC&&AttributeClass);
-	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(AttributeClass,1,EffectContextHandle);
-	ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(),ASC);
+	UISAbilitySystemComponent*LocalASC = Cast<UISAbilitySystemComponent>(ASC);
+	if(!LocalASC) return;
+	LocalASC->InitializeAttributes(AttributeClass);
 }
 
 void AISCharacter::AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>& TargetActivateAbilities)

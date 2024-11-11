@@ -2,9 +2,12 @@
 
 
 #include "ActorComponents/ISCraftingComponent.h"
-
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "Character/ISCharacter.h"
+#include "Game/ISAttributeSet.h"
 #include "Game/ISGameInstance.h"
+#include "Game/ISGameplayTagsManager.h"
+#include "Game/ISPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -59,6 +62,10 @@ int32 UISCraftingComponent::FindCheckCharacterBackPack(const UDataTable* TargetD
 	return 0;
 }
 
+/*检查是否可以制造
+ * 优先检索角色物品栏，然后是背包，检查角色库存内是否有需要制作的物品所需要的材料，如果有则返回True，反之
+ * 对满足的物品的数量进行累加，如果数量不够，则返回false ， 反之
+ */
 bool UISCraftingComponent::IsCanBeCrafting(const UDataTable* TargetDT, const int32 TargetID, const int32 RequireID)
 {
 	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetOwner());
@@ -118,7 +125,8 @@ void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 
 
 	FName Trans = FName(FString::Printf(TEXT("%d"),TargetID));
 	int32 Result = 0;
-	if(FItemRecipe*UserInfo = TargetDT->FindRow<FItemRecipe>(Trans,TEXT("name")))
+	FItemRecipe*UserInfo = TargetDT->FindRow<FItemRecipe>(Trans,TEXT("name"));
+	if(UserInfo)
 	{
 		for(auto&DataTableRef:UserInfo->ItemRequired)
 		{
@@ -145,6 +153,7 @@ void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 
 				}
 			}
 		}
+		SendXPToTarget(UserInfo->ItemExperience);  //传输制造获得的经验值
 		UDataTable*ItemTable = ISGameplayInstance->ItemDataTable;
 		if(FItemInformation*Information = ItemTable->FindRow<FItemInformation>(Trans,TEXT("name")))
 		{
@@ -154,6 +163,40 @@ void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 
 	return;
 }
 
+void UISCraftingComponent::SendXPToTarget_Implementation(float TargetXP)
+{
+	if(TargetXP==0) return;
+	UGameplayEffect*Effect = NewObject<UGameplayEffect>(GetTransientPackage(),FName("CraftingXP")); //创建一个临时的GE变量
+	Effect->DurationPolicy = EGameplayEffectDurationType::Instant;  //顺时地传输
+	Effect->PeriodicInhibitionPolicy = EGameplayEffectPeriodInhibitionRemovedPolicy::NeverReset;//设置每次应用不会重置触发时间
+	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource; //聚合为原自身
+	Effect->StackLimitCount = 1;  //设置可堆的栈上限为1，防止栈溢出
+	Effect->StackExpirationPolicy = EGameplayEffectStackingExpirationPolicy::ClearEntireStack;  //当应用效果完毕后，栈会清除
+
+	UTargetTagsGameplayEffectComponent&TargetTagsGameplayEffectComponent = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
+	FInheritedTagContainer InheritedTagContainer = TargetTagsGameplayEffectComponent.GetConfiguredTargetTagChanges();
+	FGameplayTagsManager GameplayTagsManager = FGameplayTagsManager::Get();  //从我们的标签库中获取对象
+	InheritedTagContainer.AddTag(GameplayTagsManager.Attribute_Meta_InComingXP);  //添加标签为获取经验值
+	TargetTagsGameplayEffectComponent.SetAndApplyTargetTagChanges(InheritedTagContainer);
+
+	const int32 Index = Effect->Modifiers.Num();  //获取当前修改属性Modifiers的长度，也就是最新的那一位
+	Effect->Modifiers.Add(FGameplayModifierInfo());
+	FGameplayModifierInfo&ModifierInfo = Effect->Modifiers[Index];  //通过下标索引获取对应的Modifier
+	ModifierInfo.ModifierMagnitude = FScalableFloat(TargetXP);
+	ModifierInfo.ModifierOp = EGameplayModOp::Override;  //设置属性运算符号
+	ModifierInfo.Attribute = UISAttributeSet::GetInComingXPAttribute();  //指定对应的属性
+
+	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetOwner());
+	AISPlayerState* SourcePlayerState = SourceCharacter->GetPlayerState<AISPlayerState>();
+	check(SourcePlayerState);
+	UAbilitySystemComponent*SourceASC = SourcePlayerState->GetAbilitySystemComponent();
+	FGameplayEffectContextHandle GameplayEffectContextHandle = SourceASC->MakeEffectContext();
+	GameplayEffectContextHandle.AddSourceObject(this); //添加效果的来源为自身
+	if(const FGameplayEffectSpec*MutableSpec = new FGameplayEffectSpec(Effect,GameplayEffectContextHandle,1.f))
+	{
+		SourceASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);  //应用效果
+	}
+}
 // Called when the game starts
 void UISCraftingComponent::BeginPlay()
 {

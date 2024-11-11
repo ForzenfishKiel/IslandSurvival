@@ -6,6 +6,7 @@
 #include "Character/ISCharacterBase.h"
 #include "Components/ActorComponent.h"
 #include "Data/ISPlayerItemDataTable.h"
+#include "Items/ISConsumable.h"
 #include "Items/ISEquipable.h"
 #include "ISEquipmentComponent.generated.h"
 
@@ -31,6 +32,10 @@ public:
 	TObjectPtr<AISEquipable> Equipable = nullptr;//用于储存角色可装备的物品
 	UPROPERTY()
 	TObjectPtr<AISEquipable> EquipableClient = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<AISConsumable> ISConsumable = nullptr;
+	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent>SourceASC;
 public:
@@ -44,6 +49,10 @@ public:
 	void UnEquip();
 	UFUNCTION(BlueprintCallable,Client, Reliable)
 	void UnEquipOnClient();
+	UFUNCTION(Server, Reliable)
+	void UseConsumable(TSubclassOf<AISItemBase>ItemClass);
+	UFUNCTION(Server, Reliable)
+	void UnUseConsumable();
 	void InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC);
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

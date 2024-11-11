@@ -21,6 +21,8 @@ public:
 	bool IsCanBeCrafting(const UDataTable*TargetDT,const int32 TargetID,const int32 RequireID);  //检查是否可以制造
 	UFUNCTION(BlueprintCallable)
 	void CraftingAction(const UDataTable*TargetDT,const int32 TargetID);  //制造开始
+	UFUNCTION(Server,Reliable)
+	void SendXPToTarget(float TargetXP);  //往对方传输经验值
 protected:
 	virtual void BeginPlay() override;
 

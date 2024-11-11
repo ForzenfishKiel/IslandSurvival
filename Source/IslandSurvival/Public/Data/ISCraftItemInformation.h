@@ -60,7 +60,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EItemCategory ItemCategory;  //物品类别
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 ItemExperience;
+	float ItemExperience;
 };
 UCLASS()
 class ISLANDSURVIVAL_API UISCraftItemInformation : public UObject

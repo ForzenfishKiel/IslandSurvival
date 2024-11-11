@@ -21,3 +21,38 @@ UAbilitySystemComponent* AISPlayerState::GetAbilitySystemComponent() const
 {
 	return ISAbilitySystemComponent;
 }
+
+void AISPlayerState::AddToLevel(int32 InLevel)  //等级累加
+{
+	CurrentLevel+=InLevel;
+	OnPlayerLevelChanged.Broadcast(CurrentLevel);
+}
+
+void AISPlayerState::SetLevel(int32 InLevel)  //等级设置
+{
+	CurrentLevel = InLevel;
+	OnPlayerLevelChanged.Broadcast(CurrentLevel);
+}
+
+void AISPlayerState::AddToXP(int32 InXP)
+{
+	CurrentXP+=InXP;
+	OnPlayerXPChange.Broadcast(CurrentXP);
+}
+
+void AISPlayerState::SetXP(int32 InXP)
+{
+	CurrentXP = InXP;
+	OnPlayerXPChange.Broadcast(CurrentXP);
+}
+
+void AISPlayerState::AddToAttributePoint(int32 InAttributePoint)
+{
+	AttributePoint+=InAttributePoint;
+	OnPlayerAttributePointChange.Broadcast(AttributePoint);
+}
+
+void AISPlayerState::SetAttributePoint(int32 InAttributePoint)
+{
+	
+}

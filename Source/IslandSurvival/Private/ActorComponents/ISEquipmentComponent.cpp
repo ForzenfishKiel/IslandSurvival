@@ -74,3 +74,15 @@ void UISEquipmentComponent::UnEquipOnClient_Implementation()
 	EquipableClient->Destroy();
 	EquipableClient = nullptr;
 }
+void UISEquipmentComponent::UseConsumable_Implementation(TSubclassOf<AISItemBase> ItemClass)
+{
+	if(ISConsumable) return;
+	ISConsumable = NewObject<AISConsumable>(GetOwner(),ItemClass);
+	ISConsumable->UseItem(GetOwner(),SourceASC);
+}
+
+void UISEquipmentComponent::UnUseConsumable_Implementation()
+{
+	if(ISConsumable) {ISConsumable = nullptr;}
+}
+

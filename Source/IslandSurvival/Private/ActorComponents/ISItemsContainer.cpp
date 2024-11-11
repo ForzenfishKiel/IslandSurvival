@@ -51,6 +51,12 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 				return;
 			}
 		}
+		if(ItemType==EItemType::Consumable)
+		{
+			CharacterEquipment->UseConsumable(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);//使用对应的物品
+			DiscardItem(TargetIndex,1);  //丢弃一个物品
+			CharacterEquipment->UnUseConsumable();  //停止使用
+		}
 	}
 }
 void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex)
@@ -173,7 +179,6 @@ void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInform
 			}
 		}
 	}
-	
 }
 
 // Called when the game starts

@@ -13,5 +13,10 @@ UCLASS()
 class ISLANDSURVIVAL_API AISConsumable : public AISItemBase
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) override;
+	virtual void ApplyEffectToTarget(UAbilitySystemComponent* InASC, TSubclassOf<UGameplayEffect> EffectClass) override;
+public:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Config")
+	TSubclassOf<UGameplayEffect> ConsumableEffectClass;
 };

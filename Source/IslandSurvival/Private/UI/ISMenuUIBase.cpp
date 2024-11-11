@@ -34,3 +34,9 @@ void UISMenuUIBase::SafeToClearData_Implementation()
 	CraftingInfo.TargetName = FName();
 	CraftingInfo.ItemCraftingInfoDataTable = nullptr;
 }
+
+void UISMenuUIBase::SetWidgetController(UObject* TargetWidgetController)
+{
+	WidgetController = TargetWidgetController;
+	WidgetControllerWasSet();
+}

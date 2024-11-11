@@ -8,6 +8,7 @@
 #include "UI/ISMainUIBase.h"
 #include "UI/ISMenuUIBase.h"
 #include "WidgetController/ISMainUIWidgetController.h"
+#include "WidgetController/ISMenuWidgetController.h"
 #include "ISPlayerMainHUD.generated.h"
 
 /**
@@ -20,6 +21,7 @@ class ISLANDSURVIVAL_API AISPlayerMainHUD : public AHUD
 public:
 	void InitUserWidget(const FCharacterParams&CharacterParams);
 	UISMainUIWidgetController* GetMainUIWidgetController(const FCharacterParams&CharacterParams);
+	UISMenuWidgetController* GetMenuWidgetController(const FCharacterParams&CharacterParams);
 public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> ISMenuClass;
@@ -34,4 +36,8 @@ private:
 	TSubclassOf<UISMainUIWidgetController>ISMainUIWidgetControllerClass;
 	UPROPERTY()
 	TObjectPtr<UISMainUIWidgetController> IsMainUIWidgetController;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UISMenuWidgetController> ISMenuWidgetControllerClass;
+	UPROPERTY()
+	TObjectPtr<UISMenuWidgetController> IsMenuWidgetController;
 };

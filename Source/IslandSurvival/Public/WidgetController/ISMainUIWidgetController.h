@@ -16,6 +16,7 @@ class ISLANDSURVIVAL_API UISMainUIWidgetController : public UISWidgetController
 	GENERATED_BODY()
 public:
 	virtual void BindCallBackDependencies() override;
+	virtual void BroadcastInitialValues() override;
 
 	UPROPERTY(BlueprintAssignable,Category = "GAS|Attributes")
 	FOnPlayerStateChangeSignature OnMaxHealthChange;  //最大生命值变化绑定

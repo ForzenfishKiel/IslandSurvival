@@ -98,7 +98,10 @@ public:
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxThirst,Category = "SecondaryAttributes")
 	FGameplayAttributeData MaxThirst;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxThirst);
-	
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_InComingXP,Category = "MetaAttributes")
+	FGameplayAttributeData InComingXP;  //角色获得的XP
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,InComingXP);
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
@@ -122,8 +125,9 @@ public:
 	void OnRep_Thirst(const FGameplayAttributeData&OldThirst) const;
 	UFUNCTION()
 	void OnRep_MaxThirst(const FGameplayAttributeData&OldMaxThirst) const;
+	UFUNCTION()
+	void OnRep_IncomingXP(const FGameplayAttributeData&OldIncomingXP) const;
 protected:
 	void SetEffectContext(const FGameplayEffectModCallbackData& Data,FEffectProperties&Properties);
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 };

@@ -4,6 +4,8 @@
 #include "Game/ISAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
+#include "Interface/ISCombatInterface.h"
+#include "Interface/ISPlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
 void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -20,6 +22,7 @@ void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxHunger,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,Thirst,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxThirst,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,InComingXP,COND_None,REPNOTIFY_Always);
 }
 
 
@@ -64,18 +67,38 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
 	}
-}
-
-void UISAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
-{
-	Super::PreAttributeChange(Attribute, NewValue);
-	if(Attribute==GetHealthAttribute())
+	if(Data.EvaluatedData.Attribute == GetHungerAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue,0.f,GetMaxHealth());
+		SetHunger(FMath::Clamp(GetHunger(),0.f,GetMaxHunger()));
 	}
-	else if(Attribute==GetVigorAttribute())
+	if(Data.EvaluatedData.Attribute == GetThirstAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue,0.f,GetMaxVigor());
+		SetThirst(FMath::Clamp(GetThirst(),0.f,GetMaxThirst()));
+	}
+	if(Data.EvaluatedData.Attribute == GetInComingXPAttribute())
+	{
+		const float LocalInComingXP = GetInComingXP();  //保存当前得到的经验值
+		SetInComingXP(0.f);  //重置为0
+
+		//若角色可以访问角色接口和战斗接口
+		if(Properties.SourceCharacter->Implements<UISPlayerInterface>()&&Properties.SourceCharacter->Implements<UISCombatInterface>())
+		{
+			const int32 CurrentLevel = IISPlayerInterface::Execute_GetLevel(Properties.SourceCharacter);  //获得当前等级
+			const int32 CurrentXP = IISPlayerInterface::Execute_GetXP(Properties.SourceCharacter); //获得当前经验值
+
+			const int32 NewLevel = IISPlayerInterface::Execute_FindLevelFromXP(Properties.SourceCharacter, CurrentXP+LocalInComingXP);  //新加的经验值加上已有的经验值然后查询等级
+			const int32 NewLevelUp = NewLevel - CurrentLevel;
+			//如果当前等级大于获取到的等级，则已升级，满足升级条件
+			if(NewLevelUp>0)
+			{
+				int32 AttributePointReward = IISPlayerInterface::Execute_GetAttributePointsReward(Properties.SourceCharacter,NewLevelUp);  //获取升级后的属性点
+
+				IISPlayerInterface::Execute_AddToPlayerLevel(Properties.SourceCharacter,NewLevelUp);  //添加等级
+				IISPlayerInterface::Execute_AddToAttributePoints(Properties.SourceCharacter,AttributePointReward);  //累加属性点
+				IISPlayerInterface::Execute_LevelUp(Properties.SourceCharacter);  //升级
+			}
+			IISPlayerInterface::Execute_AddToXP(Properties.SourceCharacter, LocalInComingXP); //添加加上的经验值
+		}
 	}
 }
 
@@ -134,4 +157,9 @@ void UISAttributeSet::OnRep_Thirst(const FGameplayAttributeData& OldThirst) cons
 void UISAttributeSet::OnRep_MaxThirst(const FGameplayAttributeData& OldMaxThirst) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,MaxThirst,OldMaxThirst);
+}
+
+void UISAttributeSet::OnRep_IncomingXP(const FGameplayAttributeData& OldIncomingXP) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,InComingXP,OldIncomingXP);
 }
