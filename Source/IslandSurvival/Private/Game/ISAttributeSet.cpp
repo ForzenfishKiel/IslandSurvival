@@ -22,7 +22,6 @@ void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxHunger,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,Thirst,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxThirst,COND_None,REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,InComingXP,COND_None,REPNOTIFY_Always);
 }
 
 
@@ -102,8 +101,6 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 	}
 }
 
-
-
 void UISAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,Health,OldHealth);
@@ -157,9 +154,4 @@ void UISAttributeSet::OnRep_Thirst(const FGameplayAttributeData& OldThirst) cons
 void UISAttributeSet::OnRep_MaxThirst(const FGameplayAttributeData& OldMaxThirst) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,MaxThirst,OldMaxThirst);
-}
-
-void UISAttributeSet::OnRep_IncomingXP(const FGameplayAttributeData& OldIncomingXP) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,InComingXP,OldIncomingXP);
 }

@@ -115,6 +115,12 @@ int32 AISCharacter::GetSpellPointsReward_Implementation(int32 Level) const
 	return ISPlayerState->ISLevelUpInformation->LevelUpArray[Level].SpellPointAward;
 }
 
+int32 AISCharacter::GetPlayerMaxHealthPoint_Implementation()
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	return ISPlayerState->MaxHealthPoint;
+}
+
 void AISCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
 	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
@@ -157,9 +163,11 @@ void AISCharacter::InitAbilityActorInfo()
 
 void AISCharacter::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubclassOf<UGameplayEffect> AttributeClass)
 {
-	UISAbilitySystemComponent*LocalASC = Cast<UISAbilitySystemComponent>(ASC);
-	if(!LocalASC) return;
-	LocalASC->InitializeAttributes(AttributeClass);
+	check(AttributeClass);
+	FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(AttributeClass,1.f,EffectContextHandle);
+	SourceASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
 void AISCharacter::AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>& TargetActivateAbilities)

@@ -2,7 +2,7 @@
 
 
 #include "Game/ISPlayerState.h"
-
+#include "Net/UnrealNetwork.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISAttributeSet.h"
 
@@ -22,24 +22,31 @@ UAbilitySystemComponent* AISPlayerState::GetAbilitySystemComponent() const
 	return ISAbilitySystemComponent;
 }
 
-void AISPlayerState::AddToLevel(int32 InLevel)  //等级累加
+void AISPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AISPlayerState,CurrentLevel);
+	DOREPLIFETIME(AISPlayerState, CurrentXP);
+	DOREPLIFETIME(AISPlayerState, AttributePoint);
+	DOREPLIFETIME(AISPlayerState, MaxHealthPoint);
+}
+
+void AISPlayerState::AddToLevel(int32 InLevel)
 {
 	CurrentLevel+=InLevel;
 	OnPlayerLevelChanged.Broadcast(CurrentLevel);
 }
 
-void AISPlayerState::SetLevel(int32 InLevel)  //等级设置
+void AISPlayerState::SetLevel(int32 InLevel)
 {
 	CurrentLevel = InLevel;
 	OnPlayerLevelChanged.Broadcast(CurrentLevel);
 }
-
 void AISPlayerState::AddToXP(int32 InXP)
 {
 	CurrentXP+=InXP;
 	OnPlayerXPChange.Broadcast(CurrentXP);
 }
-
 void AISPlayerState::SetXP(int32 InXP)
 {
 	CurrentXP = InXP;
@@ -55,4 +62,19 @@ void AISPlayerState::AddToAttributePoint(int32 InAttributePoint)
 void AISPlayerState::SetAttributePoint(int32 InAttributePoint)
 {
 	
+}
+
+void AISPlayerState::OnRep_Level(int32 OldLevel) const
+{
+	OnPlayerLevelChanged.Broadcast(CurrentLevel);   //服务器的属性更改后，复制到客户端时，调用该委托，将复制的值同步到客户端
+}
+
+void AISPlayerState::OnRep_XP(int32 OldXP) const
+{
+	OnPlayerXPChange.Broadcast(CurrentXP);
+}
+
+void AISPlayerState::OnRep_AttributePoints(int32 OldAttributePoints) const
+{
+	OnPlayerAttributePointChange.Broadcast(AttributePoint);
 }

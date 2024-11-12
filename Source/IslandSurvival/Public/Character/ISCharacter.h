@@ -31,6 +31,7 @@ public:
 	virtual int32 GetLevel_Implementation() override;
 	virtual int32 GetAttributePointsReward_Implementation(int32 Level) const override;  //获取奖励的属性点
 	virtual int32 GetSpellPointsReward_Implementation(int32 Level) const override;  //获取奖励的技能点
+	virtual int32 GetPlayerMaxHealthPoint_Implementation() override;  //获取最大生命值的技能点
 	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
 	virtual void LevelUp_Implementation() override;  //角色升级，播放粒子特效或音效等

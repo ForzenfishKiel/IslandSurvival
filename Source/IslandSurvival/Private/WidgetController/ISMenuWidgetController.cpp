@@ -7,8 +7,15 @@
 void UISMenuWidgetController::BindCallBackDependencies()
 {
 	Super::BindCallBackDependencies();
-	GetSourcePlayerState()->OnPlayerXPChange.AddUObject(this,&UISMenuWidgetController::OnXPChange);  //绑定经验值上涨变化
-	
+	GetSourcePlayerState()->OnPlayerXPChange.AddUObject(this,&ThisClass::OnXPChange);
+	GetSourcePlayerState()->OnPlayerLevelChanged.AddLambda([this](int32 NewLevel)
+	{
+		OnLevelStateChange.Broadcast(NewLevel);
+	});
+	GetSourcePlayerState()->OnPlayerAttributePointChange.AddLambda([this](int32 NewPoint)
+	{
+		OnAttributeStateChange.Broadcast(NewPoint);
+	});
 	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetHealthAttribute()).AddLambda([this]
 	(const FOnAttributeChangeData& Data)
 	{
@@ -67,6 +74,7 @@ void UISMenuWidgetController::BroadcastInitialValues()
 //经验值更改广播
 void UISMenuWidgetController::OnXPChange(int32 CurrentXP)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,  FString::Printf(TEXT("111")));
 	UISLevelUpInformation*IsLevelUpInformation = GetSourcePlayerState()->ISLevelUpInformation;  //获取角色的等级信息表
 	check(IsLevelUpInformation);
 	const int32 Level = IsLevelUpInformation->FindLevelFromXP(CurrentXP);  //从当前经验值获取当前等级

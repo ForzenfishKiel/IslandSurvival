@@ -11,6 +11,7 @@
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnXPProgressPercentChange, float, XPPercent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerMenuStateChangeSignature,float,NewValue);  //绑定玩家属性变化
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelStateChangeSignature,int32,NewValue);
 UCLASS(BlueprintType, Blueprintable)
 class ISLANDSURVIVAL_API UISMenuWidgetController : public UISWidgetController
 {
@@ -19,6 +20,12 @@ public:
 	virtual void BindCallBackDependencies() override;
 	virtual void BroadcastInitialValues() override;
 	void OnXPChange(int32 CurrentXP);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLevelStateChangeSignature OnAttributeStateChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLevelStateChangeSignature OnLevelStateChange;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnXPProgressPercentChange OnXPProgressPercent;

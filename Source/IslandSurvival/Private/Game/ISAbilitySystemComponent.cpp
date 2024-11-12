@@ -94,10 +94,3 @@ void UISAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();
 }
-void UISAbilitySystemComponent::InitializeAttributes(TSubclassOf<UGameplayEffect> AttributeEffect)
-{
-	check(AttributeEffect);
-	FGameplayEffectContextHandle EffectContextHandle = MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(AttributeEffect,1.f,EffectContextHandle);
-	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-}

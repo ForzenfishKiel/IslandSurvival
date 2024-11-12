@@ -23,6 +23,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UISLevelUpInformation> ISLevelUpInformation;  //导入角色经验值数据表
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	UAttributeSet*GetAttributeSet() const{return ISAttributeSet;}
 	
 	FOnPlayerStateChanged OnPlayerLevelChanged;
@@ -32,7 +33,7 @@ public:
 	FORCEINLINE int32 GetPlayerLevel() const {return CurrentLevel;}  //获取角色当前的等级
 	void AddToLevel(int32 InLevel);
 	void SetLevel(int32 InLevel);
-
+	
 	FORCEINLINE int32 GetXP() const {return CurrentXP;}
 	void AddToXP(int32 InXP);
 	void SetXP(int32 InXP);
@@ -40,6 +41,10 @@ public:
 	FORCEINLINE int32 GetAttributePoint() const {return AttributePoint;}
 	void AddToAttributePoint(int32 InAttributePoint);
 	void SetAttributePoint(int32 InAttributePoint);
+
+	/*特定属性点统计信息*/
+	UPROPERTY(VisibleAnywhere,Replicated)
+	int32 MaxHealthPoint = 0;  //最大生命值加点
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAbilitySystemComponent> ISAbilitySystemComponent;
@@ -48,10 +53,24 @@ protected:
 
 
 private:
-	UPROPERTY(VisibleAnywhere)
+
+	/*特定属性点统计结束*/
+	UPROPERTY(VisibleAnywhere,ReplicatedUsing = OnRep_XP)
 	int32 CurrentXP = 0;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,ReplicatedUsing = OnRep_Level)
 	int32 CurrentLevel = 1;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,ReplicatedUsing = OnRep_AttributePoints)
 	int32 AttributePoint = 0;
+
+	//服务器出现更改自动同步到本地函数 等级
+	UFUNCTION()
+	void OnRep_Level(int32 OldLevel) const; 
+
+	//服务器出现更改自动同步到本地函数 经验值
+	UFUNCTION()
+	void OnRep_XP(int32 OldXP) const; 
+
+	//服务器出现更改自动同步到本地函数 属性点
+	UFUNCTION()
+	void OnRep_AttributePoints(int32 OldAttributePoints) const; 
 };
