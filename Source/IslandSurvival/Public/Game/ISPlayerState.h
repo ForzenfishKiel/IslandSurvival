@@ -5,12 +5,18 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
+#include "AttributeSet.h"
 #include "DataAsset/ISLevelUpInformation.h"
 #include "ISPlayerState.generated.h"
-
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EAttributePointType : uint8
+{
+	None = 0 UMETA(DisplayName = "None"),
+	MaxHealth = 1 UMETA(DisplayName = "MaxHealth"),
+};
 class UAbilitySystemComponent;
 class UAttributeSet;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChanged,int32);
@@ -22,6 +28,8 @@ public:
 	AISPlayerState();
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UISLevelUpInformation> ISLevelUpInformation;  //导入角色经验值数据表
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UCurveTable>PlayerAttributePointsTable;  //导入角色加点的因数值
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	UAttributeSet*GetAttributeSet() const{return ISAttributeSet;}
@@ -42,9 +50,7 @@ public:
 	void AddToAttributePoint(int32 InAttributePoint);
 	void SetAttributePoint(int32 InAttributePoint);
 
-	/*特定属性点统计信息*/
-	UPROPERTY(VisibleAnywhere,Replicated)
-	int32 MaxHealthPoint = 0;  //最大生命值加点
+	void AddTargetAttributeLevel(const FGameplayAttribute TargetPointType);
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAbilitySystemComponent> ISAbilitySystemComponent;
@@ -68,7 +74,7 @@ private:
 
 	//服务器出现更改自动同步到本地函数 经验值
 	UFUNCTION()
-	void OnRep_XP(int32 OldXP) const; 
+	void OnRep_XP(int32 OldXP) const;
 
 	//服务器出现更改自动同步到本地函数 属性点
 	UFUNCTION()

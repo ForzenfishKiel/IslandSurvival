@@ -53,8 +53,8 @@ class ISLANDSURVIVAL_API UISAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 public:
+	UISAttributeSet();
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth,Category = "SecondaryAttributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet, MaxHealth)
@@ -103,7 +103,17 @@ public:
 	UPROPERTY(BlueprintReadOnly,Category = "MetaAttributes")
 	FGameplayAttributeData InComingXP;  //角色获得的XP
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,InComingXP);
-	
+
+	/*角色等级*/
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_PlayerLevel,Category = "CharacterLevel")
+	FGameplayAttributeData PlayerLevel;
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,PlayerLevel);
+
+	/*角色加点属性*/
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxHealthLevel,Category = "AttributeLevel")
+	FGameplayAttributeData MaxHealthLevel;
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxHealthLevel);
 	
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
@@ -127,6 +137,10 @@ public:
 	void OnRep_Thirst(const FGameplayAttributeData&OldThirst) const;
 	UFUNCTION()
 	void OnRep_MaxThirst(const FGameplayAttributeData&OldMaxThirst) const;
+	UFUNCTION()
+	void OnRep_PlayerLevel(const FGameplayAttributeData&OldPlayerLevel) const;
+	UFUNCTION()
+	void OnRep_MaxHealthLevel(const FGameplayAttributeData&OldMaxHealthLevel) const;
 protected:
 	void SetEffectContext(const FGameplayEffectModCallbackData& Data,FEffectProperties&Properties);
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;

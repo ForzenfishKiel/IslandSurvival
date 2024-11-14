@@ -8,6 +8,11 @@
 #include "Interface/ISPlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
+UISAttributeSet::UISAttributeSet()
+{
+	InitMaxHealthLevel(1.f);
+}
+
 void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -22,10 +27,9 @@ void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxHunger,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,Thirst,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxThirst,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,PlayerLevel,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxHealthLevel,COND_None,REPNOTIFY_Always);
 }
-
-
-
 void UISAttributeSet::SetEffectContext(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties)
 {
 	Properties.EffectContextHandle = Data.EffectSpec.GetContext();
@@ -74,6 +78,10 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 	{
 		SetThirst(FMath::Clamp(GetThirst(),0.f,GetMaxThirst()));
 	}
+	if(Data.EvaluatedData.Attribute == GetVigorAttribute())
+	{
+		SetVigor(FMath::Clamp(GetVigor(),0.f,GetMaxVigor()));
+	}
 	if(Data.EvaluatedData.Attribute == GetInComingXPAttribute())
 	{
 		const float LocalInComingXP = GetInComingXP();  //保存当前得到的经验值
@@ -91,8 +99,9 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 			if(NewLevelUp>0)
 			{
 				int32 AttributePointReward = IISPlayerInterface::Execute_GetAttributePointsReward(Properties.SourceCharacter,NewLevelUp);  //获取升级后的属性点
-
 				IISPlayerInterface::Execute_AddToPlayerLevel(Properties.SourceCharacter,NewLevelUp);  //添加等级
+				const float ResultValue = IISPlayerInterface::Execute_GetLevel(Properties.SourceCharacter);
+				SetPlayerLevel(FMath::Clamp(ResultValue,0.f,100.f));
 				IISPlayerInterface::Execute_AddToAttributePoints(Properties.SourceCharacter,AttributePointReward);  //累加属性点
 				IISPlayerInterface::Execute_LevelUp(Properties.SourceCharacter);  //升级
 			}
@@ -154,4 +163,15 @@ void UISAttributeSet::OnRep_Thirst(const FGameplayAttributeData& OldThirst) cons
 void UISAttributeSet::OnRep_MaxThirst(const FGameplayAttributeData& OldMaxThirst) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,MaxThirst,OldMaxThirst);
+}
+
+void UISAttributeSet::OnRep_PlayerLevel(const FGameplayAttributeData& OldPlayerLevel) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,PlayerLevel,OldPlayerLevel);
+
+}
+
+void UISAttributeSet::OnRep_MaxHealthLevel(const FGameplayAttributeData& OldMaxHealthLevel) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,MaxHealthLevel,OldMaxHealthLevel);
 }

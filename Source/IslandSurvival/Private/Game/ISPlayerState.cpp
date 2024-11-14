@@ -3,6 +3,7 @@
 
 #include "Game/ISPlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISAttributeSet.h"
 
@@ -28,7 +29,6 @@ void AISPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	DOREPLIFETIME(AISPlayerState,CurrentLevel);
 	DOREPLIFETIME(AISPlayerState, CurrentXP);
 	DOREPLIFETIME(AISPlayerState, AttributePoint);
-	DOREPLIFETIME(AISPlayerState, MaxHealthPoint);
 }
 
 void AISPlayerState::AddToLevel(int32 InLevel)
@@ -62,6 +62,41 @@ void AISPlayerState::AddToAttributePoint(int32 InAttributePoint)
 void AISPlayerState::SetAttributePoint(int32 InAttributePoint)
 {
 	
+}
+
+void AISPlayerState::AddTargetAttributeLevel(const FGameplayAttribute TargetPointType)
+{
+	if(AttributePoint>=1)
+	{
+		UGameplayEffect*Effect = NewObject<UGameplayEffect>(GetTransientPackage(),FName("CraftingXP")); //创建一个临时的GE变量
+		Effect->DurationPolicy = EGameplayEffectDurationType::Instant;  //顺时地传输
+		Effect->PeriodicInhibitionPolicy = EGameplayEffectPeriodInhibitionRemovedPolicy::NeverReset;//设置每次应用不会重置触发时间
+		Effect->StackingType = EGameplayEffectStackingType::AggregateBySource; //聚合为原自身
+		Effect->StackLimitCount = 1;  //设置可堆的栈上限为1，防止栈溢出
+		Effect->StackExpirationPolicy = EGameplayEffectStackingExpirationPolicy::ClearEntireStack;  //当应用效果完毕后，栈会清除
+
+		UTargetTagsGameplayEffectComponent&TargetTagsGameplayEffectComponent = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
+		FInheritedTagContainer InheritedTagContainer = TargetTagsGameplayEffectComponent.GetConfiguredTargetTagChanges();
+		TargetTagsGameplayEffectComponent.SetAndApplyTargetTagChanges(InheritedTagContainer);
+
+		const int32 Index = Effect->Modifiers.Num();  //获取当前修改属性Modifiers的长度，也就是最新的那一位
+		Effect->Modifiers.Add(FGameplayModifierInfo());
+		FGameplayModifierInfo&ModifierInfo = Effect->Modifiers[Index];  //通过下标索引获取对应的Modifier
+		ModifierInfo.ModifierMagnitude = FScalableFloat(1.f);
+		ModifierInfo.ModifierOp = EGameplayModOp::Additive;  //设置属性运算符号
+		ModifierInfo.Attribute = TargetPointType;  //指定对应的属性
+
+
+		FGameplayEffectContextHandle GameplayEffectContextHandle = ISAbilitySystemComponent->MakeEffectContext();
+		GameplayEffectContextHandle.AddSourceObject(this); //添加效果的来源为自身
+		if(const FGameplayEffectSpec*MutableSpec = new FGameplayEffectSpec(Effect,GameplayEffectContextHandle,1.f))
+		{
+			ISAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*MutableSpec);  //应用效果
+			AttributePoint-=1;
+			OnPlayerAttributePointChange.Broadcast(AttributePoint);  //往UI更新属性点
+			return;
+		}
+	}
 }
 
 void AISPlayerState::OnRep_Level(int32 OldLevel) const

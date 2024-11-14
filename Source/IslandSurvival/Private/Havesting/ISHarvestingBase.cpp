@@ -86,7 +86,7 @@ void AISHarvestingBase::ApplyDamageToTarget_Implementation(AActor* TargetActor)
 {
 	IISCollectibleInterface::ApplyDamageToTarget_Implementation(TargetActor);
 	AISCharacter*SourceCharacter = Cast<AISCharacter>(TargetActor);
-	AISPlayerState*SourcePlayerState = Cast<AISPlayerState>(SourceCharacter->GetPlayerState());
+	AISPlayerState*SourcePlayerState = SourceCharacter->GetPlayerState<AISPlayerState>();
 	if(!SourcePlayerState&&!SourceCharacter) return;
 	UAbilitySystemComponent*SourceASC = SourcePlayerState->GetAbilitySystemComponent();
 	UISAttributeSet*SourceAS = Cast<UISAttributeSet>( SourcePlayerState->GetAttributeSet());  //获取角色的属性

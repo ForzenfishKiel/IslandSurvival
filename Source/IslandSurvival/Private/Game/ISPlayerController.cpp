@@ -102,10 +102,11 @@ void AISPlayerController::OpenUI_Implementation()
 
 void AISPlayerController::InputPressedAbility(const FGameplayTag InputTag)
 {
-	AISPlayerState*LocalPlayerState = Cast<AISPlayerState>(Cast<AISCharacter>(GetPawn())->GetPlayerState());
-	if(LocalPlayerState)
+	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetPawn());
+	AISPlayerState*SourcePlayerState = SourceCharacter->GetPlayerState<AISPlayerState>();
+	if(SourcePlayerState)
 	{
-		UISAbilitySystemComponent*LocalASC =Cast<UISAbilitySystemComponent>( UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(LocalPlayerState));
+		UISAbilitySystemComponent*LocalASC =Cast<UISAbilitySystemComponent>( UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourcePlayerState));
 		if(!LocalASC) return;
 		LocalASC->InputPressedFunc(InputTag);
 	}
@@ -119,4 +120,9 @@ void AISPlayerController::InputHeldAbility(const FGameplayTag InputTag)
 void AISPlayerController::InputReleasedAbility(const FGameplayTag InputTag)
 {
 	
+}
+
+AISCharacter* AISPlayerController::GetCharacterLocal() const
+{
+	return Cast<AISCharacter>(GetPawn());
 }

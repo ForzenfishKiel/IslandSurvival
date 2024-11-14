@@ -10,6 +10,7 @@
 #include "ActorComponents/ISInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Character/ISCharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Interface/ISPlayerInterface.h"
 #include "ISCharacter.generated.h"
@@ -23,6 +24,9 @@ class ISLANDSURVIVAL_API AISCharacter : public AISCharacterBase,public IISPlayer
 	GENERATED_BODY()
 public:
 	AISCharacter();
+	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void PossessedBy(AController* NewController) override;  //设定服务器同步数据，也是角色控制器调用时调用
 	virtual void OnRep_PlayerState() override;  //客户端同步玩家数据
 	virtual void AddToXP_Implementation(int32 XP) override;
@@ -31,10 +35,13 @@ public:
 	virtual int32 GetLevel_Implementation() override;
 	virtual int32 GetAttributePointsReward_Implementation(int32 Level) const override;  //获取奖励的属性点
 	virtual int32 GetSpellPointsReward_Implementation(int32 Level) const override;  //获取奖励的技能点
-	virtual int32 GetPlayerMaxHealthPoint_Implementation() override;  //获取最大生命值的技能点
 	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
 	virtual void LevelUp_Implementation() override;  //角色升级，播放粒子特效或音效等
+	virtual AISPlayerState*GetPlayerState_Implementation() override;
+
+	UFUNCTION(BlueprintCallable)
+	bool CheckIsFastRun();
 
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TSubclassOf<UGameplayEffect>PlayerDefaultAttribute;
@@ -60,11 +67,15 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = "Combine")
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
 
+	UPROPERTY(BlueprintReadWrite,Replicated,Category = "Config")
+	float CharacterSpeed = 400.f;
 private:
 	void InitAbilityActorInfo();
 	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
 	void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
 	void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	UFUNCTION(BlueprintCallable,Server,Reliable)
+	void AddAttributeLevel(const FGameplayAttribute TargetPointType);
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;
 	UPROPERTY(EditAnywhere,Category = "Config")

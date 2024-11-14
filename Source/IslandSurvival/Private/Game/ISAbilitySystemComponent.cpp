@@ -64,6 +64,10 @@ void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 			{
 				TryActivateAbility(AbilitySpec.Handle);
 			}
+			else if(InputTag==GameplayTagsManager.Input_Attack_FastRun&&!AbilitySpec.IsActive())
+			{
+				TryActivateAbility(AbilitySpec.Handle);
+			}
 		}
 	}
 }

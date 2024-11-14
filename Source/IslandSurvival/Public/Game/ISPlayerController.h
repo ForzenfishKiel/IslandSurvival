@@ -14,6 +14,7 @@
 /**
  * 
  */
+class AISCharacter;
 UCLASS()
 class ISLANDSURVIVAL_API AISPlayerController : public APlayerController
 {
@@ -51,4 +52,6 @@ private:
 	void InputPressedAbility(const FGameplayTag InputTag);
 	void InputHeldAbility(const FGameplayTag InputTag);
 	void InputReleasedAbility(const FGameplayTag InputTag);
+	UFUNCTION(BlueprintCallable)
+	AISCharacter*GetCharacterLocal() const;
 };

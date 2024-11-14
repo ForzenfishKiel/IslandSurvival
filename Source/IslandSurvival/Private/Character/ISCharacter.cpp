@@ -2,15 +2,13 @@
 
 
 #include "Character/ISCharacter.h"
-#include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
-#include "Game/ISGameInstance.h"
 #include "Game/ISPlayerController.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Game/ISPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 AISCharacter::AISCharacter()
 {
@@ -53,6 +51,23 @@ AISCharacter::AISCharacter()
 	ISInteractionComponent->SetIsReplicated(true);
 	ISCraftingComponent = CreateDefaultSubobject<UISCraftingComponent>(TEXT("ISCraftingComponent"));
 	ISCraftingComponent->SetIsReplicated(true);
+}
+
+void AISCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AISCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AISCharacter,CharacterSpeed);
+}
+
+void AISCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	CheckIsFastRun();
 }
 
 void AISCharacter::PossessedBy(AController* NewController)
@@ -115,11 +130,6 @@ int32 AISCharacter::GetSpellPointsReward_Implementation(int32 Level) const
 	return ISPlayerState->ISLevelUpInformation->LevelUpArray[Level].SpellPointAward;
 }
 
-int32 AISCharacter::GetPlayerMaxHealthPoint_Implementation()
-{
-	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
-	return ISPlayerState->MaxHealthPoint;
-}
 
 void AISCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
@@ -138,6 +148,36 @@ void AISCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 void AISCharacter::LevelUp_Implementation()
 {
 	IISPlayerInterface::LevelUp_Implementation();
+}
+
+AISPlayerState* AISCharacter::GetPlayerState_Implementation()
+{
+	AISPlayerState*SourcePlayerState = GetPlayerState<AISPlayerState>();
+	check(SourcePlayerState);
+	return SourcePlayerState;
+}
+bool AISCharacter::CheckIsFastRun()
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	if (!ISPlayerState) return false;
+	UISAttributeSet*ISAttributeSet = Cast<UISAttributeSet>( ISPlayerState->GetAttributeSet());
+	if(ISAttributeSet->GetVigor()<=0)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = CharacterSpeed;
+		return false;
+	}
+	//如果角色拥有在地面上的速度且此时处于短跑阶段，则返回角色处于短跑
+	if(GetCharacterMovement()->Velocity.Size()>0&&GetCharacterMovement()->GetMaxSpeed()>400)
+	{
+		return true;
+	}
+	//角色速度未达到短跑速度则恢复为走路速度
+	else if(GetCharacterMovement()->Velocity.Size()<600)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = CharacterSpeed;
+		return false;
+	}
+	return false;
 }
 
 void AISCharacter::InitAbilityActorInfo()
@@ -183,3 +223,10 @@ void AISCharacter::AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbilit
 	if(!LocalASC) return;
 	LocalASC->AddCharacterPassiveAbility(TargetActivateAbilities); //应用并激活被动技能
 }
+
+void AISCharacter::AddAttributeLevel_Implementation(const FGameplayAttribute TargetPointType)
+{
+	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
+	ISPlayerState->AddTargetAttributeLevel(TargetPointType);
+}
+

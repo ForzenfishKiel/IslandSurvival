@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Game/ISPlayerState.h"
 #include "UObject/Interface.h"
 #include "ISPlayerInterface.generated.h"
 
@@ -51,5 +52,5 @@ public:
 	void LevelUp();
 
 	UFUNCTION(BlueprintNativeEvent)
-	int32 GetPlayerMaxHealthPoint();
+	AISPlayerState*GetPlayerState();
 };
