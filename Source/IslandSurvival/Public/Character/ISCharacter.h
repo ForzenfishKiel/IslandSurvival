@@ -66,6 +66,8 @@ public:
 	TObjectPtr<UISCraftingComponent>ISCraftingComponent;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = "Combine")
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TObjectPtr<UISGearEquipComponent> GearEquipComponent;
 
 	UPROPERTY(BlueprintReadWrite,Replicated,Category = "Config")
 	float CharacterSpeed = 400.f;

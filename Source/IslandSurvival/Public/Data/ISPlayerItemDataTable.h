@@ -38,6 +38,8 @@ public:
 	int32 MaxStack = 0; //最大可堆叠上限
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInformation")
 	EItemType ItemType = EItemType::None;  //物品种类
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EArmorType ArmorType;  //护甲种类
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInformation")
 	TSubclassOf<AISItemBase> ItemClassRef;  //物品类型引用
 };

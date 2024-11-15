@@ -5,6 +5,7 @@
 #include "Data/ISPlayerItemDataTable.h"
 #include "Interface/ISContainerInterface.h"
 #include "ISItemsContainer.generated.h"
+class UISGearEquipComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWhenItemPickUp,FItemInformation,TargetItemInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemPickUpOnUI,FItemInformation,TargetItemInfo);
@@ -32,6 +33,7 @@ public:
 	void WhenInventoryChange(UISItemsContainer*TargetContainer,const int32 TargetIndex);
 	UFUNCTION(BlueprintCallable,Client,Reliable)
 	void WhenItemExchanged(UISItemsContainer*TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex);
+	bool CheckGearSlotEcchanged(UISItemsContainer*TargetGear,const int32 TargetIndex,const int32 SourceIndex);
 	UFUNCTION(Client,Reliable)
 	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
 	UFUNCTION(Client,Reliable)
@@ -41,6 +43,8 @@ public:
 	bool CheckInventoryEmpty(const FItemInformation Information);
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	TArray<FItemInformation>InventoryContainer;//背包
+	UPROPERTY(BlueprintReadOnly)
+	TMap<EArmorType,FItemInformation> GearEquipContainer;//装备栏
 protected:
 	virtual void BeginPlay() override;
 public:	

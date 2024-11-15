@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Items/ISItemBase.h"
 #include "UObject/NoExportTypes.h"
 #include "ISCraftItemInformation.generated.h"
 

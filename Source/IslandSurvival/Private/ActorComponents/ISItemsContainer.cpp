@@ -5,6 +5,7 @@
 #include "ActorComponents/ISCharacterInventory.h"
 #include "ActorComponents/ISEquipmentComponent.h"
 #include "ActorComponents/ISHotBarInventory.h"
+#include "ActorComponents/ISGearEquipComponent.h"
 #include "Character/ISCharacter.h"
 #include "Game/ISGameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -59,12 +60,15 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 		}
 	}
 }
+
+
 void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex)
 {
 	/*当物品放置到另一个物品的时候的几种情况
 	 * 1.当物品可堆叠时，则放置的格子的数量加上对方物品的数量，然后对方物品为空（双方物品ID相同）
 	 * 2.当物品不可堆叠时，则无条件交换
 	 */
+	if(CheckGearSlotEcchanged(TargetItemsContainer,TargetIndex,SourceIndex)) return;
 	if(TargetItemsContainer->InventoryContainer[TargetIndex].ItemID==InventoryContainer[SourceIndex].ItemID)
 	{
 		if(TargetItemsContainer->InventoryContainer[TargetIndex].CanStack&&InventoryContainer[SourceIndex].CanStack)
@@ -76,6 +80,7 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 			InventoryUpdate.Broadcast();
 			return;
 		}
+		//不可堆叠
 		else
 		{
 			FItemInformation TempItemInfor = InventoryContainer[SourceIndex];  //暂存
@@ -98,7 +103,44 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 		return;
 	}
 }
-
+bool UISItemsContainer::CheckGearSlotEcchanged(UISItemsContainer* TargetGear, const int32 TargetIndex,const int32 SourceIndex)
+{
+	//如果拖动源是来自装备栏
+	if(UISGearEquipComponent*GearEquipComponent = Cast<UISGearEquipComponent>(TargetGear))
+	{
+		if(InventoryContainer[SourceIndex].ArmorType!=EArmorType::None)  //如果放置的位置是某一个装备
+		{
+			FItemInformation Information = GearEquipComponent->GearEquipContainer[InventoryContainer[SourceIndex].ArmorType];
+			GearEquipComponent->GearEquipContainer[InventoryContainer[SourceIndex].ArmorType];
+			InventoryContainer[SourceIndex] = Information;
+			TargetGear->InventoryUpdate.Broadcast();
+			InventoryUpdate.Broadcast();  //除了装备以外的库存
+			return true;
+		}
+		else
+		{
+			return true;  //跳过当前执行
+		}
+	}
+	//如果拖动源是来自其他库存
+	else if(GetClass()==UISGearEquipComponent::StaticClass())
+	{
+		if(TargetGear->InventoryContainer[TargetIndex].ArmorType!=EArmorType::None)
+		{
+			FItemInformation Information = GearEquipContainer[TargetGear->InventoryContainer[TargetIndex].ArmorType];
+			GearEquipContainer[TargetGear->InventoryContainer[TargetIndex].ArmorType] = TargetGear->InventoryContainer[TargetIndex];
+			TargetGear->InventoryContainer[TargetIndex] = Information;
+			TargetGear->InventoryUpdate.Broadcast();
+			InventoryUpdate.Broadcast();
+			return true;
+		}
+		else
+		{
+			return true;  //跳过当前执行
+		}
+	}
+	return false;
+}
 //丢弃/销毁物品
 void UISItemsContainer::DiscardItem_Implementation(const int32 TargetIndex, const int32 TargetQuantity)
 {

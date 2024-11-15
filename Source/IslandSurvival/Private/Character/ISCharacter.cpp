@@ -2,6 +2,7 @@
 
 
 #include "Character/ISCharacter.h"
+#include "ActorComponents/ISGearEquipComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISPlayerController.h"
@@ -51,6 +52,8 @@ AISCharacter::AISCharacter()
 	ISInteractionComponent->SetIsReplicated(true);
 	ISCraftingComponent = CreateDefaultSubobject<UISCraftingComponent>(TEXT("ISCraftingComponent"));
 	ISCraftingComponent->SetIsReplicated(true);
+	GearEquipComponent = CreateDefaultSubobject<UISGearEquipComponent>(TEXT("GearEquipComponent"));  //创建玩家装备组件
+	GearEquipComponent->SetIsReplicated(true);
 }
 
 void AISCharacter::BeginPlay()
