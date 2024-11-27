@@ -99,6 +99,14 @@ public:
 	FGameplayAttributeData MaxThirst;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxThirst);
 
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Armor,Category = "SecondaryAttributes")
+	FGameplayAttributeData Armor;  //总护甲
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,Armor);
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing =OnRep_GearArmor,Category = "SecondaryAttributes")
+	FGameplayAttributeData GearArmor;  //装备护甲
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,GearArmor);
+
 	/*元属性*/
 	UPROPERTY(BlueprintReadOnly,Category = "MetaAttributes")
 	FGameplayAttributeData InComingXP;  //角色获得的XP
@@ -141,6 +149,10 @@ public:
 	void OnRep_PlayerLevel(const FGameplayAttributeData&OldPlayerLevel) const;
 	UFUNCTION()
 	void OnRep_MaxHealthLevel(const FGameplayAttributeData&OldMaxHealthLevel) const;
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData&OldArmor) const;
+	UFUNCTION()
+	void OnRep_GearArmor(const FGameplayAttributeData&OldHelmetArmor) const;
 protected:
 	void SetEffectContext(const FGameplayEffectModCallbackData& Data,FEffectProperties&Properties);
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;

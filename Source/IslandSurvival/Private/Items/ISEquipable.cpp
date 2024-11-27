@@ -38,7 +38,7 @@ void AISEquipable::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* Tar
 	const FGameplayTagsManager TagsManager = FGameplayTagsManager::Get();
 	ApplyEffectToTarget(TargetASC,EquipableDefaultAttribute);
 	AddTargetAbility(TargetASC,EquipableActivateAbilities);//应用主动技能
-	AddTargetAbility(TargetASC,EquibablePassiveAbilities);  //应用被动技能
+	AddTargetPassiveAbility(TargetASC,EquibablePassiveAbilities);  //应用被动技能
 }
 
 //初始化加载武器配置
@@ -77,8 +77,17 @@ void AISEquipable::AddTargetAbility(UAbilitySystemComponent* TargetASC,
 	LocalASC->AddCharacterAbility(TargetArray);
 }
 
-void AISEquipable::RemoveTargetAbility(UAbilitySystemComponent* TargetASC,
+void AISEquipable::AddTargetPassiveAbility(UAbilitySystemComponent* TargetASC,
 	TArray<TSubclassOf<UGameplayAbility>>& TargetArray)
+{
+	Super::AddTargetPassiveAbility(TargetASC, TargetArray);
+	UISAbilitySystemComponent*LocalASC = Cast<UISAbilitySystemComponent>(TargetASC);
+	if(!LocalASC&&TargetArray.IsEmpty())return;
+	LocalASC->AddCharacterPassiveAbility(TargetArray);
+}
+
+void AISEquipable::RemoveTargetAbility(UAbilitySystemComponent* TargetASC,
+                                       TArray<TSubclassOf<UGameplayAbility>>& TargetArray)
 {
 	Super::RemoveTargetAbility(TargetASC, TargetArray);
 	UISAbilitySystemComponent*LocalASC = Cast<UISAbilitySystemComponent>(TargetASC);

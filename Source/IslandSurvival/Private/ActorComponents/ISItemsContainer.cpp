@@ -68,7 +68,7 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 	 * 1.当物品可堆叠时，则放置的格子的数量加上对方物品的数量，然后对方物品为空（双方物品ID相同）
 	 * 2.当物品不可堆叠时，则无条件交换
 	 */
-	if(CheckGearSlotEcchanged(TargetItemsContainer,TargetIndex,SourceIndex)) return;
+	if(CheckGearSlotEcchanged(TargetItemsContainer,TargetIndex,SourceIndex)) return;  //是否是来自装备的交换
 	if(TargetItemsContainer->InventoryContainer[TargetIndex].ItemID==InventoryContainer[SourceIndex].ItemID)
 	{
 		if(TargetItemsContainer->InventoryContainer[TargetIndex].CanStack&&InventoryContainer[SourceIndex].CanStack)
@@ -105,21 +105,44 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 }
 bool UISItemsContainer::CheckGearSlotEcchanged(UISItemsContainer* TargetGear, const int32 TargetIndex,const int32 SourceIndex)
 {
+	//两个装备栏不做交换
+	if(Cast<UISGearEquipComponent>(TargetGear)&&GetClass()==UISGearEquipComponent::StaticClass()) return true;
+	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetOwner());
+	UISEquipmentComponent*EquipmentComponent = SourceCharacter->GetComponentByClass<UISEquipmentComponent>();
 	//如果拖动源是来自装备栏
 	if(UISGearEquipComponent*GearEquipComponent = Cast<UISGearEquipComponent>(TargetGear))
 	{
+		//装备交换
 		if(InventoryContainer[SourceIndex].ArmorType!=EArmorType::None)  //如果放置的位置是某一个装备
 		{
-			FItemInformation Information = GearEquipComponent->GearEquipContainer[InventoryContainer[SourceIndex].ArmorType];
-			GearEquipComponent->GearEquipContainer[InventoryContainer[SourceIndex].ArmorType];
-			InventoryContainer[SourceIndex] = Information;
-			TargetGear->InventoryUpdate.Broadcast();
+			TArray<EArmorType> MapArray;
+			GearEquipComponent->GearEquipContainer.GenerateKeyArray(MapArray);  //将Map里的键用数组储存
+			FItemInformation Information = GearEquipComponent->GearEquipContainer[InventoryContainer[SourceIndex].ArmorType];  //获取放置位的物品信息
+			EquipmentComponent->OnUnEquipGear.Broadcast(*GearEquipComponent->GearEquipContainer.Find(MapArray[TargetIndex]));  //广播卸下装备
+			GearEquipComponent->GearEquipContainer[InventoryContainer[SourceIndex].ArmorType] = InventoryContainer[SourceIndex]; //装备栏装备交换的物品信息
+			EquipmentComponent->OnEquipGear.Broadcast(*GearEquipComponent->GearEquipContainer.Find(InventoryContainer[SourceIndex].ArmorType));//广播穿上装备
+			InventoryContainer[SourceIndex] = Information;//放置位置进行交换
+			TargetGear->InventoryUpdate.Broadcast(); //更新双方库存
 			InventoryUpdate.Broadcast();  //除了装备以外的库存
 			return true;
 		}
+		else if(InventoryContainer[SourceIndex].ItemID==-1)
+		{
+			TArray<EArmorType> MapArray;
+			GearEquipComponent->GearEquipContainer.GenerateKeyArray(MapArray);  //将Map里的键用数组储存
+			FItemInformation*TargetGearSlot = GearEquipComponent->GearEquipContainer.Find(MapArray[TargetIndex]);  //找到这个装备插槽里的装备
+			if(TargetGearSlot == nullptr) return true;  //数据异常，跳过当前执行
+			InventoryContainer[SourceIndex] =*TargetGearSlot;  //解引用并储存数据
+			EquipmentComponent->OnUnEquipGear.Broadcast(*TargetGearSlot);  //广播脱下装备
+			GearEquipComponent->GearEquipContainer[MapArray[TargetIndex]] = ItemInfo;  //清空装备槽显示
+			//更新双方背包
+			TargetGear->InventoryUpdate.Broadcast();
+			InventoryUpdate.Broadcast();
+			return true;  //跳过当前执行
+		}
 		else
 		{
-			return true;  //跳过当前执行
+			return true;
 		}
 	}
 	//如果拖动源是来自其他库存
@@ -127,11 +150,15 @@ bool UISItemsContainer::CheckGearSlotEcchanged(UISItemsContainer* TargetGear, co
 	{
 		if(TargetGear->InventoryContainer[TargetIndex].ArmorType!=EArmorType::None)
 		{
+			TArray<EArmorType> MapArray;
+			GearEquipContainer.GenerateKeyArray(MapArray);  //将Map里的键用数组储存
 			FItemInformation Information = GearEquipContainer[TargetGear->InventoryContainer[TargetIndex].ArmorType];
+			EquipmentComponent->OnUnEquipGear.Broadcast(*GearEquipContainer.Find(MapArray[SourceIndex]));  //广播卸下装备
 			GearEquipContainer[TargetGear->InventoryContainer[TargetIndex].ArmorType] = TargetGear->InventoryContainer[TargetIndex];
-			TargetGear->InventoryContainer[TargetIndex] = Information;
-			TargetGear->InventoryUpdate.Broadcast();
-			InventoryUpdate.Broadcast();
+			EquipmentComponent->OnEquipGear.Broadcast(GearEquipContainer[TargetGear->InventoryContainer[TargetIndex].ArmorType]);  //广播穿上装备
+			TargetGear->InventoryContainer[TargetIndex] = Information;  //目标位置等于被替换的装备位置
+			TargetGear->InventoryUpdate.Broadcast(); //更新双方库存
+			InventoryUpdate.Broadcast(); //更新双方库存
 			return true;
 		}
 		else

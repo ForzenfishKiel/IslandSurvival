@@ -14,7 +14,10 @@ UISEquipmentComponent::UISEquipmentComponent()
 void UISEquipmentComponent::InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC)
 {
 	SourceASC = TargetASC;
+	OnEquipGear.AddDynamic(this,&UISEquipmentComponent::EquipGear);
+	OnUnEquipGear.AddDynamic(this,&UISEquipmentComponent::UnEquipGear);
 }
+
 void UISEquipmentComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -25,6 +28,10 @@ void UISEquipmentComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UISEquipmentComponent, Equipable);
 	DOREPLIFETIME(UISEquipmentComponent,CharacterEquipState);
+	DOREPLIFETIME(UISEquipmentComponent,ISHelmet);
+	DOREPLIFETIME(UISEquipmentComponent,ISChest);
+	DOREPLIFETIME(UISEquipmentComponent,ISPants);
+	DOREPLIFETIME(UISEquipmentComponent,ISBoots);
 }
 
 //在服务器完成武器的初始化
@@ -74,6 +81,7 @@ void UISEquipmentComponent::UnEquipOnClient_Implementation()
 	EquipableClient->Destroy();
 	EquipableClient = nullptr;
 }
+//使用物品
 void UISEquipmentComponent::UseConsumable_Implementation(TSubclassOf<AISItemBase> ItemClass)
 {
 	if(ISConsumable) return;
@@ -85,4 +93,75 @@ void UISEquipmentComponent::UnUseConsumable_Implementation()
 {
 	if(ISConsumable) {ISConsumable = nullptr;}
 }
+//装备防具
+void UISEquipmentComponent::EquipGear_Implementation(const FItemInformation TargetInformation)
+{
+	if(TargetInformation.ArmorType==EArmorType::Helmet)
+	{
+		if(!ISHelmet)
+		{
+			ISHelmet = NewObject<AISGear>(GetOwner(),TargetInformation.ItemClassRef);
+			ISHelmet->UseItem(GetOwner(),SourceASC);
+		}
+	}
+	else if(TargetInformation.ArmorType == EArmorType::Chest)
+	{
+		if(!ISChest)
+		{
+			ISChest = NewObject<AISGear>(GetOwner(),TargetInformation.ItemClassRef);
+			ISChest->UseItem(GetOwner(),SourceASC);
+		}
+	}
+	else if(TargetInformation.ArmorType == EArmorType::Pants)
+	{
+		if(!ISPants)
+		{
+			ISPants = NewObject<AISGear>(GetOwner(),TargetInformation.ItemClassRef);
+			ISPants->UseItem(GetOwner(),SourceASC);
+		}
+	}
+	else
+	{
+		if(!ISBoots)
+		{
+			ISBoots = NewObject<AISGear>(GetOwner(),TargetInformation.ItemClassRef);
+			ISBoots->UseItem(GetOwner(),SourceASC);
+		}
+	}
+}
 
+void UISEquipmentComponent::UnEquipGear_Implementation(const FItemInformation TargetInformation)
+{
+	if(TargetInformation.ArmorType==EArmorType::Helmet)
+	{
+		if(ISHelmet)
+		{
+			ISHelmet->UnUseItem(GetOwner(),SourceASC);
+			ISHelmet = nullptr;
+		}
+	}
+	else if(TargetInformation.ArmorType == EArmorType::Chest)
+	{
+		if(ISChest)
+		{
+			ISChest->UnUseItem(GetOwner(),SourceASC);
+			ISChest = nullptr;
+		}
+	}
+	else if(TargetInformation.ArmorType == EArmorType::Pants)
+	{
+		if(ISPants)
+		{
+			ISPants->UnUseItem(GetOwner(),SourceASC);
+			ISPants = nullptr;
+		}
+	}
+	else
+	{
+		if(ISBoots)
+		{
+			ISBoots->UnUseItem(GetOwner(),SourceASC);
+			ISBoots = nullptr;
+		}
+	}
+}

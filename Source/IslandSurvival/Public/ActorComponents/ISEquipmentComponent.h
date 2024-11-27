@@ -8,10 +8,13 @@
 #include "Data/ISPlayerItemDataTable.h"
 #include "Items/ISConsumable.h"
 #include "Items/ISEquipable.h"
+#include "Items/ISGear.h"
 #include "ISEquipmentComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquip,FItemInformation,TargetItemInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquip);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipGear,FItemInformation,TargetItemInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnEquipGear,FItemInformation,TargetItemInfo);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ISLANDSURVIVAL_API UISEquipmentComponent : public UActorComponent
 {
@@ -26,6 +29,8 @@ public:
 	FOnEquip OnEquip;
 	UPROPERTY(BlueprintAssignable, Category="Custom Events")
 	FOnUnEquip OnUnEquip;
+	FOnEquipGear OnEquipGear;  //装备事件
+	FOnUnEquipGear OnUnEquipGear;  //脱下装备事件
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	ECharacterEquipState CharacterEquipState = ECharacterEquipState::None;
 	UPROPERTY(BlueprintReadOnly,Replicated)
@@ -35,6 +40,18 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<AISConsumable> ISConsumable = nullptr;
+
+	UPROPERTY(BlueprintReadOnly,Replicated)
+	TObjectPtr<AISGear> ISHelmet = nullptr;
+
+	UPROPERTY(BlueprintReadOnly,Replicated)
+	TObjectPtr<AISGear> ISChest = nullptr;
+
+	UPROPERTY(BlueprintReadOnly,Replicated)
+	TObjectPtr<AISGear> ISPants = nullptr;
+
+	UPROPERTY(BlueprintReadOnly,Replicated)
+	TObjectPtr<AISGear> ISBoots = nullptr;
 	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent>SourceASC;
@@ -54,6 +71,10 @@ public:
 	UFUNCTION(Server, Reliable)
 	void UnUseConsumable();
 	void InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC);
+	UFUNCTION(Server, Reliable)
+	void EquipGear(const FItemInformation TargetInformation);
+	UFUNCTION(server, Reliable)
+	void UnEquipGear(const FItemInformation TargetInformation);
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

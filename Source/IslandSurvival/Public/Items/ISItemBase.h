@@ -61,6 +61,7 @@ public:
 	virtual void UnUseItem(AActor*TargetCharacter,UAbilitySystemComponent*TargetASC);
 	virtual void ApplyEffectToTarget(UAbilitySystemComponent*InASC,TSubclassOf<UGameplayEffect>EffectClass){return;}
 	virtual void AddTargetAbility(UAbilitySystemComponent*TargetASC,TArray<TSubclassOf<UGameplayAbility>>&TargetArray){return;}
+	virtual void AddTargetPassiveAbility(UAbilitySystemComponent*TargetASC,TArray<TSubclassOf<UGameplayAbility>>&TargetArray){return;}
 	virtual void RemoveTargetAbility(UAbilitySystemComponent*TargetASC,TArray<TSubclassOf<UGameplayAbility>>&TargetArray){return;}
 	virtual void RemoveTargetEffect(UAbilitySystemComponent*TargetASC,TSubclassOf<UGameplayEffect>EffectClass){return;}
 	virtual FName GetName_Implementation() override;
