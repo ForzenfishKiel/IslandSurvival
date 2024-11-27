@@ -23,6 +23,7 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 	if(TargetContainer->InventoryContainer[TargetIndex].ItemID!=-1&&IsValid(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef))
 	{
 		UISEquipmentComponent*CharacterEquipment = GetOwner()->GetComponentByClass<UISEquipmentComponent>();
+		UISBuildingComponent*Building = GetOwner()->GetComponentByClass<UISBuildingComponent>();
 		const EItemType ItemType = TargetContainer->InventoryContainer[TargetIndex].ItemType;  //获取对方的物品种类
 		if(ItemType==EItemType::Equipable)
 		{
@@ -57,6 +58,11 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 			CharacterEquipment->UseConsumable(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);//使用对应的物品
 			DiscardItem(TargetIndex,1);  //丢弃一个物品
 			CharacterEquipment->UnUseConsumable();  //停止使用
+			return;
+		}
+		if(ItemType == EItemType::Buildable)
+		{
+			Building->BuildModeClient(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);
 		}
 	}
 }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActorComponents/ISBuildingComponent.h"
 #include "ActorComponents/ISCharacterInventory.h"
 #include "ActorComponents/ISCraftingComponent.h"
 #include "ActorComponents/ISEquipmentComponent.h"
@@ -68,6 +69,8 @@ public:
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TObjectPtr<UISGearEquipComponent> GearEquipComponent;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UISBuildingComponent>ISBuildingComponent;
 
 	UPROPERTY(BlueprintReadWrite,Replicated,Category = "Config")
 	float CharacterSpeed = 400.f;

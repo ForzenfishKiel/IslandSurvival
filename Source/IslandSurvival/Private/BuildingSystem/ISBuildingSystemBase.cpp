@@ -7,8 +7,13 @@
 AISBuildingSystemBase::AISBuildingSystemBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PickUpCheckSphere->UnregisterComponent();
+	PickUpCheckSphere->DestroyComponent();
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>("RootSceneComponent");
+	RootSceneComponent->SetupAttachment(GetRootComponent());
+	ItemsStaticMesh->SetupAttachment(RootSceneComponent);
+	RootSceneComponent->SetMobility(EComponentMobility::Movable);
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -18,10 +23,8 @@ void AISBuildingSystemBase::BeginPlay()
 	
 }
 
-// Called every frame
-void AISBuildingSystemBase::Tick(float DeltaTime)
+AISBuildingSystemBase* AISBuildingSystemBase::GetBuildingSystemBase_Implementation()
 {
-	Super::Tick(DeltaTime);
-
+	return this;
 }
 

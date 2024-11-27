@@ -54,6 +54,8 @@ AISCharacter::AISCharacter()
 	ISCraftingComponent->SetIsReplicated(true);
 	GearEquipComponent = CreateDefaultSubobject<UISGearEquipComponent>(TEXT("GearEquipComponent"));  //创建玩家装备组件
 	GearEquipComponent->SetIsReplicated(true);
+	ISBuildingComponent = CreateDefaultSubobject<UISBuildingComponent>(TEXT("ISBuildingComponent"));
+	ISBuildingComponent->SetIsReplicated(true);
 }
 
 void AISCharacter::BeginPlay()
