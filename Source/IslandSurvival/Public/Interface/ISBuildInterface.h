@@ -2,6 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "UObject/Interface.h"
 #include "ISBuildInterface.generated.h"
 
@@ -24,4 +25,6 @@ class ISLANDSURVIVAL_API IISBuildInterface
 public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	AISBuildingSystemBase*GetBuildingSystemBase();  //获取建筑类引用
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	TArray<UBoxComponent*>GetBuildingBoxComponent() const;  //获取该建筑类的盒体碰撞
 };

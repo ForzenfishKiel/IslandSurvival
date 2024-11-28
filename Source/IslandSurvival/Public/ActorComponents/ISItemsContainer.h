@@ -9,6 +9,7 @@ class UISGearEquipComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWhenItemPickUp,FItemInformation,TargetItemInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemPickUpOnUI,FItemInformation,TargetItemInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemDiscard,int32,TargetIndex,int32,TargetQuantity);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ISLANDSURVIVAL_API UISItemsContainer : public UActorComponent,public IISContainerInterface
 {
@@ -29,6 +30,8 @@ public:
 	FWhenItemPickUp ItemPickup;
 	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
 	FItemPickUpOnUI ItemPickupOnUI;
+	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
+	FOnItemDiscard ItemDiscard;
 	UISItemsContainer();
 	void WhenInventoryChange(UISItemsContainer*TargetContainer,const int32 TargetIndex);
 	UFUNCTION(BlueprintCallable,Client,Reliable)

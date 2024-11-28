@@ -33,6 +33,7 @@ void AISPlayerController::SetupInputComponent()
 	ISEnhanceInputComponent->BindAction(IA_Move,ETriggerEvent::Triggered,this,&AISPlayerController::Move);  //绑定移动事件
 	ISEnhanceInputComponent->BindAction(IA_LookUp,ETriggerEvent::Triggered,this,&AISPlayerController::LookUp);
 	ISEnhanceInputComponent->BindAction(IA_OpenUI,ETriggerEvent::Started,this,&AISPlayerController::OpenUI);
+	ISEnhanceInputComponent->BindAction(IA_LeftClick,ETriggerEvent::Started,this,&AISPlayerController::PrimaryInteract);
 	ISEnhanceInputComponent->BindChooseItemActions(ChooseHotBarInputData,this,&AISPlayerController::ChooseHotBar);
 	ISEnhanceInputComponent->BindAbilityActions(InputAbilityData,this,&AISPlayerController::InputPressedAbility
 		,&AISPlayerController::InputHeldAbility,&AISPlayerController::InputHeldAbility);
@@ -66,6 +67,28 @@ void AISPlayerController::LookUp(const struct FInputActionValue& InputActionValu
 	OwingCharacter->AddControllerYawInput(LookAxisVector.X);
 	OwingCharacter->AddControllerPitchInput(-(LookAxisVector.Y));
 }
+
+void AISPlayerController::PrimaryInteract()
+{
+	AISCharacter*OwingCharacter = Cast<AISCharacter>(GetPawn());
+	UISBuildingComponent*BuildingComponent = OwingCharacter->GetComponentByClass<UISBuildingComponent>();
+	UISHotBarInventory*ItemsContainer = OwingCharacter->GetComponentByClass<UISHotBarInventory>();
+	if(!BuildingComponent) return;
+	if(BuildingComponent->ISBuildingRef)
+	{
+		if(!BuildingComponent->CheckForOverlap())
+		{
+			BuildingComponent->SpawnBuildOnServer(BuildingComponent->ISBuildingRef.GetClass(),
+				BuildingComponent->ISBuildingTransformRef,BuildingComponent->bBuildPreviewWasCreated);  //通知服务器生成建筑
+			ItemsContainer->ItemDiscard.Broadcast(BuildingComponent->SaveHotBarIndex,1);
+		}
+		else
+		{
+			return;
+		}
+	}
+}
+
 void AISPlayerController::ChooseHotBar(int32 InputIndex)
 {
 	if(InputIndex==-1) return;  //系统错误

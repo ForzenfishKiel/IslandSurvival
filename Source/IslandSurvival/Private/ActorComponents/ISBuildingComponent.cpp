@@ -4,7 +4,6 @@
 #include "ActorComponents/ISBuildingComponent.h"
 #include "Character/ISCharacter.h"
 #include "Math/MathFwd.h"
-#include "Components/DecalComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
@@ -22,8 +21,7 @@ UISBuildingComponent::UISBuildingComponent()
 void UISBuildingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
+	OnBuildingWasDestory.AddDynamic(this,&UISBuildingComponent::DestoryBuildPreviewOnClient);  //绑定删除建筑预览的广播事件
 	
 }
 
@@ -36,21 +34,21 @@ void UISBuildingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
-void UISBuildingComponent::BuildModeClient_Implementation(TSubclassOf<AISItemBase>BuildingSystemBase)
+//TargetIndex是为了保存当前你的快捷栏的快捷位置的索引
+void UISBuildingComponent::BuildModeClient_Implementation(TSubclassOf<AISItemBase>BuildingSystemBase,const int32 TargetIndex)
 {
-	if(ISBuildingRef==nullptr&&bBuildPreviewWasCreated == false){SpawnBuildPreview(BuildingSystemBase);}  //预览建筑物不存在就新构建一个预览建筑物
-	else{ISBuildingRef->Destroy();ISBuildingRef = nullptr;bBuildPreviewWasCreated = false;}
+	if(ISBuildingRef==nullptr&&bBuildPreviewWasCreated == false){SpawnBuildPreview(BuildingSystemBase);SaveHotBarIndex = TargetIndex;}  //预览建筑物不存在就新构建一个预览建筑物
+	else{OnBuildingWasDestory.Broadcast();SaveHotBarIndex = -1;}  //在客户端中删除建筑预览，并清空Index
 }
 
 void UISBuildingComponent::SpawnBuildPreview(TSubclassOf<AISItemBase>BuildingSystemBase)
 {
 	ISBuildingRef = GetWorld()->SpawnActor<AISBuildingSystemBase>(BuildingSystemBase,ISBuildingTransformRef);  //生成Actor
-	UStaticMeshComponent*BuildStaticMeshComponent = ISBuildingRef->ItemsStaticMesh;  //获取静态网格体
-	BuildStaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ISBuildingRef->ItemsStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	bBuildPreviewWasCreated = true;
 }
-
-void UISBuildingComponent::TraceToMoveBuildPreview()
+//追踪并移动建筑预览
+void UISBuildingComponent::TraceToMoveBuildPreview_Implementation()
 {
 	if(bBuildPreviewWasCreated)
 	{
@@ -64,18 +62,17 @@ void UISBuildingComponent::TraceToMoveBuildPreview()
 		FVector CameraLocationAddDistanceClose =  (CameraForwardVector * BuildDistanceClose) + CameraLocation;
 
 		FVector CameraForwardMultDistanceFar = (CameraForwardVector * BuildDistanceFar) + CameraLocation;
-
-		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypeQuery;
-		ObjectTypeQuery.Add(EObjectTypeQuery::ObjectTypeQuery1);
+		
 		TArray<AActor*>IgnoreActor;
 		IgnoreActor.Add(GetOwner());
+		IgnoreActor.Add(ISBuildingRef);
 		FHitResult Hit;
 	
 		//如果预览建筑物存在，则不断地改变其位置
-		if(UKismetSystemLibrary::LineTraceSingleForObjects(GetOwner(),CameraLocationAddDistanceClose,
-		CameraForwardMultDistanceFar,ObjectTypeQuery,
-		false,IgnoreActor,EDrawDebugTrace::ForDuration,
-		Hit,true,FLinearColor::Yellow,FLinearColor::Green,1.f))
+		if(UKismetSystemLibrary::LineTraceSingle(GetOwner(),CameraLocationAddDistanceClose,
+		CameraForwardMultDistanceFar,ISBuildingRef->BuildingConfig.TraceType,
+		false,IgnoreActor,EDrawDebugTrace::None,
+		Hit,true,FLinearColor::Red,FLinearColor::Green,1.f))
 		{
 			FRotator CameraRotation = CameraComponent->GetComponentRotation();
 			CameraRotation.Yaw += 90;
@@ -86,6 +83,13 @@ void UISBuildingComponent::TraceToMoveBuildPreview()
 
 			if(ISBuildingRef)
 			{
+				AActor* ActorRef = Hit.GetActor();
+				UActorComponent* ComponentRef = Cast<UActorComponent>(Hit.GetComponent());
+				if(ActorRef&&ActorRef->Implements<UISBuildInterface>())
+				{
+					ISBuildingTransformRef = GetSnappingPoint(ActorRef,ComponentRef);
+				}
+				SetPreviewBuildingColor();
 				ISBuildingRef->RootSceneComponent->SetWorldTransform(ISBuildingTransformRef);  //改变预览建筑物的位置
 			}
 		}
@@ -100,27 +104,106 @@ void UISBuildingComponent::TraceToMoveBuildPreview()
 			ISBuildingTransformRef.SetLocation(Hit.TraceEnd);  //从撞击目标中获取目标位置
 			if(ISBuildingRef)
 			{
+				AActor* ActorRef = Hit.GetActor();
+				UActorComponent* ComponentRef = Cast<UActorComponent>(Hit.GetComponent());
+				if(ActorRef&&ActorRef->Implements<UISBuildInterface>())
+				{
+					ISBuildingTransformRef = GetSnappingPoint(ActorRef,ComponentRef);
+				}
+				SetPreviewBuildingColor();
 				ISBuildingRef->RootSceneComponent->SetWorldTransform(ISBuildingTransformRef);  //改变预览建筑物的位置
 			}
 		}
 	}
 }
 
+FTransform UISBuildingComponent::GetSnappingPoint(const AActor* TargetActor, UActorComponent* TargetComp)
+{
+	//循环遍历预览命中的建筑物的判定框
+	for(auto BoxesRef:IISBuildInterface::Execute_GetBuildingBoxComponent(TargetActor))
+	{
+		if(BoxesRef==TargetComp)  //如果判定框等于击中的判定框，也就是同样的判定框，则返回该判定框的位置
+		{
+			return BoxesRef->GetComponentTransform();
+		}
+	}
+	return FTransform();
+}
 //设置预览建筑物的颜色
 void UISBuildingComponent::SetPreviewBuildingColor()
 {
 	if(!ISBuildingRef) return;
-	for(auto&CompRef:ISBuildingRef->GetComponents())
+	
+	for(auto CompRef:ISBuildingRef->GetComponents())
 	{
 		//尝试遍历该预览建筑的静态网格体的所有材质
 		UStaticMeshComponent*BuildingStaticMesh = Cast<UStaticMeshComponent>(CompRef);
 		if(BuildingStaticMesh)
 		{
-			for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
+			bool bCheckOverlap = CheckForOverlap();
+			if(!bCheckOverlap)
 			{
-				BuildingStaticMesh->SetMaterial(i,BuildingStaticMesh->GetMaterial(i));  //设置静态网格体的材质
+				
+				for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
+				{
+					OnCallSetMaterial.Broadcast(BuildingStaticMesh,i,bCheckOverlap);
+				}
+				BuildingStaticMesh->SetWorldTransform(ISBuildingTransformRef);
+			}
+			else
+			{
+				for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
+				{
+					OnCallSetMaterial.Broadcast(BuildingStaticMesh,i,bCheckOverlap);
+				}
+				BuildingStaticMesh->SetWorldTransform(ISBuildingTransformRef);
 			}
 		}
+	}
+}
+
+//删除建筑预览在客户端
+void UISBuildingComponent::DestoryBuildPreviewOnClient_Implementation()
+{
+	ISBuildingRef->Destroy();
+	ISBuildingRef = nullptr;
+	bBuildPreviewWasCreated = false;
+}
+//在服务器中生成预览性建筑
+void UISBuildingComponent::SpawnBuildOnServer_Implementation(TSubclassOf<AISItemBase>BuildingSystemBaseClass,FTransform Transform,bool bBuildingWasCreated)
+{
+	if(bBuildingWasCreated&&BuildingSystemBaseClass!=nullptr)
+	{
+		GetWorld()->SpawnActor<AISBuildingSystemBase>(BuildingSystemBaseClass,Transform);  //生成建筑
+		OnBuildingWasDestory.Broadcast();
+	}
+}
+
+bool UISBuildingComponent::CheckForOverlap()
+{
+	//查看建筑是否使用自定义重叠
+	if(!ISBuildingRef) return false;
+	FVector StaticOrigin = ISBuildingRef->ItemsStaticMesh->Bounds.Origin;
+	FVector StaticExtent = ISBuildingRef->ItemsStaticMesh->Bounds.BoxExtent;
+	FVector BoxOrigin = ISBuildingRef->BoxCollisionComponent->Bounds.Origin;
+	FVector BoxExtent = ISBuildingRef->BoxCollisionComponent->Bounds.BoxExtent;
+	float HalfSizeFloat = 1.2f;
+	FRotator RootSceneRotation =  ISBuildingRef->RootSceneComponent->GetComponentRotation();
+	RootSceneRotation.Yaw +=90;
+	TArray<AActor*>IgnoreActor;
+	IgnoreActor.Add(GetOwner());
+	FHitResult Hit;
+	if(ISBuildingRef->BuildingConfig.UseCustomOverlap)
+	{
+		FVector HalfSize = BoxExtent/HalfSizeFloat;
+		return UKismetSystemLibrary::BoxTraceSingle(GetOwner(),BoxOrigin,BoxOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),TraceTypeQuery1,true
+			,IgnoreActor,EDrawDebugTrace::None,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f);
+	}
+	else
+	{
+		FVector HalfSize = StaticExtent/HalfSizeFloat;
+		return UKismetSystemLibrary::BoxTraceSingle(GetOwner(),StaticOrigin,StaticOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),TraceTypeQuery1,true
+			,IgnoreActor,EDrawDebugTrace::None,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f);
 	}
 }
 

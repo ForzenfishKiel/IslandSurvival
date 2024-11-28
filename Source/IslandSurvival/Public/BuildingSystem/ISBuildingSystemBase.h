@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Interface/ISBuildInterface.h"
 #include "Items/ISItemBase.h"
@@ -12,6 +13,8 @@ struct FISBuildingConfig
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TEnumAsByte<ETraceTypeQuery> TraceType;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool CanPlaceOnGround = false;  //是否可以放置在地上
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -39,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> RootSceneComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UBoxComponent>BoxCollisionComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Config")
 	FISBuildingConfig BuildingConfig;  //保存建筑信息配置
 	virtual AISBuildingSystemBase*GetBuildingSystemBase_Implementation() override;
+	virtual TArray<UBoxComponent*>GetBuildingBoxComponent_Implementation() const override;
 };

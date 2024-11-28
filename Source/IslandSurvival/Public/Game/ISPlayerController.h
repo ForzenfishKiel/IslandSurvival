@@ -43,6 +43,8 @@ private:
 	TObjectPtr<UInputAction>IA_LookUp;
 	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction>IA_OpenUI;
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputAction>IA_LeftClick; //左键点击事件
 	void Move(const struct FInputActionValue&InputActionValue);
 	void LookUp(const struct FInputActionValue&InputActionValue);
 	void PrimaryInteract();

@@ -10,9 +10,12 @@ AISBuildingSystemBase::AISBuildingSystemBase()
 	PickUpCheckSphere->UnregisterComponent();
 	PickUpCheckSphere->DestroyComponent();
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>("RootSceneComponent");
-	RootSceneComponent->SetupAttachment(GetRootComponent());
+	SetRootComponent(RootSceneComponent);
 	ItemsStaticMesh->SetupAttachment(RootSceneComponent);
 	RootSceneComponent->SetMobility(EComponentMobility::Movable);
+	BoxCollisionComponent = CreateDefaultSubobject<UBoxComponent>("OverlapBox");
+	BoxCollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);//所有通道全忽略
+	BoxCollisionComponent->SetupAttachment(RootSceneComponent);
 	bReplicates = true;
 }
 
@@ -26,5 +29,27 @@ void AISBuildingSystemBase::BeginPlay()
 AISBuildingSystemBase* AISBuildingSystemBase::GetBuildingSystemBase_Implementation()
 {
 	return this;
+}
+
+//获取建筑的吸附判定框（数组）
+TArray<UBoxComponent*> AISBuildingSystemBase::GetBuildingBoxComponent_Implementation() const
+{
+	TArray<UBoxComponent*> ISBoxComponent;
+	for(auto&CompRef:GetComponents())
+	{
+		UStaticMeshComponent*BuildMeshRef = Cast<UStaticMeshComponent>(CompRef);
+		if(BuildMeshRef)
+		{
+			for(auto&StaticMeshChildRef:BuildMeshRef->GetAttachChildren())
+			{
+				UBoxComponent* BoxCompRef = Cast<UBoxComponent>(StaticMeshChildRef);
+				if(BoxCompRef)
+				{
+					ISBoxComponent.Add(BoxCompRef);
+				}
+			}
+		}
+	}
+	return ISBoxComponent;
 }
 

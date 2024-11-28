@@ -56,13 +56,14 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 		if(ItemType==EItemType::Consumable)
 		{
 			CharacterEquipment->UseConsumable(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);//使用对应的物品
-			DiscardItem(TargetIndex,1);  //丢弃一个物品
+			DiscardItem(TargetIndex,1);  //丢弃/消耗一个物品
 			CharacterEquipment->UnUseConsumable();  //停止使用
 			return;
 		}
 		if(ItemType == EItemType::Buildable)
 		{
-			Building->BuildModeClient(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef);
+			Building->BuildModeClient(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef,TargetIndex);
+			return;
 		}
 	}
 }
@@ -260,6 +261,7 @@ void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInform
 void UISItemsContainer::BeginPlay()
 {
 	Super::BeginPlay();
+	ItemDiscard.AddDynamic(this,&UISItemsContainer::DiscardItem);
 }
 
 
