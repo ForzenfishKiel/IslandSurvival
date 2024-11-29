@@ -76,7 +76,7 @@ void AISPlayerController::PrimaryInteract()
 	if(!BuildingComponent) return;
 	if(BuildingComponent->ISBuildingRef)
 	{
-		if(!BuildingComponent->CheckForOverlap())
+		if(BuildingComponent->bCanBeBuild)
 		{
 			BuildingComponent->SpawnBuildOnServer(BuildingComponent->ISBuildingRef.GetClass(),
 				BuildingComponent->ISBuildingTransformRef,BuildingComponent->bBuildPreviewWasCreated);  //通知服务器生成建筑

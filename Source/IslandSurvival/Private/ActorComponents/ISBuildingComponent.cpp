@@ -140,23 +140,12 @@ void UISBuildingComponent::SetPreviewBuildingColor()
 		UStaticMeshComponent*BuildingStaticMesh = Cast<UStaticMeshComponent>(CompRef);
 		if(BuildingStaticMesh)
 		{
-			bool bCheckOverlap = CheckForOverlap();
-			if(!bCheckOverlap)
+			//检查是否需要进行浮空检测
+			//需要进行浮空检测的，添加浮空检测判定语句
+			for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
 			{
-				
-				for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
-				{
-					OnCallSetMaterial.Broadcast(BuildingStaticMesh,i,bCheckOverlap);
-				}
-				BuildingStaticMesh->SetWorldTransform(ISBuildingTransformRef);
-			}
-			else
-			{
-				for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
-				{
-					OnCallSetMaterial.Broadcast(BuildingStaticMesh,i,bCheckOverlap);
-				}
-				BuildingStaticMesh->SetWorldTransform(ISBuildingTransformRef);
+				FISBuildBooleanCheck BuildBooleanCheck(BuildingStaticMesh,i,ISBuildingRef->BuildingConfig.DoFloatCheck,CheckForOverlap(),CheckBuildFloating());
+				OnCallSetMaterial.Broadcast(BuildBooleanCheck);
 			}
 		}
 	}
@@ -205,5 +194,18 @@ bool UISBuildingComponent::CheckForOverlap()
 		return UKismetSystemLibrary::BoxTraceSingle(GetOwner(),StaticOrigin,StaticOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),TraceTypeQuery1,true
 			,IgnoreActor,EDrawDebugTrace::None,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f);
 	}
+}
+
+bool UISBuildingComponent::CheckBuildFloating()
+{
+	if(!ISBuildingRef) return false;
+	FVector EndLocation = ISBuildingTransformRef.GetLocation();
+	EndLocation-=FVector(0,0,50);
+	TArray<AActor*>IgnoreActor;
+	IgnoreActor.Add(GetOwner());
+	IgnoreActor.Add(ISBuildingRef);
+	FHitResult Hit;
+	return (UKismetSystemLibrary::LineTraceSingle(GetOwner(),ISBuildingTransformRef.GetLocation(),EndLocation,ISBuildingRef->BuildingConfig.TraceType,true,IgnoreActor
+		,EDrawDebugTrace::ForDuration,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f));
 }
 

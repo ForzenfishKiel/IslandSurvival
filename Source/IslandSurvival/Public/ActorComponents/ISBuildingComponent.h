@@ -8,8 +8,28 @@
 #include "ISBuildingComponent.generated.h"
 
 
+
+USTRUCT(BlueprintType)
+struct FISBuildBooleanCheck
+{
+	GENERATED_BODY()
+public:
+	FISBuildBooleanCheck() {}
+	FISBuildBooleanCheck(UStaticMeshComponent* InBuildMesh, int32 InBuildIndex, bool InbDoFloatCheck,bool InbIsOverlapping,bool InbISFloating):
+	BuildMesh(InBuildMesh),TargetIndex(InBuildIndex),bDoFloatCheck(InbDoFloatCheck),bIsOverlap(InbIsOverlapping),bIsFloating(InbISFloating){}
+	UPROPERTY(BlueprintReadOnly)
+	UStaticMeshComponent* BuildMesh = nullptr;
+	UPROPERTY(BlueprintReadOnly)
+	int32 TargetIndex = -1;
+	UPROPERTY(BlueprintReadOnly)
+	bool bDoFloatCheck = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsOverlap = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsFloating = false;
+};
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildingWasDestory);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCallSetMaterial,UStaticMeshComponent*,BuildMesh,int32,TargetIndex,bool,bIsOverlap);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCallSetMaterial,FISBuildBooleanCheck,BuildBooleanCheck);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ISLANDSURVIVAL_API UISBuildingComponent : public UActorComponent
 {
@@ -32,7 +52,8 @@ public:
 	UFUNCTION(Client,Reliable)
 	void TraceToMoveBuildPreview();
 	void SetPreviewBuildingColor();
-	bool CheckForOverlap();
+	bool CheckForOverlap();  //检查预览建筑物是否发生了碰撞
+	bool CheckBuildFloating();//检查预览建筑物是否在地面
 	UFUNCTION(Server,Reliable)
 	void SpawnBuildOnServer(TSubclassOf<AISItemBase>BuildingSystemBaseClass,FTransform Transform,bool bBuildingWasCreated);
 	UFUNCTION(Client,Reliable)
@@ -47,5 +68,7 @@ public:
 	FTransform ISBuildingTransformRef = FTransform();
 	FVector ISBuildCenter = FVector();
 	bool bBuildPreviewWasCreated = false;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool bCanBeBuild = false;
 	int32 SaveHotBarIndex = -1;
 };
