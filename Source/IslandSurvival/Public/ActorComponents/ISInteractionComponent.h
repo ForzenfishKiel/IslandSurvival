@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "ISInteractionComponent.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ISLANDSURVIVAL_API UISInteractionComponent : public UActorComponent
 {
@@ -20,6 +19,8 @@ public:
 	void TickInteractline();
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
 	TObjectPtr<AActor>LastActor = nullptr;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
+	TObjectPtr<UActorComponent> LastComponent = nullptr;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

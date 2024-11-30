@@ -24,14 +24,28 @@ void UISInteractionComponent::PrimaryInteract_Implementation()
 	FHitResult Hit;
 	GetWorld()->LineTraceSingleByChannel(Hit,EyeLocation,End,ECC_GameTraceChannel1);  //待添加一个自定义通道
 	DrawDebugLine(GetWorld(), EyeLocation, Hit.GetActor() ? Hit.Location : End, FColor::Red, false, 1.0f);
-	AActor*HitActor = Hit.GetActor();
-	if(LastActor==HitActor) return;
-	else
+	AActor* HitActor = Hit.GetActor();
+	UActorComponent* HitComponent = Hit.GetComponent();
+	if(HitActor||HitComponent)
 	{
-		LastActor = HitActor;
+		AActor*CompOwner = HitComponent->GetOwner();
+		if(LastComponent==HitComponent) return;
+		else{LastComponent=HitComponent;}
+		if(LastActor==HitActor) return;
+		else{LastActor = HitActor;}
+		if(CompOwner->Implements<UISBuildInterface>())
+		{
+			IISBuildInterface::Execute_OnBuildingWasInteract(CompOwner, GetOwner(), HitComponent);
+			return;
+		}
+		else if(HitActor->Implements<UISBuildInterface>())
+		{
+			IISBuildInterface::Execute_OnBuildingWasInteract(HitActor, GetOwner(), HitComponent);
+			return;
+		}
 		if(HitActor->Implements<UISItemInterface>())
 		{
-			APawn*MyPawn = Cast<APawn>(GetOwner());
+			APawn* MyPawn = Cast<APawn>(GetOwner());
 			AISCharacter*SourceCharacter = Cast<AISCharacter>(GetOwner());
 			UISItemsContainer*UIItems = Cast<UISItemsContainer>(SourceCharacter->GetComponentByClass<UISItemsContainer>());
 			UIItems->PickUpItemForActor(SourceCharacter, HitActor);
@@ -75,5 +89,6 @@ void UISInteractionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UISInteractionComponent,LastActor);
+	DOREPLIFETIME(UISInteractionComponent,LastComponent);
 }
 

@@ -47,4 +47,5 @@ public:
 	FISBuildingConfig BuildingConfig;  //保存建筑信息配置
 	virtual AISBuildingSystemBase*GetBuildingSystemBase_Implementation() override;
 	virtual TArray<UBoxComponent*>GetBuildingBoxComponent_Implementation() const override;
+	virtual void OnBuildingWasInteract_Implementation(const AActor* InteractingActor, const UActorComponent* InteractingComponent) override;
 };

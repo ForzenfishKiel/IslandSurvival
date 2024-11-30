@@ -27,4 +27,6 @@ public:
 	AISBuildingSystemBase*GetBuildingSystemBase();  //获取建筑类引用
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	TArray<UBoxComponent*>GetBuildingBoxComponent() const;  //获取该建筑类的盒体碰撞
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void OnBuildingWasInteract(const AActor* InteractingActor, const UActorComponent* InteractingComponent);
 };

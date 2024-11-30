@@ -53,3 +53,9 @@ TArray<UBoxComponent*> AISBuildingSystemBase::GetBuildingBoxComponent_Implementa
 	return ISBoxComponent;
 }
 
+void AISBuildingSystemBase::OnBuildingWasInteract_Implementation(const AActor* InteractingActor,
+	const UActorComponent* InteractingComponent)
+{
+	IISBuildInterface::OnBuildingWasInteract_Implementation(InteractingActor, InteractingComponent);
+}
+
