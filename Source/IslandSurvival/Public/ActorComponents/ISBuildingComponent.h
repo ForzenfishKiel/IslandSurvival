@@ -15,8 +15,9 @@ struct FISBuildBooleanCheck
 	GENERATED_BODY()
 public:
 	FISBuildBooleanCheck() {}
-	FISBuildBooleanCheck(UStaticMeshComponent* InBuildMesh, int32 InBuildIndex, bool InbDoFloatCheck,bool InbIsOverlapping,bool InbISFloating):
-	BuildMesh(InBuildMesh),TargetIndex(InBuildIndex),bDoFloatCheck(InbDoFloatCheck),bIsOverlap(InbIsOverlapping),bIsFloating(InbISFloating){}
+	FISBuildBooleanCheck(UStaticMeshComponent* InBuildMesh, int32 InBuildIndex, bool InbDoFloatCheck,bool InbIsOverlapping,bool InbISFloating,bool bCanBeBuildOnFoundation,bool bCheckBuildOnFoundation):
+	BuildMesh(InBuildMesh),TargetIndex(InBuildIndex),bDoFloatCheck(InbDoFloatCheck),bIsOverlap(InbIsOverlapping),bIsFloating(InbISFloating),bCanBeBuildOnFoundation(bCanBeBuildOnFoundation)
+	,bCheckBuildFoundation(bCheckBuildOnFoundation){}
 	UPROPERTY(BlueprintReadOnly)
 	UStaticMeshComponent* BuildMesh = nullptr;
 	UPROPERTY(BlueprintReadOnly)
@@ -27,6 +28,10 @@ public:
 	bool bIsOverlap = false;
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsFloating = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool bCanBeBuildOnFoundation = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool bCheckBuildFoundation = false;
 };
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildingWasDestory);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCallSetMaterial,FISBuildBooleanCheck,BuildBooleanCheck);
@@ -54,11 +59,12 @@ public:
 	void SetPreviewBuildingColor();
 	bool CheckForOverlap();  //检查预览建筑物是否发生了碰撞
 	bool CheckBuildFloating();//检查预览建筑物是否在地面
+	bool CheckBuildOnFoundation(); //检查建筑物是否只能被放置于地基
 	UFUNCTION(Server,Reliable)
 	void SpawnBuildOnServer(TSubclassOf<AISItemBase>BuildingSystemBaseClass,FTransform Transform,bool bBuildingWasCreated);
 	UFUNCTION(Client,Reliable)
 	void DestoryBuildPreviewOnClient();
-	FTransform GetSnappingPoint(const AActor* TargetActor,UActorComponent*TargetComp);
+	bool GetSnappingPoint(const AActor* TargetActor,UActorComponent*TargetComp);
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildingWasDestory OnBuildingWasDestory;
 	UPROPERTY(BlueprintAssignable)

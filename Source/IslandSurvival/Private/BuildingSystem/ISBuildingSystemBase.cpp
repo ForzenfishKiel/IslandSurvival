@@ -58,4 +58,3 @@ void AISBuildingSystemBase::OnBuildingWasInteract_Implementation(const AActor* I
 {
 	IISBuildInterface::OnBuildingWasInteract_Implementation(InteractingActor, InteractingComponent);
 }
-

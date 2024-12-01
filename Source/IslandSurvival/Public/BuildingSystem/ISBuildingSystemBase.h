@@ -8,6 +8,14 @@
 #include "Interface/ISBuildInterface.h"
 #include "Items/ISItemBase.h"
 #include "ISBuildingSystemBase.generated.h"
+
+
+UENUM(BlueprintType)
+enum EISBuildingType
+{
+	None = 0 UMETA(DisplayName = "None"),
+	Foundation UMETA(DisplayName = "Foundation"),
+};
 USTRUCT(BlueprintType)
 struct FISBuildingConfig
 {
@@ -15,6 +23,8 @@ struct FISBuildingConfig
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TEnumAsByte<ETraceTypeQuery> TraceType;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TEnumAsByte<EISBuildingType> BuildingType;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool CanPlaceOnGround = false;  //是否可以放置在地上
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -26,6 +36,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool DoCeilingCheck = false;  //是否可以放置在天花板
 };
+
 UCLASS()
 class ISLANDSURVIVAL_API AISBuildingSystemBase : public AISItemBase,public IISBuildInterface
 {
@@ -42,10 +53,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> RootSceneComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UBoxComponent>BoxCollisionComponent;
+	TObjectPtr<UBoxComponent> BoxCollisionComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Config")
 	FISBuildingConfig BuildingConfig;  //保存建筑信息配置
-	virtual AISBuildingSystemBase*GetBuildingSystemBase_Implementation() override;
-	virtual TArray<UBoxComponent*>GetBuildingBoxComponent_Implementation() const override;
+	virtual AISBuildingSystemBase* GetBuildingSystemBase_Implementation() override;
+	virtual TArray<UBoxComponent*> GetBuildingBoxComponent_Implementation() const override;
 	virtual void OnBuildingWasInteract_Implementation(const AActor* InteractingActor, const UActorComponent* InteractingComponent) override;
 };

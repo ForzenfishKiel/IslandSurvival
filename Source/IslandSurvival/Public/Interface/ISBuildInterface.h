@@ -5,9 +5,8 @@
 #include "Components/BoxComponent.h"
 #include "UObject/Interface.h"
 #include "ISBuildInterface.generated.h"
-
-// This class does not need to be modified.
 class AISBuildingSystemBase;
+struct FISBuildingConfig;
 UINTERFACE(MinimalAPI)
 class UISBuildInterface : public UInterface
 {

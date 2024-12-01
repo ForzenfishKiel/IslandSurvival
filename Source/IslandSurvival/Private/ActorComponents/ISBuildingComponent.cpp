@@ -87,7 +87,7 @@ void UISBuildingComponent::TraceToMoveBuildPreview_Implementation()
 				UActorComponent* ComponentRef = Cast<UActorComponent>(Hit.GetComponent());
 				if(ActorRef&&ActorRef->Implements<UISBuildInterface>())
 				{
-					ISBuildingTransformRef = GetSnappingPoint(ActorRef,ComponentRef);
+					GetSnappingPoint(ActorRef,ComponentRef);
 				}
 				SetPreviewBuildingColor();
 				ISBuildingRef->RootSceneComponent->SetWorldTransform(ISBuildingTransformRef);  //改变预览建筑物的位置
@@ -108,7 +108,7 @@ void UISBuildingComponent::TraceToMoveBuildPreview_Implementation()
 				UActorComponent* ComponentRef = Cast<UActorComponent>(Hit.GetComponent());
 				if(ActorRef&&ActorRef->Implements<UISBuildInterface>())
 				{
-					ISBuildingTransformRef = GetSnappingPoint(ActorRef,ComponentRef);
+					GetSnappingPoint(ActorRef,ComponentRef);
 				}
 				SetPreviewBuildingColor();
 				ISBuildingRef->RootSceneComponent->SetWorldTransform(ISBuildingTransformRef);  //改变预览建筑物的位置
@@ -117,17 +117,18 @@ void UISBuildingComponent::TraceToMoveBuildPreview_Implementation()
 	}
 }
 
-FTransform UISBuildingComponent::GetSnappingPoint(const AActor* TargetActor, UActorComponent* TargetComp)
+bool UISBuildingComponent::GetSnappingPoint(const AActor* TargetActor, UActorComponent* TargetComp)
 {
 	//循环遍历预览命中的建筑物的判定框
 	for(auto BoxesRef:IISBuildInterface::Execute_GetBuildingBoxComponent(TargetActor))
 	{
 		if(BoxesRef==TargetComp)  //如果判定框等于击中的判定框，也就是同样的判定框，则返回该判定框的位置
 		{
-			return BoxesRef->GetComponentTransform();
+			ISBuildingTransformRef = BoxesRef->GetComponentTransform();
+			return true;
 		}
 	}
-	return FTransform();
+	return false;
 }
 //设置预览建筑物的颜色
 void UISBuildingComponent::SetPreviewBuildingColor()
@@ -137,14 +138,15 @@ void UISBuildingComponent::SetPreviewBuildingColor()
 	for(auto CompRef:ISBuildingRef->GetComponents())
 	{
 		//尝试遍历该预览建筑的静态网格体的所有材质
-		UStaticMeshComponent*BuildingStaticMesh = Cast<UStaticMeshComponent>(CompRef);
+		UStaticMeshComponent* BuildingStaticMesh = Cast<UStaticMeshComponent>(CompRef);
 		if(BuildingStaticMesh)
 		{
 			//检查是否需要进行浮空检测
 			//需要进行浮空检测的，添加浮空检测判定语句
 			for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
 			{
-				FISBuildBooleanCheck BuildBooleanCheck(BuildingStaticMesh,i,ISBuildingRef->BuildingConfig.DoFloatCheck,CheckForOverlap(),CheckBuildFloating());
+				FISBuildBooleanCheck BuildBooleanCheck(BuildingStaticMesh,i,ISBuildingRef->BuildingConfig.DoFloatCheck,CheckForOverlap(),CheckBuildFloating(),
+					ISBuildingRef->BuildingConfig.CanPlaceOnFoundation,CheckBuildOnFoundation());
 				OnCallSetMaterial.Broadcast(BuildBooleanCheck);
 			}
 		}
@@ -181,14 +183,15 @@ bool UISBuildingComponent::CheckForOverlap()
 	RootSceneRotation.Yaw +=90;
 	TArray<AActor*>IgnoreActor;
 	IgnoreActor.Add(GetOwner());
+	IgnoreActor.Add(ISBuildingRef);
 	FHitResult Hit;
-	if(ISBuildingRef->BuildingConfig.UseCustomOverlap)
+	if(ISBuildingRef->BuildingConfig.UseCustomOverlap)  //使用自定义堆叠，则使用建筑的碰撞箱进行碰撞检测
 	{
 		FVector HalfSize = BoxExtent/HalfSizeFloat;
 		return UKismetSystemLibrary::BoxTraceSingle(GetOwner(),BoxOrigin,BoxOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),TraceTypeQuery1,true
 			,IgnoreActor,EDrawDebugTrace::None,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f);
 	}
-	else
+	else  //不适用自定义堆叠，则使用建筑的模型碰撞箱进行碰撞检测
 	{
 		FVector HalfSize = StaticExtent/HalfSizeFloat;
 		return UKismetSystemLibrary::BoxTraceSingle(GetOwner(),StaticOrigin,StaticOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),TraceTypeQuery1,true
@@ -206,6 +209,24 @@ bool UISBuildingComponent::CheckBuildFloating()
 	IgnoreActor.Add(ISBuildingRef);
 	FHitResult Hit;
 	return (UKismetSystemLibrary::LineTraceSingle(GetOwner(),ISBuildingTransformRef.GetLocation(),EndLocation,ISBuildingRef->BuildingConfig.TraceType,true,IgnoreActor
-		,EDrawDebugTrace::ForDuration,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f));
+		,EDrawDebugTrace::None,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f));
+}
+
+bool UISBuildingComponent::CheckBuildOnFoundation()
+{
+	if(!ISBuildingRef) return false;
+	FVector EndLocation = ISBuildingTransformRef.GetLocation();
+	EndLocation-=FVector(0,0,50);
+	TArray<AActor*>IgnoreActor;
+	IgnoreActor.Add(GetOwner());
+	IgnoreActor.Add(ISBuildingRef);
+	FHitResult Hit;
+	if(UKismetSystemLibrary::LineTraceSingle(GetOwner(),ISBuildingTransformRef.GetLocation(),EndLocation,ETraceTypeQuery::TraceTypeQuery1,true,IgnoreActor
+	,EDrawDebugTrace::ForDuration,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f))
+	{
+		if(!Hit.GetActor()->Implements<UISBuildInterface>()) return false;
+		if(IISBuildInterface::Execute_GetBuildingSystemBase(Hit.GetActor())->BuildingConfig.BuildingType==Foundation) return true;
+	}
+	return false;
 }
 

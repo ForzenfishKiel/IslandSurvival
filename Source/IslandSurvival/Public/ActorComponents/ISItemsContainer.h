@@ -56,7 +56,7 @@ public:
 	virtual EContainerType GetTargetContainerType() override;
 	virtual FName GetContainerName() override;
 	void PickUpItemForActor(APawn* TargetPawn, AActor* TargetActor);
-	UFUNCTION(Client,Reliable)
+	UFUNCTION(BlueprintCallable,Client,Reliable)
 	void PickUpItemForID(APawn*TargetPawn,FName TargetID,const int32 TargetNums);
 
 };

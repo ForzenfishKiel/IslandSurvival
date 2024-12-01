@@ -70,7 +70,7 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 					const bool bCanDrop= FMath::RandRange(0,100) < TargetDropRef.DropRate.GetValueAtLevel(1.f);  //获取掉落概率
 					if(bCanDrop)
 					{
-						Execute_ApplyDamageToTarget(this,TargetActor);
+						ApplyDamageToTarget(TargetActor);
 						CallMulticastDelegates();  //广播播放效果
 						ItemContainer->PickUpItemForID
 						(SourceCharacter,TargetDropRef.TargetID,Execute_GetNumsFromMultiplier(this,TargetTool,TargetDropRef.DropNums.GetValueAtLevel(1.f)));
