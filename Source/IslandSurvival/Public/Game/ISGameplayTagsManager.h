@@ -38,6 +38,7 @@ public:
 	FGameplayTag Input_Attack_LMB;
 	FGameplayTag Input_Attack_Roll;
 	FGameplayTag Input_Attack_FastRun;
+	FGameplayTag Input_Attack_SecondInteract;
 	/*输入事件结束*/
 
 	/*输入触发状态事件*/

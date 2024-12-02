@@ -45,6 +45,10 @@ private:
 	TObjectPtr<UInputAction>IA_OpenUI;
 	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction>IA_LeftClick; //左键点击事件
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputAction>IA_SecInteract;
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputAction>IA_DemoBuilding;
 	void Move(const struct FInputActionValue&InputActionValue);
 	void LookUp(const struct FInputActionValue&InputActionValue);
 	void PrimaryInteract();
@@ -54,6 +58,8 @@ private:
 	void InputPressedAbility(const FGameplayTag InputTag);
 	void InputHeldAbility(const FGameplayTag InputTag);
 	void InputReleasedAbility(const FGameplayTag InputTag);
+	void SecondaryInteract();
+	void OneClickToDemoBuilding();
 	UFUNCTION(BlueprintCallable)
 	AISCharacter*GetCharacterLocal() const;
 };

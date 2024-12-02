@@ -116,6 +116,19 @@ void UISBuildingComponent::TraceToMoveBuildPreview_Implementation()
 		}
 	}
 }
+void UISBuildingComponent::OneClickToDemoBuilding_Implementation()
+{
+	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetOwner());
+	if(!SourceCharacter) return;
+	UISInteractionComponent* InteractionComponent = SourceCharacter->GetComponentByClass<UISInteractionComponent>();
+	if(!InteractionComponent) return;
+	if(InteractionComponent->bIsInteractTrace&&InteractionComponent->LastBuildingActor)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("建筑损坏"));
+		AISBuildingSystemBase* TargetBuildingRef = InteractionComponent->LastBuildingActor;
+		IISBuildInterface::Execute_DestoryBuilding(TargetBuildingRef,GetOwner());
+	}
+}
 
 bool UISBuildingComponent::GetSnappingPoint(const AActor* TargetActor, UActorComponent* TargetComp)
 {
@@ -229,4 +242,3 @@ bool UISBuildingComponent::CheckBuildOnFoundation()
 	}
 	return false;
 }
-

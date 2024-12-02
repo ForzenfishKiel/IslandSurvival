@@ -28,4 +28,8 @@ public:
 	TArray<UBoxComponent*>GetBuildingBoxComponent() const;  //获取该建筑类的盒体碰撞
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void OnBuildingWasInteract(const AActor* InteractingActor, const UActorComponent* InteractingComponent);
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void OnBuildBroking(AActor*TargetActor);
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void DestoryBuilding(AActor*TargetActor);
 };

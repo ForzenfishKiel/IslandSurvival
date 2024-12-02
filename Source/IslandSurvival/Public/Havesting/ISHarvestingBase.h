@@ -18,10 +18,10 @@ public:
 	TObjectPtr<UStaticMeshComponent> HarvestStaticMesh;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
 	ECollectibleClass CollectibleClass = ECollectibleClass::None;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category="Config")
-	float CollectibleHP = 0.f;  //采集物血量
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	float CollectibleMaxHP = 100.f; //采集物最大血量
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
+	float CollectibleHP = 0.f;  //采集物血量
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated,Category = "Config")
 	FName CollectibleName;  //采集物名字
 

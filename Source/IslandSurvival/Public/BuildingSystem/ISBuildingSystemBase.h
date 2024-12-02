@@ -14,13 +14,16 @@ UENUM(BlueprintType)
 enum EISBuildingType
 {
 	None = 0 UMETA(DisplayName = "None"),
-	Foundation UMETA(DisplayName = "Foundation"),
+	Foundation  = 1 UMETA(DisplayName = "Foundation"),
+	AboveFoundation = 2 UMETA(DisplayName = "AboveFoundation"),
 };
 USTRUCT(BlueprintType)
 struct FISBuildingConfig
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FName BuildName = FName("None");  //建筑物名称
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TEnumAsByte<ETraceTypeQuery> TraceType;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -50,13 +53,26 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 public:
+
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Replicated)
+	int32 BuildHP = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Replicated)
+	int32 BuildMaxHP = 100;  //建筑物最大血量
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void EnableBuildBroken(AActor* TargetActor);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> RootSceneComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> BoxCollisionComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Config")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category = "Config")
 	FISBuildingConfig BuildingConfig;  //保存建筑信息配置
 	virtual AISBuildingSystemBase* GetBuildingSystemBase_Implementation() override;
 	virtual TArray<UBoxComponent*> GetBuildingBoxComponent_Implementation() const override;
 	virtual void OnBuildingWasInteract_Implementation(const AActor* InteractingActor, const UActorComponent* InteractingComponent) override;
+	virtual void OnBuildBroking_Implementation(AActor* TargetActor) override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void DestoryBuilding_Implementation(AActor*TargetActor) override;
 };

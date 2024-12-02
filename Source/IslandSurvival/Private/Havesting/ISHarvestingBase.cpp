@@ -35,9 +35,8 @@ void AISHarvestingBase::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AISHarvestingBase, CollectibleClass);
-	DOREPLIFETIME(AISHarvestingBase, CollectibleHP);
-	DOREPLIFETIME(AISHarvestingBase, CollectibleMaxHP);
 	DOREPLIFETIME(AISHarvestingBase, CollectibleName);
+	DOREPLIFETIME(AISHarvestingBase,CollectibleHP);
 }
 
 FName AISHarvestingBase::GetTargetName()
@@ -53,10 +52,10 @@ ECollectibleClass AISHarvestingBase::GetTargetClass_Implementation()
 void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, AActor* TargetTool)
 {
 	IISCollectibleInterface::CollectionExecution_Implementation(TargetActor, TargetTool);
-	AISCharacter*SourceCharacter = Cast<AISCharacter>(TargetActor);
+	AISCharacter* SourceCharacter = Cast<AISCharacter>(TargetActor);
 	if(!SourceCharacter) return;  //如果为目标角色
-	UISItemsContainer*ItemContainer = SourceCharacter->GetComponentByClass<UISItemsContainer>();
-	UISCollectibleDataAsset*CollectibleDataAsset = UISAbilitysystemLibary::GetCollectibleDataAsset(this);
+	UISItemsContainer* ItemContainer = SourceCharacter->GetComponentByClass<UISItemsContainer>();
+	UISCollectibleDataAsset* CollectibleDataAsset = UISAbilitysystemLibary::GetCollectibleDataAsset(this);
 	const FDropInformation DropInfo = CollectibleDataAsset->GetDropConfig(CollectibleClass);
 	for(auto&TargetRef:DropInfo.Drops)
 	{
@@ -67,10 +66,10 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 				if(TargetDropRef.TargetID!=FName("None"))  //对应ID不为-1，防止出错
 				{
 					/*则开始计算掉落概率和掉落数量*/
+					Execute_ApplyDamageToTarget(this,TargetActor);
 					const bool bCanDrop= FMath::RandRange(0,100) < TargetDropRef.DropRate.GetValueAtLevel(1.f);  //获取掉落概率
 					if(bCanDrop)
 					{
-						ApplyDamageToTarget(TargetActor);
 						CallMulticastDelegates();  //广播播放效果
 						ItemContainer->PickUpItemForID
 						(SourceCharacter,TargetDropRef.TargetID,Execute_GetNumsFromMultiplier(this,TargetTool,TargetDropRef.DropNums.GetValueAtLevel(1.f)));

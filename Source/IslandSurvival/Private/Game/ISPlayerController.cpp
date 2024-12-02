@@ -37,6 +37,8 @@ void AISPlayerController::SetupInputComponent()
 	ISEnhanceInputComponent->BindChooseItemActions(ChooseHotBarInputData,this,&AISPlayerController::ChooseHotBar);
 	ISEnhanceInputComponent->BindAbilityActions(InputAbilityData,this,&AISPlayerController::InputPressedAbility
 		,&AISPlayerController::InputHeldAbility,&AISPlayerController::InputHeldAbility);
+	ISEnhanceInputComponent->BindAction(IA_SecInteract,ETriggerEvent::Started,this,&AISPlayerController::SecondaryInteract);
+	ISEnhanceInputComponent->BindAction(IA_DemoBuilding,ETriggerEvent::Triggered,this,&AISPlayerController::OneClickToDemoBuilding);
 }
 
 void AISPlayerController::Move(const struct FInputActionValue& InputActionValue)
@@ -145,6 +147,23 @@ void AISPlayerController::InputReleasedAbility(const FGameplayTag InputTag)
 	
 }
 
+void AISPlayerController::SecondaryInteract()
+{
+	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetPawn());
+	if(!SourceCharacter) return;
+	UISInteractionComponent*InteractionComponent = SourceCharacter->GetComponentByClass<UISInteractionComponent>();
+	if(!InteractionComponent) return;
+	InteractionComponent->SecondaryInteract();
+}
+
+void AISPlayerController::OneClickToDemoBuilding()
+{
+	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetPawn());
+	UISBuildingComponent* BuildingComponent = SourceCharacter->GetComponentByClass<UISBuildingComponent>();
+	UISInteractionComponent*InteractionComponent = SourceCharacter->GetComponentByClass<UISInteractionComponent>();
+	if(!BuildingComponent) return;
+	BuildingComponent->OneClickToDemoBuilding();
+}
 AISCharacter* AISPlayerController::GetCharacterLocal() const
 {
 	return Cast<AISCharacter>(GetPawn());

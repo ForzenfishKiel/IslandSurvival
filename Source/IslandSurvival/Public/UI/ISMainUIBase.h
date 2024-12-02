@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "BuildingSystem/ISBuildingSystemBase.h"
 #include "WidgetController/ISWidgetController.h"
 #include "ISMainUIBase.generated.h"
 
@@ -20,4 +21,8 @@ public:
 	TObjectPtr<UObject> WidgetController;
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerWasSet();
+	UFUNCTION(BlueprintImplementableEvent)
+	void SendBuildingInfo(const AISBuildingSystemBase* TargetBuilding);
+	UFUNCTION(BlueprintImplementableEvent)
+	void SendTickTraceWasEnd();
 };

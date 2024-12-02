@@ -51,6 +51,8 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Attack.FastRun"),FString("疾跑标签"));
 	GameplayTags.Input_Attack_LMB = 
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Attack.LMB"),FString("左键触发标签"));
+	GameplayTags.Input_Attack_SecondInteract =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Attack.SecondInteract"),FString("次向交互"));
 
 	GameplayTags.Input_Combo_Combo01 = 
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Combo.Combo01"),FString("连招第一段"));

@@ -64,6 +64,8 @@ public:
 	void SpawnBuildOnServer(TSubclassOf<AISItemBase>BuildingSystemBaseClass,FTransform Transform,bool bBuildingWasCreated);
 	UFUNCTION(Client,Reliable)
 	void DestoryBuildPreviewOnClient();
+	UFUNCTION(Server,Reliable)
+	void OneClickToDemoBuilding();
 	bool GetSnappingPoint(const AActor* TargetActor,UActorComponent*TargetComp);
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildingWasDestory OnBuildingWasDestory;
