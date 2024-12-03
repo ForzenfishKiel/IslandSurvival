@@ -151,7 +151,7 @@ void AISPlayerController::SecondaryInteract()
 {
 	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetPawn());
 	if(!SourceCharacter) return;
-	UISInteractionComponent*InteractionComponent = SourceCharacter->GetComponentByClass<UISInteractionComponent>();
+	UISInteractionComponent* InteractionComponent = SourceCharacter->GetComponentByClass<UISInteractionComponent>();
 	if(!InteractionComponent) return;
 	InteractionComponent->SecondaryInteract();
 }
@@ -162,7 +162,8 @@ void AISPlayerController::OneClickToDemoBuilding()
 	UISBuildingComponent* BuildingComponent = SourceCharacter->GetComponentByClass<UISBuildingComponent>();
 	UISInteractionComponent*InteractionComponent = SourceCharacter->GetComponentByClass<UISInteractionComponent>();
 	if(!BuildingComponent) return;
-	BuildingComponent->OneClickToDemoBuilding();
+	if(!InteractionComponent->LastBuildingActor) return;
+	BuildingComponent->OneClickToDemoBuilding(InteractionComponent->LastBuildingActor);
 }
 AISCharacter* AISPlayerController::GetCharacterLocal() const
 {

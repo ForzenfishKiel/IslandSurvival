@@ -65,7 +65,7 @@ public:
 	UFUNCTION(Client,Reliable)
 	void DestoryBuildPreviewOnClient();
 	UFUNCTION(Server,Reliable)
-	void OneClickToDemoBuilding();
+	void OneClickToDemoBuilding(AActor* TargetActor);
 	bool GetSnappingPoint(const AActor* TargetActor,UActorComponent*TargetComp);
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildingWasDestory OnBuildingWasDestory;
