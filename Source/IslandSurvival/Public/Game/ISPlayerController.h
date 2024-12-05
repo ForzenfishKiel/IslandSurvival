@@ -14,6 +14,7 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpenInventoryEvent,APlayerController*,SourceController);
 class AISCharacter;
 UCLASS()
 class ISLANDSURVIVAL_API AISPlayerController : public APlayerController
@@ -21,6 +22,17 @@ class ISLANDSURVIVAL_API AISPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	AISPlayerController();
+
+	bool bStorageUIOpen = false;
+
+	UPROPERTY()
+	TObjectPtr<UEnhancedInputLocalPlayerSubsystem> InputSubsystem;
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputMappingContext>CharacterInputMapping;
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputMappingContext>CharacterInputMenuMapping;
+
+	FOnOpenInventoryEvent OnOpenInventoryEvent;
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -31,12 +43,7 @@ private:
 	TObjectPtr<UISChooseInventoryInputData>ChooseHotBarInputData;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UISInputAbilityData>InputAbilityData;
-	UPROPERTY()
-	TObjectPtr<UEnhancedInputLocalPlayerSubsystem> InputSubsystem;
-	UPROPERTY(EditAnywhere,Category = "Input")
-	TObjectPtr<UInputMappingContext>CharacterInputMapping;
-	UPROPERTY(EditAnywhere,Category = "Input")
-	TObjectPtr<UInputMappingContext>CharacterInputMenuMapping;
+
 	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction>IA_Move;
 	UPROPERTY(EditAnywhere,Category = "Input")

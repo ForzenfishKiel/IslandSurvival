@@ -73,10 +73,6 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 		if(HitActor||HitComponent)
 		{
 			AActor*CompOwner = HitComponent->GetOwner();
-			if(LastComponent==HitComponent) return;
-			else{LastComponent=HitComponent;}
-			if(LastActor==HitActor) return;
-			else{LastActor = HitActor;}
 			if(CompOwner->Implements<UISBuildInterface>())
 			{
 				IISBuildInterface::Execute_OnBuildingWasInteract(CompOwner, GetOwner(), HitComponent);

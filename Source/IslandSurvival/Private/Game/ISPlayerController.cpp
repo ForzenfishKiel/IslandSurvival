@@ -101,6 +101,7 @@ void AISPlayerController::ChooseHotBar(int32 InputIndex)
 
 void AISPlayerController::OpenUI_Implementation()
 {
+	if(bStorageUIOpen){OnOpenInventoryEvent.Broadcast(this);return;}
 	AISPlayerMainHUD*SourceHUD = Cast<AISPlayerMainHUD>(GetHUD()); //获取角色HUD
 	UISMenuUIBase*MenuUI = SourceHUD->ISMenuUI;
 	AISCharacter*SourceChar = Cast<AISCharacter>(GetPawn());
