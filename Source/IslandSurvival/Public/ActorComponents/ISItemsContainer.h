@@ -33,9 +33,9 @@ public:
 	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
 	FOnItemDiscard ItemDiscard;
 	UISItemsContainer();
-	void WhenInventoryChange(UISItemsContainer*TargetContainer,const int32 TargetIndex);
+	void WhenInventoryChange(UISItemsContainer*TargetContainer,const int32 TargetIndex);  //玩家自身背包物品发生变化时
 	UFUNCTION(BlueprintCallable,Client,Reliable)
-	void WhenItemExchanged(UISItemsContainer*TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex);
+	void WhenItemExchanged(UISItemsContainer*TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex);  //储存器物品发生变化时
 	bool CheckGearSlotEcchanged(UISItemsContainer*TargetGear,const int32 TargetIndex,const int32 SourceIndex);
 	UFUNCTION(Client,Reliable)
 	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
@@ -44,7 +44,7 @@ public:
 	UFUNCTION()
 	void InitializeContainerSpace(const int32 Space);
 	bool CheckInventoryEmpty(const FItemInformation Information);
-	UPROPERTY(BlueprintReadOnly,Replicated)
+	UPROPERTY(BlueprintReadOnly,Replicated,ReplicatedUsing = OnRep_CheckToBackPackMode)
 	TArray<FItemInformation>InventoryContainer;//背包
 	UPROPERTY(BlueprintReadOnly)
 	TMap<EArmorType,FItemInformation> GearEquipContainer;//装备栏
@@ -58,5 +58,6 @@ public:
 	void PickUpItemForActor(APawn* TargetPawn, AActor* TargetActor);
 	UFUNCTION(BlueprintCallable,Client,Reliable)
 	void PickUpItemForID(APawn*TargetPawn,FName TargetID,const int32 TargetNums);
-
+	UFUNCTION()
+	void OnRep_CheckToBackPackMode();
 };

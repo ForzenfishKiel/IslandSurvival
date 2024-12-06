@@ -11,14 +11,15 @@ AISStorageMaster::AISStorageMaster()
 {
 	StorageContainer = CreateDefaultSubobject<UISStorageContainer>("Storage Container");
 	StorageContainer->SetIsReplicated(true);
+	bReplicates = true;
 }
 
 void AISStorageMaster::BeginPlay()
 {
+	StorageContainer->InitializeContainerSpace(StorageContainer->InventorySpace);
 	check(StorageUserWidgetClass);
 	StorageWidget = CreateWidget<UISMenuUIBase>(GetWorld(),StorageUserWidgetClass);  //创建UI
 	StorageWidget->SetWidgetOwner(this);
-	StorageContainer->InitializeContainerSpace(StorageContainer->InventorySpace);
 }
 
 void AISStorageMaster::OnBuildingWasInteract_Implementation(const AActor* InteractingActor,

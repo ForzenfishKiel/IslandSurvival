@@ -17,6 +17,7 @@ UISItemsContainer::UISItemsContainer()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+//当物品发生变化
 void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, const int32 TargetIndex)
 {
 	//若目标位置可用
@@ -68,7 +69,7 @@ void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, 
 	}
 }
 
-
+//当物品发生交换
 void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex)
 {
 	/*当物品放置到另一个物品的时候的几种情况
@@ -115,6 +116,7 @@ bool UISItemsContainer::CheckGearSlotEcchanged(UISItemsContainer* TargetGear, co
 	//两个装备栏不做交换
 	if(Cast<UISGearEquipComponent>(TargetGear)&&GetClass()==UISGearEquipComponent::StaticClass()) return true;
 	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetOwner());
+	if(!SourceCharacter) return false;
 	UISEquipmentComponent*EquipmentComponent = SourceCharacter->GetComponentByClass<UISEquipmentComponent>();
 	//如果拖动源是来自装备栏
 	if(UISGearEquipComponent*GearEquipComponent = Cast<UISGearEquipComponent>(TargetGear))
@@ -293,6 +295,16 @@ void UISItemsContainer::PickUpItemForActor(APawn* TargetPawn, AActor* TargetActo
 	FName TargetItemID = SourceItem->ItemID;
 	PickUpItemForID(TargetPawn,TargetItemID,1);
 }
+
+void UISItemsContainer::OnRep_CheckToBackPackMode()
+{
+	for(auto& ItemRef:InventoryContainer)
+	{
+		FString ItemNameToPrint = FString::Printf(TEXT("输出: %s"), *ItemRef.ItemName.ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *ItemNameToPrint);
+	}
+}
+
 
 //客户端运行
 void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName TargetID, const int32 TargetNums)
