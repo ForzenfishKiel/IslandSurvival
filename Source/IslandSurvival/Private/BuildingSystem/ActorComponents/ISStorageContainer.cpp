@@ -3,7 +3,6 @@
 
 #include "BuildingSystem/ActorComponents/ISStorageContainer.h"
 
-
 void UISStorageContainer::BeginPlay()
 {
 	Super::BeginPlay();

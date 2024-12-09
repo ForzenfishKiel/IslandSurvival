@@ -15,7 +15,6 @@ AISPlayerState::AISPlayerState()
 	ISAbilitySystemComponent->SetIsReplicated(true);  //设置复制行为为可复制
 	ISAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);  //设置ASC仅仅被复制到拥有者的客户端
 	ISAttributeSet = CreateDefaultSubobject<UISAttributeSet>(TEXT("ISAttributeSet"));
-
 }
 
 UAbilitySystemComponent* AISPlayerState::GetAbilitySystemComponent() const

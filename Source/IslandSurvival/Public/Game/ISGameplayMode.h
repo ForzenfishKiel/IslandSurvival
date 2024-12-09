@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Data/ISCollectibleDataAsset.h"
 #include "DataAsset/ISEquipableDataAsset.h"
+#include "DataAsset/ISStorageDataConfig.h"
 #include "GameFramework/GameModeBase.h"
 #include "ISGameplayMode.generated.h"
 
@@ -20,4 +21,6 @@ public:
 	TObjectPtr<UISCollectibleDataAsset> CollectibleDataAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
 	TObjectPtr<UISEquipableDataAsset> EquipableDataAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
+	TObjectPtr<UISStorageDataConfig>StorageDataConfig;
 };

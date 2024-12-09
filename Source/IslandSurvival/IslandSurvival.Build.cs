@@ -8,7 +8,7 @@ public class IslandSurvival : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","EnhancedInput","UMG","GameplayAbilities"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","EnhancedInput","UMG","GameplayAbilities","NetCore"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags","GameplayTasks" });
 

@@ -7,13 +7,14 @@
 void UISGearEquipComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	InitializeEquipContainer();
+	InitializeComponent();
 }
 
-void UISGearEquipComponent::InitializeEquipContainer()
+void UISGearEquipComponent::InitializeComponent()
 {
 	GearEquipContainer.Add(EArmorType::Helmet,ItemInfo);
 	GearEquipContainer.Add(EArmorType::Chest,ItemInfo);
 	GearEquipContainer.Add(EArmorType::Pants,ItemInfo);
 	GearEquipContainer.Add(EArmorType::Boots,ItemInfo);
 }
+

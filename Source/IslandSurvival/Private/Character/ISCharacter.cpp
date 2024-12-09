@@ -41,6 +41,7 @@ AISCharacter::AISCharacter()
 	ArmMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ArmorMesh"));
 	ArmMesh->SetupAttachment(CameraComponent);
 	ArmMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 
 	CharacterInventory = CreateDefaultSubobject<UISCharacterInventory>(TEXT("CharacterInventory"));  //玩家背包组件
 	CharacterInventory->SetIsReplicated(true);  //背包组件设定为可复制
@@ -82,6 +83,7 @@ void AISCharacter::PossessedBy(AController* NewController)
 	{
 		InitAbilityActorInfo();  //服务器调用初始化操作
 	}
+	SetOwner(NewController);
 	AddCharacterActivateAbility(CharacterActivateAbilities);
 	AddCharacterPassiveAbility(CharacterPassiveAbilities);
 }

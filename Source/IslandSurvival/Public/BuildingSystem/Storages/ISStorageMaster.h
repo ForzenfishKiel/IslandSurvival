@@ -31,4 +31,9 @@ public:
 	void StorageUIOpen(APlayerController* TargetController);
 	UFUNCTION()
 	void StorageUIClose(APlayerController* TargetController);
+
+	UFUNCTION(Server, Reliable)
+	void AddOwnerController(APlayerController* TargetController);
+	UFUNCTION(Server, Reliable)
+	void RemoveOwnerController(APlayerController* TargetController);
 };

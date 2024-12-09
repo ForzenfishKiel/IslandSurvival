@@ -12,11 +12,12 @@ AISStorageMaster::AISStorageMaster()
 	StorageContainer = CreateDefaultSubobject<UISStorageContainer>("Storage Container");
 	StorageContainer->SetIsReplicated(true);
 	bReplicates = true;
+	bNetLoadOnClient = true;
 }
 
 void AISStorageMaster::BeginPlay()
 {
-	StorageContainer->InitializeContainerSpace(StorageContainer->InventorySpace);
+	StorageContainer->InitializeContainer();
 	check(StorageUserWidgetClass);
 	StorageWidget = CreateWidget<UISMenuUIBase>(GetWorld(),StorageUserWidgetClass);  //创建UI
 	StorageWidget->SetWidgetOwner(this);
@@ -26,7 +27,10 @@ void AISStorageMaster::OnBuildingWasInteract_Implementation(const AActor* Intera
 	const UActorComponent* InteractingComponent)
 {
 	APlayerController* SourcePC = Cast<APlayerController>( InteractingActor->GetInstigatorController());
-	if(SourcePC){StorageUIOpen(SourcePC);}
+	if(SourcePC)
+	{
+		StorageUIOpen(SourcePC);
+	}
 }
 
 
@@ -38,6 +42,8 @@ void AISStorageMaster::StorageUIOpen(APlayerController* TargetController)
 	SourcePC->OnOpenInventoryEvent.AddDynamic(this,&AISStorageMaster::StorageUIClose);
 	if(!StorageWidget->IsVisible())
 	{
+		AddOwnerController(TargetController);
+
 		SourcePC->bStorageUIOpen = true;
 		StorageWidget->InitializeCraftingData(StorageContainer);
 		StorageWidget->AddToViewport();
@@ -55,6 +61,8 @@ void AISStorageMaster::StorageUIClose(APlayerController* TargetController)
 	SourcePC->OnOpenInventoryEvent.RemoveDynamic(this,&AISStorageMaster::StorageUIClose);
 	if(StorageWidget->IsVisible())
 	{
+		RemoveOwnerController(TargetController);
+		
 		SourcePC->bStorageUIOpen = false;
 		StorageWidget->RemoveFromParent();
 		SourcePC->bShowMouseCursor = false;
@@ -62,4 +70,16 @@ void AISStorageMaster::StorageUIClose(APlayerController* TargetController)
 		SourcePC->InputSubsystem->RemoveMappingContext(SourcePC->CharacterInputMenuMapping);
 		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMapping,0);
 	}
+}
+
+void AISStorageMaster::AddOwnerController_Implementation(APlayerController* TargetController)
+{
+	SetOwner(TargetController);
+	StorageContainer->AddRelevantPlayer(TargetController);
+}
+
+void AISStorageMaster::RemoveOwnerController_Implementation(APlayerController* TargetController)
+{
+	SetOwner(nullptr);
+	StorageContainer->RemoveRelevantPlayer(TargetController);
 }

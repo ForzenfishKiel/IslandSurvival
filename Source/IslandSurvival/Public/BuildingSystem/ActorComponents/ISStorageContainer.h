@@ -15,6 +15,5 @@ class ISLANDSURVIVAL_API UISStorageContainer : public UISItemsContainer
 {
 	GENERATED_BODY()
 public:
-
 	virtual void BeginPlay() override;
 };
