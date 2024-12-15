@@ -15,9 +15,14 @@ UCLASS()
 class ISLANDSURVIVAL_API AISGameplayMode : public AGameModeBase
 {
 	GENERATED_BODY()
+private:
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
 	TObjectPtr<UISCollectibleDataAsset> CollectibleDataAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
 	TObjectPtr<UISEquipableDataAsset> EquipableDataAsset;
+
+	UPROPERTY()
+	TArray<TWeakObjectPtr<APlayerController>> LoginPlayerList;
 };

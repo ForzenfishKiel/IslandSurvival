@@ -5,8 +5,6 @@
 
 void UISStroageContainer::BeginPlay()
 {
-	if(GetOwner()->HasAuthority())
-	{
-		InitializeContainerSpace(InventorySpace);
-	}
+	
 }
+

@@ -16,7 +16,9 @@ class ISLANDSURVIVAL_API UISMenuUIBase : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadOnly,Category = "UI")
-	TObjectPtr<UObject> WidgetController;
+	TObjectPtr<UObject> WidgetController = nullptr;
+	UPROPERTY(BlueprintReadOnly,Category = "UI")
+	TObjectPtr<UObject> WidgetOwner = nullptr;
 	UPROPERTY(BlueprintReadOnly)
 	FCraftingInfoContainer CraftingInfo;
 	UFUNCTION(Client,Reliable)
@@ -24,6 +26,9 @@ public:
 	UFUNCTION(Client,Reliable)
 	void SafeToClearData();
 	void SetWidgetController(UObject*TargetWidgetController);
+	void SetWidgetOwner(UObject*TargetWidgetOwner);
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerWasSet();
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetOwnerWasSet();
 };

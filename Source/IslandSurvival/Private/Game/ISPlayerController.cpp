@@ -105,6 +105,13 @@ void AISPlayerController::OpenUI_Implementation()
 	UISMenuUIBase*MenuUI = SourceHUD->ISMenuUI;
 	AISCharacter*SourceChar = Cast<AISCharacter>(GetPawn());
 	UISItemsContainer*CharacterInventory = SourceChar->GetComponentByClass<UISItemsContainer>();
+
+	if(bIsOpenStorage)
+	{
+		OnOpenInventoryEvent.Broadcast(this);
+		return;
+	}
+	
 	if(!SourceHUD&&!MenuUI) return;
 	if(MenuUI->IsVisible())
 	{

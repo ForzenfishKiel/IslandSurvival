@@ -22,12 +22,24 @@ public:
 	void TickInteractline();
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
 	TObjectPtr<AActor>LastActor = nullptr;
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
 	TObjectPtr<UActorComponent> LastComponent = nullptr;
+	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<AISBuildingSystemBase>LastBuildingActor = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<AISBuildingSystemBase> CurrentBuilding = nullptr;
+	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	bool bIsInteractTrace = false;
+
+	UFUNCTION(Server,Reliable)
+	void PossessedBuildingOnServer(AISBuildingSystemBase* Building);
+	
+	UFUNCTION()
+	void ReciveControllerOpenUIEvent(APlayerController* InController);
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

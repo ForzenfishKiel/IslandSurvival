@@ -12,6 +12,7 @@
 UISInteractionComponent::UISInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true); //默认打开复制
 }
 
 void UISInteractionComponent::PrimaryInteract_Implementation()
@@ -75,17 +76,50 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 			AActor*CompOwner = HitComponent->GetOwner();
 			if(CompOwner->Implements<UISBuildInterface>())
 			{
+				CurrentBuilding = IISBuildInterface::Execute_GetBuildingSystemBase(CompOwner);
+				AISPlayerController* SourcePC = Cast<AISPlayerController>(GetOwner()->GetInstigatorController());
+				SourcePC->OnOpenInventoryEvent.AddDynamic(this,&UISInteractionComponent::ReciveControllerOpenUIEvent);
+				PossessedBuildingOnServer(CurrentBuilding);
+				
 				IISBuildInterface::Execute_OnBuildingWasInteract(CompOwner, GetOwner(), HitComponent);
 				return;
 			}
 			else if(HitActor->Implements<UISBuildInterface>())
 			{
+				CurrentBuilding = IISBuildInterface::Execute_GetBuildingSystemBase(CompOwner);
+				AISPlayerController* SourcePC = Cast<AISPlayerController>(GetOwner()->GetInstigatorController());
+				SourcePC->OnOpenInventoryEvent.AddDynamic(this,&UISInteractionComponent::ReciveControllerOpenUIEvent);
+				PossessedBuildingOnServer(CurrentBuilding);
+				
 				IISBuildInterface::Execute_OnBuildingWasInteract(HitActor, GetOwner(), HitComponent);
 				return;
 			}
 		}
 	}
 }
+
+
+//控制器事件回调
+void UISInteractionComponent::ReciveControllerOpenUIEvent(APlayerController* InController)
+{
+	if(CurrentBuilding)
+	{
+		AISPlayerController* SourcePC = Cast<AISPlayerController>(InController);
+		SourcePC->OnOpenInventoryEvent.RemoveDynamic(this,&UISInteractionComponent::ReciveControllerOpenUIEvent);
+		PossessedBuildingOnServer(CurrentBuilding);
+		CurrentBuilding = nullptr;
+	}
+}
+
+//调用建筑物的控制器事件
+void UISInteractionComponent::PossessedBuildingOnServer_Implementation(AISBuildingSystemBase* Building)
+{
+	if(!Building) return;
+	AISCharacter* ISCharacter = Cast<AISCharacter>(GetOwner());
+	Building->InteractOnServer(ISCharacter->GetController());
+}
+
+
 void UISInteractionComponent::TickInteractline()
 {
 	AISCharacter* ISCharacter = Cast<AISCharacter>(GetOwner());
@@ -104,17 +138,13 @@ void UISInteractionComponent::TickInteractline()
 	FHitResult Hit;
 	if(GetWorld()->LineTraceSingleByChannel(Hit,EyeLocation,End,ECC_GameTraceChannel1))
 	{
-		if(Hit.GetActor()->Implements<UISBuildInterface>()&&!bIsInteractTrace)
+		if(Hit.GetActor() && Hit.GetActor()->Implements<UISBuildInterface>() && !bIsInteractTrace)
 		{
 			UISMainUIBase*ISMainUI = PlayerMainHUD->IsMainUI;  //获取角色的主UI
 			if(!ISMainUI) return;
 			LastBuildingActor =  IISBuildInterface::Execute_GetBuildingSystemBase(Hit.GetActor());  //获取检测到的建筑
 			ISMainUI->SendBuildingInfo(LastBuildingActor);
 			bIsInteractTrace = true;
-		}
-		if(Hit.GetActor()->Implements<UISItemInterface>())
-		{
-			
 		}
 	}
 	else
@@ -129,7 +159,6 @@ void UISInteractionComponent::TickInteractline()
 		}
 	}
 }
-
 
 void UISInteractionComponent::BeginPlay()
 {

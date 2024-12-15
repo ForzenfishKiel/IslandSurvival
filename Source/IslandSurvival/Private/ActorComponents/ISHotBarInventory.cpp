@@ -6,9 +6,5 @@
 void UISHotBarInventory::BeginPlay()
 {
 	Super::BeginPlay();
-	if(GetOwner()->HasAuthority())
-	{
-		InitializeContainerSpace(InventorySpace);
-	}
 	ItemPickup.AddDynamic(this,&UISItemsContainer::ToPickUpItemsInBackPack);
 }

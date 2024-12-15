@@ -27,14 +27,26 @@ public:
 	//用于通知一些功能的实现，例如通知装备动画的播放，并传递一些数值
 	UPROPERTY(BlueprintAssignable, Category="Custom Events")
 	FOnEquip OnEquip;
+
+	
 	UPROPERTY(BlueprintAssignable, Category="Custom Events")
 	FOnUnEquip OnUnEquip;
+
+	
 	FOnEquipGear OnEquipGear;  //装备事件
+
+	
 	FOnUnEquipGear OnUnEquipGear;  //脱下装备事件
+
+	
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	ECharacterEquipState CharacterEquipState = ECharacterEquipState::None;
+
+	
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	TObjectPtr<AISEquipable> Equipable = nullptr;//用于储存角色可装备的物品
+
+	
 	UPROPERTY()
 	TObjectPtr<AISEquipable> EquipableClient = nullptr;
 
@@ -58,21 +70,39 @@ public:
 public:
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void Equip(const FItemInformation TargetInformation);
+
+	
 	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
 	void SpawnEquip(USceneComponent*AttachEquip);
+
+	
 	UFUNCTION(BlueprintCallable,Client, Reliable)
 	void SpawnEquipOnClient(const FItemInformation TargetInformation);
+
+	
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void UnEquip();
+
+	
 	UFUNCTION(BlueprintCallable,Client, Reliable)
 	void UnEquipOnClient();
+
+	
 	UFUNCTION(Server, Reliable)
 	void UseConsumable(TSubclassOf<AISItemBase>ItemClass);
+
+	
 	UFUNCTION(Server, Reliable)
 	void UnUseConsumable();
+
+	
 	void InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC);
+
+	
 	UFUNCTION(Server, Reliable)
 	void EquipGear(const FItemInformation TargetInformation);
+
+	
 	UFUNCTION(server, Reliable)
 	void UnEquipGear(const FItemInformation TargetInformation);
 public:	

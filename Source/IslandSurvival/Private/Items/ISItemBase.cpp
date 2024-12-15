@@ -20,7 +20,7 @@ AISItemBase::AISItemBase()
 // Called when the game starts or when spawned
 void AISItemBase::BeginPlay()
 {
-	
+	Super::BeginPlay();
 }
 
 // Called every frame

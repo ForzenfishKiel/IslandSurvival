@@ -7,7 +7,6 @@
 void UISGearEquipComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	InitializeEquipContainer();
 }
 
 void UISGearEquipComponent::InitializeEquipContainer()

@@ -40,3 +40,9 @@ void UISMenuUIBase::SetWidgetController(UObject* TargetWidgetController)
 	WidgetController = TargetWidgetController;
 	WidgetControllerWasSet();
 }
+
+void UISMenuUIBase::SetWidgetOwner(UObject* TargetWidgetOwner)
+{
+	WidgetOwner = TargetWidgetOwner;
+	WidgetOwnerWasSet();
+}

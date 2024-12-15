@@ -9,6 +9,7 @@
 UISEquipmentComponent::UISEquipmentComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true); //默认打开复制
 }
 
 void UISEquipmentComponent::InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC)
@@ -44,10 +45,10 @@ void UISEquipmentComponent::Equip_Implementation(const FItemInformation TargetIn
 	CharacterEquipState = Equipable->EquipState;
 	Equipable->UseItem(GetOwner(),SourceASC);
 	USceneComponent*AttachThirdPerson = Equipable->GetAttachThirdPersonParent(Cast<APawn>(Equipable->GetOwner()));
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("服务器触发: %s"), *Equipable->GetOwner()->GetName()));
 	SpawnEquip_Implementation(AttachThirdPerson);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Owner: %s"), *Equipable->GetOwner()->GetName()));
 }
-
+// NetMulticast
 void UISEquipmentComponent::SpawnEquip_Implementation(USceneComponent* AttachEquip)
 {
 	Equipable->SetEquipableCollision();
@@ -57,6 +58,7 @@ void UISEquipmentComponent::SpawnEquip_Implementation(USceneComponent* AttachEqu
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("多播触发！！"));
 }
 
+//客户端调用武器装备
 void UISEquipmentComponent::SpawnEquipOnClient_Implementation(const FItemInformation TargetInformation)
 {
 	EquipableClient = GetWorld()->SpawnActorDeferred<AISEquipable>(TargetInformation.ItemClassRef,FTransform::Identity,GetOwner());

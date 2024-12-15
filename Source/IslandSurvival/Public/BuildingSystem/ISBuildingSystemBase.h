@@ -65,14 +65,33 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> RootSceneComponent;
+
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> BoxCollisionComponent;
+
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category = "Config")
 	FISBuildingConfig BuildingConfig;  //保存建筑信息配置
+
+	
 	virtual AISBuildingSystemBase* GetBuildingSystemBase_Implementation() override;
+
+	
 	virtual TArray<UBoxComponent*> GetBuildingBoxComponent_Implementation() const override;
+
+	
 	virtual void OnBuildingWasInteract_Implementation(const AActor* InteractingActor, const UActorComponent* InteractingComponent) override;
+
+	
 	virtual void OnBuildBroking_Implementation(AActor* TargetActor) override;
+
+	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	
 	virtual void DestoryBuilding_Implementation(AActor*TargetActor) override;
+	
+	UFUNCTION(Server,Reliable)
+	virtual void InteractOnServer(AController* InPlayerController);
 };

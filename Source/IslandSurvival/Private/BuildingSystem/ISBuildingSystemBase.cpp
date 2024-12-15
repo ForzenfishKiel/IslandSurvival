@@ -25,7 +25,6 @@ AISBuildingSystemBase::AISBuildingSystemBase()
 	bReplicates = true;
 }
 
-// Called when the game starts or when spawned
 void AISBuildingSystemBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -98,4 +97,9 @@ void AISBuildingSystemBase::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 void AISBuildingSystemBase::DestoryBuilding_Implementation(AActor*TargetActor)
 {
 	EnableBuildBroken(TargetActor);
+}
+
+void AISBuildingSystemBase::InteractOnServer_Implementation(AController* InPlayerController)
+{
+	
 }

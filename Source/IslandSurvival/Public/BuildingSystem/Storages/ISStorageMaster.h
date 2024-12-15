@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BuildingSystem/ISBuildingSystemBase.h"
 #include "BuildingSystem/ActorComponents/ISStroageContainer.h"
+#include "UI/ISMenuUIBase.h"
 #include "ISStorageMaster.generated.h"
 
 /**
@@ -19,6 +20,17 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UISStroageContainer>StorageContainer;
 
+	UPROPERTY()
+	TObjectPtr<UISMenuUIBase> StorageWidget;
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TSubclassOf<UUserWidget>InteractUserWidget;
+	TSubclassOf<UUserWidget>StorageUserWidgetClass;
+
+	
+	void StorageUIOpen(APlayerController* TargetController);
+	UFUNCTION()
+	void StorageUIClose(APlayerController* TargetController);
+	virtual void InteractOnServer(AController* InPlayerController) override;
+	virtual void BeginPlay() override;
+	virtual void OnBuildingWasInteract_Implementation(const AActor* InteractingActor, const UActorComponent* InteractingComponent) override;
 };
