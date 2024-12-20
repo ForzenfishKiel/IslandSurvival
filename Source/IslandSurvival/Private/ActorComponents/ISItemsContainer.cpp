@@ -10,6 +10,7 @@
 #include "Engine/ActorChannel.h"
 #include "Character/ISCharacter.h"
 #include "Game/ISGameInstance.h"
+#include "Game/ISGameplayMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -32,11 +33,8 @@ void UISItemsContainer::InitializeComponent()
 			auto InventorySystem = UISInventorySystem::CreateInventory(this);  //创建背包对象，并传输背包的属性
 			check(InventorySystem);
 			RepInventories.Emplace(InventorySystem);
-			InventorySystem->InitializeInterNetInventory(InventorySpace);
+
 		}
-	}
-	else
-	{
 		InitializeContainerSpace(InventorySpace);
 	}
 }
@@ -102,15 +100,13 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 	 * 2.当物品不可堆叠时，则无条件交换
 	 */
 	if(CheckGearSlotEcchanged(TargetItemsContainer,TargetIndex,SourceIndex)) return;  //是否是来自装备的交换
+	//相同ID的物品可堆叠与不可堆叠
 	if(TargetItemsContainer->InventoryContainer[TargetIndex].ItemID==InventoryContainer[SourceIndex].ItemID)
 	{
 		if(TargetItemsContainer->InventoryContainer[TargetIndex].CanStack&&InventoryContainer[SourceIndex].CanStack)
 		{
 			InventoryContainer[SourceIndex].ItemQuantity+=TargetItemsContainer->InventoryContainer[TargetIndex].ItemQuantity;
 			TargetItemsContainer->InventoryContainer[TargetIndex] = ItemInfo;
-			/*更新双方的背包*/
-			TargetItemsContainer->InventoryUpdate.Broadcast();
-			InventoryUpdate.Broadcast();
 		}
 		//不可堆叠
 		else
@@ -118,9 +114,6 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 			FItemInformation TempItemInfor = InventoryContainer[SourceIndex];  //暂存
 			InventoryContainer[SourceIndex] = TargetItemsContainer->InventoryContainer[TargetIndex];
 			TargetItemsContainer->InventoryContainer[TargetIndex] = TempItemInfor;
-			/*更新双方背包*/
-			TargetItemsContainer->InventoryUpdate.Broadcast();
-			InventoryUpdate.Broadcast();
 		}
 	}
 	else
@@ -128,28 +121,8 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 		FItemInformation TempItemInfor = InventoryContainer[SourceIndex];  //暂存
 		InventoryContainer[SourceIndex] = TargetItemsContainer->InventoryContainer[TargetIndex];
 		TargetItemsContainer->InventoryContainer[TargetIndex] = TempItemInfor;
-		/*更新双方背包*/
-		TargetItemsContainer->InventoryUpdate.Broadcast();
-		InventoryUpdate.Broadcast();
-	}
-	if(bReplicated)
-	{
-		SendContainerDataOnServer(InventoryContainer);
-	}
-	else if(TargetItemsContainer->bReplicated)
-	{
-		TargetItemsContainer->SendContainerDataOnServer(TargetItemsContainer->InventoryContainer);
 	}
 }
-
-void UISItemsContainer::SendContainerDataOnServer_Implementation(const TArray<FItemInformation>& InItems)
-{
-	if(CurrentInventorySystem)
-	{
-		CurrentInventorySystem->UpdateInventoryDataFromClient(InItems);
-	}
-}
-
 
 bool UISItemsContainer::CheckGearSlotEcchanged(UISItemsContainer* TargetGear, const int32 TargetIndex,const int32 SourceIndex)
 {
@@ -227,11 +200,16 @@ void UISItemsContainer::DiscardItem_Implementation(const int32 TargetIndex, cons
 		if(InventoryContainer[TargetIndex].ItemQuantity==0)
 		{
 			InventoryContainer[TargetIndex] = ItemInfo;
-			InventoryUpdate.Broadcast(); //更新背包
 			return;
 		}
-		InventoryUpdate.Broadcast();
 	}
+}
+
+
+void UISItemsContainer::OnRep_CotainerChange()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("本地数组更新变化"));
+	InventoryUpdate.Broadcast();
 }
 
 
@@ -258,6 +236,7 @@ bool UISItemsContainer::CheckInventoryEmpty(const FItemInformation Information)
 	}
 	return false;
 }
+
 
 void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInformation Information)
 {
@@ -312,6 +291,7 @@ void UISItemsContainer::BeginPlay()
 void UISItemsContainer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 }
 
 
@@ -320,10 +300,12 @@ void UISItemsContainer::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 void UISItemsContainer::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+			
 	FDoRepLifetimeParams SharedParams;
 	SharedParams.bIsPushBased = true;
 	
-	DOREPLIFETIME_WITH_PARAMS_FAST(UISItemsContainer,CurrentInventorySystem,SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UISItemsContainer,InventoryContainer,SharedParams);
 }
 
 bool UISItemsContainer::CheckConnection(UActorChannel* Channel)
@@ -411,7 +393,6 @@ void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName 
 	}
 }
 
-
 UISInventorySystem* UISItemsContainer::FindInventoryByName(const FName InName)
 {
 	for(auto InventoryRef : RepInventories)
@@ -422,18 +403,4 @@ UISInventorySystem* UISItemsContainer::FindInventoryByName(const FName InName)
 		}
 	}
 	return nullptr;
-}
-
-//Run On Server
-void UISItemsContainer::SetCurrentInventory(UISInventorySystem* InventorySystem)
-{
-	CurrentInventorySystem = InventorySystem;
-
-	MARK_PROPERTY_DIRTY_FROM_NAME(UISItemsContainer,CurrentInventorySystem,this);
-}
-
-void UISItemsContainer::OnRep_UpdateInventory()
-{
-	InventoryContainer.Empty();  //	清空数组
-	InventoryContainer = CurrentInventorySystem->InternetInventory;  //下载服务器数组
 }

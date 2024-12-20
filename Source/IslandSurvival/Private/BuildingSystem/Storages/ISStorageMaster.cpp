@@ -73,24 +73,6 @@ void AISStorageMaster::StorageUIClose(APlayerController* TargetController)
 
 void AISStorageMaster::InteractOnServer(AController* InPlayerController)
 {
-	AISGameplayMode* SourceGameMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if(!SourceGameMode) return;
-
-	if(GetOwner() == nullptr)
-	{
-		if(SourceGameMode->LoginPlayerList.Contains(InPlayerController))
-		{
-			SetOwner(InPlayerController->GetPawn());
-		}
-	}
-	else if(GetOwner() != InPlayerController->GetPawn())
-	{
-		if(SourceGameMode->LoginPlayerList.Contains(InPlayerController))
-		{
-			SetOwner(InPlayerController->GetPawn());
-		}
-	}
-
 	if(StorageContainer->RepInventoryPlayer.Contains(InPlayerController))
 	{
 		StorageContainer->RepInventoryPlayer.Remove(InPlayerController);
@@ -99,8 +81,4 @@ void AISStorageMaster::InteractOnServer(AController* InPlayerController)
 	{
 		StorageContainer->RepInventoryPlayer.Add(InPlayerController);
 	}
-	
-	UISInventorySystem* InventorySystem = StorageContainer->FindInventoryByName(StorageContainer->ContainerName);
-	if(!InventorySystem) return;
-	StorageContainer->SetCurrentInventory(InventorySystem);
 }

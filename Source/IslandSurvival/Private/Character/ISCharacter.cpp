@@ -161,6 +161,8 @@ AISPlayerState* AISCharacter::GetPlayerState_Implementation()
 	check(SourcePlayerState);
 	return SourcePlayerState;
 }
+
+
 bool AISCharacter::CheckIsFastRun()
 {
 	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
@@ -235,3 +237,24 @@ void AISCharacter::AddAttributeLevel_Implementation(const FGameplayAttribute Tar
 	ISPlayerState->AddTargetAttributeLevel(TargetPointType);
 }
 
+void AISCharacter::SetOwnerWhenCharacterControlActor_Implementation(const TArray<UISItemsContainer*>&InItemsContainer,
+	APlayerController* InController)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("玩家控制器调用"));
+
+	for(auto ContainerRef : InItemsContainer)
+	{
+		AActor* ContainerOwner = ContainerRef->GetOwner();
+		if(ContainerOwner->GetOwner() == nullptr)
+		{
+			ContainerOwner->SetOwner(InController);
+		}
+		else
+		{
+			if(ContainerOwner->GetOwner() != InController)
+			{
+				ContainerOwner->SetOwner(InController);
+			}
+		}
+	}
+}

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActorComponents/ISItemsContainer.h"
 #include "Blueprint/UserWidget.h"
 #include "DataAsset/ISCraftingContainer.h"
 #include "ISMenuUIBase.generated.h"
@@ -17,18 +18,29 @@ class ISLANDSURVIVAL_API UISMenuUIBase : public UUserWidget
 public:
 	UPROPERTY(BlueprintReadOnly,Category = "UI")
 	TObjectPtr<UObject> WidgetController = nullptr;
+	
 	UPROPERTY(BlueprintReadOnly,Category = "UI")
 	TObjectPtr<UObject> WidgetOwner = nullptr;
+	
+	UPROPERTY(BlueprintReadOnly,Category = "UI")
+	TObjectPtr<UObject> WidgetControllerOwner = nullptr;
+	
 	UPROPERTY(BlueprintReadOnly)
 	FCraftingInfoContainer CraftingInfo;
+	
 	UFUNCTION(Client,Reliable)
 	void InitializeCraftingData(UObject* Target);
+	
 	UFUNCTION(Client,Reliable)
 	void SafeToClearData();
+	
 	void SetWidgetController(UObject*TargetWidgetController);
+	
 	void SetWidgetOwner(UObject*TargetWidgetOwner);
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerWasSet();
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetOwnerWasSet();
 };

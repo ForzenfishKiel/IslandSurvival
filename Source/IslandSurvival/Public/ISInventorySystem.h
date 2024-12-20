@@ -17,7 +17,7 @@ class ISLANDSURVIVAL_API UISInventorySystem : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(ReplicatedUsing = OnRep_InventoryChange)
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	TArray<FItemInformation> InternetInventory;   //用于在网络显示的背包
 
 	FItemInformation ItemInfo;
@@ -32,12 +32,6 @@ public:
 	FName InventoryName;
 
 	static UISInventorySystem* CreateInventory(UISItemsContainer* InOwnerContainer);  //开辟一个新的背包空间对象
-	UFUNCTION()
-	void OnRep_InventoryChange();
-
-	void InitializeInterNetInventory(const int32 InSize);
-
-	void UpdateInventoryDataFromClient(const TArray<FItemInformation>& InItems);
 
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

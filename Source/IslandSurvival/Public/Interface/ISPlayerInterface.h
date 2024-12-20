@@ -50,7 +50,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
-
+	
 	UFUNCTION(BlueprintNativeEvent)
 	AISPlayerState*GetPlayerState();
 };

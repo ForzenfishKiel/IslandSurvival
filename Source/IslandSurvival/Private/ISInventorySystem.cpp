@@ -27,26 +27,3 @@ UISInventorySystem* UISInventorySystem::CreateInventory(UISItemsContainer* InOwn
 	NewInventory->InventoryName = InOwnerContainer->ContainerName;
 	return NewInventory;
 }
-
-void UISInventorySystem::OnRep_InventoryChange()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("客户端回调"));
-}
-
-void UISInventorySystem::InitializeInterNetInventory(const int32 InSize)
-{
-	for (int32 i = 0; i < InSize; i++)
-	{
-		InternetInventory.Add(ItemInfo);
-	}
-	MARK_PROPERTY_DIRTY_FROM_NAME(UISInventorySystem,InternetInventory,this);
-}
-
-//服务器更新来自客户端的数据
-void UISInventorySystem::UpdateInventoryDataFromClient(const TArray<FItemInformation>& InItems)
-{
-	InternetInventory = InItems;
-	MARK_PROPERTY_DIRTY_FROM_NAME(UISInventorySystem,InternetInventory,this);
-
-	OwnerComponent->SetCurrentInventory(this);
-}

@@ -22,8 +22,6 @@ public:
 	int32 InventorySpace = 0;  //背包空间
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="config")
 	bool bReplicated = false;  //是否复制？
-
-
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int32 LastChooseIndex = -1;
@@ -48,27 +46,27 @@ public:
 	UISItemsContainer();
 	void WhenInventoryChange(UISItemsContainer*TargetContainer,const int32 TargetIndex);
 	
-	UFUNCTION(BlueprintCallable,Client,Reliable)
+	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void WhenItemExchanged(UISItemsContainer*TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex);
 	
 	bool CheckGearSlotEcchanged(UISItemsContainer*TargetGear,const int32 TargetIndex,const int32 SourceIndex);
 	
-	UFUNCTION(Client,Reliable)
+	UFUNCTION(Server,Reliable)
 	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
 	
-	UFUNCTION(Client,Reliable)
-	void DiscardItem(const int32 TargetIndex,const int32 TargetQuantity);  //丢弃物品
-
 	UFUNCTION(Server,Reliable)
-	void SendContainerDataOnServer(const TArray<FItemInformation>&InItems);
+	void DiscardItem(const int32 TargetIndex,const int32 TargetQuantity);  //丢弃物品
 	
 	UFUNCTION()
 	void InitializeContainerSpace(const int32 Space);
 	
 	bool CheckInventoryEmpty(const FItemInformation Information);
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_CotainerChange)
 	TArray<FItemInformation>InventoryContainer;//背包
+
+	UFUNCTION()
+	void OnRep_CotainerChange();
 
 	
 	UPROPERTY(BlueprintReadOnly)
@@ -83,18 +81,6 @@ public:
 	virtual EContainerType GetTargetContainerType() override;
 	
 	virtual FName GetContainerName() override;
-
-
-	
-	UPROPERTY(ReplicatedUsing = OnRep_UpdateInventory)
-	TObjectPtr<UISInventorySystem> CurrentInventorySystem;
-
-	//Setter
-	void SetCurrentInventory(UISInventorySystem* InventorySystem);
-	
-	UFUNCTION()
-	void OnRep_UpdateInventory();
-
 	
 	void PickUpItemForActor(APawn* TargetPawn, AActor* TargetActor);
 	

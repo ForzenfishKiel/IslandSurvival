@@ -40,6 +40,8 @@ public:
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
 	virtual void LevelUp_Implementation() override;  //角色升级，播放粒子特效或音效等
 	virtual AISPlayerState*GetPlayerState_Implementation() override;
+	UFUNCTION(BlueprintCallable,Server,Reliable)
+	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
 
 	UFUNCTION(BlueprintCallable)
 	bool CheckIsFastRun();
@@ -76,11 +78,16 @@ public:
 	float CharacterSpeed = 400.f;
 private:
 	void InitAbilityActorInfo();
+	
 	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
+	
 	void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	
 	void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void AddAttributeLevel(const FGameplayAttribute TargetPointType);
+	
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;
 	UPROPERTY(EditAnywhere,Category = "Config")

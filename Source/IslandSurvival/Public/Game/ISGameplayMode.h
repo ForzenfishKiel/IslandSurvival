@@ -25,4 +25,6 @@ public:
 
 	UPROPERTY()
 	TArray<TWeakObjectPtr<APlayerController>> LoginPlayerList;
+
+	APlayerController* FindPlayerControllerFromLocalPlayer(ULocalPlayer* InLocalPlayer);
 };

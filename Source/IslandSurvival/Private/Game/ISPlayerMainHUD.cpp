@@ -30,9 +30,13 @@ UISMenuWidgetController* AISPlayerMainHUD::GetMenuWidgetController(const FCharac
 void AISPlayerMainHUD::InitUserWidget(const FCharacterParams& CharacterParams)
 {
 	UISMainUIWidgetController* MainUIWidgetController = GetMainUIWidgetController(CharacterParams);
+	
 	UISMenuWidgetController* MenuWidgetController = GetMenuWidgetController(CharacterParams);
-	IsMainUI = CreateWidget<UISMainUIBase>(GetWorld(),ISMainUIClass);
-	ISMenuUI = CreateWidget<UISMenuUIBase>(GetWorld(),ISMenuClass); //创建人物的背包界面UI
+	
+	IsMainUI = CreateWidget<UISMainUIBase>(GetOwningPlayerController(),ISMainUIClass);
+	
+	ISMenuUI = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),ISMenuClass); //创建人物的背包界面UI
+	
 	IsMainUI->SetWidgetController(MainUIWidgetController);
 	ISMenuUI->SetWidgetController(MenuWidgetController);
 	MainUIWidgetController->BroadcastInitialValues();  //广播初始化属性
