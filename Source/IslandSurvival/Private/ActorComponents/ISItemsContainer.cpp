@@ -99,6 +99,7 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 	 * 1.当物品可堆叠时，则放置的格子的数量加上对方物品的数量，然后对方物品为空（双方物品ID相同）
 	 * 2.当物品不可堆叠时，则无条件交换
 	 */
+	if(!TargetItemsContainer) return;
 	if(CheckGearSlotEcchanged(TargetItemsContainer,TargetIndex,SourceIndex)) return;  //是否是来自装备的交换
 	//相同ID的物品可堆叠与不可堆叠
 	if(TargetItemsContainer->InventoryContainer[TargetIndex].ItemID==InventoryContainer[SourceIndex].ItemID)

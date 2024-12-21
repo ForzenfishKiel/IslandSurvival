@@ -16,7 +16,7 @@ void UISMenuUIBase::InitializeCraftingData_Implementation(UObject* Target)
 	if(!CraftingContainer) return;
 	if(Target->Implements<UISContainerInterface>())
 	{
-		IISContainerInterface*Container = Cast<IISContainerInterface>(Target);
+		IISContainerInterface*Container = Cast<IISContainerInterface>(Target);   //目标是否实现了接口
 		for(auto&ArrayRef: CraftingContainer->GetCraftingInfoMap(Container->GetTargetContainerType()).CraftingInfos)
 		{
 			if(ArrayRef.TargetName==Container->GetContainerName())

@@ -57,6 +57,10 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 	UISItemsContainer* ItemContainer = SourceCharacter->GetComponentByClass<UISItemsContainer>();
 	UISCollectibleDataAsset* CollectibleDataAsset = UISAbilitysystemLibary::GetCollectibleDataAsset(this);
 	const FDropInformation DropInfo = CollectibleDataAsset->GetDropConfig(CollectibleClass);
+
+	Execute_ApplyDamageToTarget(this,TargetActor); //计算伤害
+
+	//计算掉落
 	for(auto&TargetRef:DropInfo.Drops)
 	{
 		if(TargetRef.TargetName==CollectibleName)
@@ -66,7 +70,7 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 				if(TargetDropRef.TargetID!=FName("None"))  //对应ID不为-1，防止出错
 				{
 					/*则开始计算掉落概率和掉落数量*/
-					Execute_ApplyDamageToTarget(this,TargetActor);
+
 					const bool bCanDrop= FMath::RandRange(0,100) < TargetDropRef.DropRate.GetValueAtLevel(1.f);  //获取掉落概率
 					if(bCanDrop)
 					{
