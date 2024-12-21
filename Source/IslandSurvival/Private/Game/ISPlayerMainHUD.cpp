@@ -5,6 +5,7 @@
 
 
 
+//MainUI WidgetController Setter and Getter
 UISMainUIWidgetController* AISPlayerMainHUD::GetMainUIWidgetController(const FCharacterParams& CharacterParams)
 {
 	if(IsMainUIWidgetController==nullptr)
@@ -16,6 +17,7 @@ UISMainUIWidgetController* AISPlayerMainHUD::GetMainUIWidgetController(const FCh
 	return IsMainUIWidgetController;
 }
 
+//MenuWidgetController Setter and Getter
 UISMenuWidgetController* AISPlayerMainHUD::GetMenuWidgetController(const FCharacterParams& CharacterParams)
 {
 	if(IsMenuWidgetController==nullptr)
