@@ -132,6 +132,7 @@ void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 
 		{
 			for(int32 Index = 0;Index<CharacterHotBar->InventoryContainer.Num();Index++)
 			{
+				//优先搜索角色的物品栏
 				if(CharacterHotBar->InventoryContainer[Index].ItemID==DataTableRef.ItemID)
 				{
 					const int32 Value = CharacterHotBar->InventoryContainer[Index].ItemQuantity;
@@ -143,18 +144,22 @@ void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 
 			}
 			for(int32 Index = 0;Index<CharacterInventory->InventoryContainer.Num();Index++)
 			{
+				//再搜索角色的背包
 				if(CharacterInventory->InventoryContainer[Index].ItemID==DataTableRef.ItemID)
 				{
 					const int32 Value = CharacterInventory->InventoryContainer[Index].ItemQuantity;
 					Result+=Value;
 					if(Result==DataTableRef.ItemQuantity){CharacterInventory->DiscardItem(Index,Result);  Result = 0; break;}
 					if(Result>DataTableRef.ItemQuantity){CharacterInventory->DiscardItem(Index,DataTableRef.ItemQuantity); Result = 0; break;}
-					CharacterInventory->DiscardItem(Index,Result);
+					
+					CharacterInventory->DiscardItem(Index,Value);
 				}
 			}
 		}
 		SendXPToTarget(UserInfo->ItemExperience);  //传输制造获得的经验值
 		UDataTable*ItemTable = ISGameplayInstance->ItemDataTable;
+
+		//(暂定)制作完成后将制作完成的物品添加到角色
 		if(FItemInformation*Information = ItemTable->FindRow<FItemInformation>(Trans,TEXT("name")))
 		{
 			ItemsContainer->PickUpItemForID(SourceCharacter,Trans,1);
@@ -163,6 +168,7 @@ void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 
 	return;
 }
 
+//发送给角色相应的经验值
 void UISCraftingComponent::SendXPToTarget_Implementation(float TargetXP)
 {
 	if(TargetXP==0) return;

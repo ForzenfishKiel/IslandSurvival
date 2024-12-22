@@ -16,7 +16,7 @@ AISStorageMaster::AISStorageMaster()
 
 void AISStorageMaster::BeginPlay()
 {
-
+	Super::BeginPlay();
 	check(StorageUserWidgetClass);
 	StorageWidget = CreateWidget<UISMenuUIBase>(GetWorld(),StorageUserWidgetClass);  //创建UI
 	StorageWidget->SetWidgetOwner(this);
