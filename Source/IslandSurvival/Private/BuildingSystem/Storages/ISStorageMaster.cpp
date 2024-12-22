@@ -13,15 +13,13 @@ AISStorageMaster::AISStorageMaster()
 	StorageContainer->SetIsReplicated(true);
 }
 
-
-void AISStorageMaster::BeginPlay()
+void AISStorageMaster::InitItemConfig()
 {
-	Super::BeginPlay();
+	Super::InitItemConfig();
 	check(StorageUserWidgetClass);
 	StorageWidget = CreateWidget<UISMenuUIBase>(GetWorld(),StorageUserWidgetClass);  //创建UI
 	StorageWidget->SetWidgetOwner(this);
 }
-
 void AISStorageMaster::OnBuildingWasInteract_Implementation(const AActor* InteractingActor,
 	const UActorComponent* InteractingComponent)
 {
@@ -31,6 +29,7 @@ void AISStorageMaster::OnBuildingWasInteract_Implementation(const AActor* Intera
 		StorageUIOpen(SourcePC);  //客户端打开UI
 	}
 }
+
 
 
 void AISStorageMaster::StorageUIOpen(APlayerController* TargetController)

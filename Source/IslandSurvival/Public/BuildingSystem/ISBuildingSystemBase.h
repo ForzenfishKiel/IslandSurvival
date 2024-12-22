@@ -48,12 +48,6 @@ class ISLANDSURVIVAL_API AISBuildingSystemBase : public AISItemBase,public IISBu
 public:	
 	// Sets default values for this actor's properties
 	AISBuildingSystemBase();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-public:
-
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Replicated)
 	int32 BuildHP = 0;
@@ -76,6 +70,8 @@ public:
 
 	
 	virtual AISBuildingSystemBase* GetBuildingSystemBase_Implementation() override;
+
+	virtual void InitItemConfig() override;
 
 	
 	virtual TArray<UBoxComponent*> GetBuildingBoxComponent_Implementation() const override;

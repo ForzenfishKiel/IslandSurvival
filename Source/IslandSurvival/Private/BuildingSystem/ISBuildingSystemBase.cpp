@@ -25,15 +25,15 @@ AISBuildingSystemBase::AISBuildingSystemBase()
 	bReplicates = true;
 }
 
-void AISBuildingSystemBase::BeginPlay()
-{
-	Super::BeginPlay();
-	BuildHP = BuildMaxHP;
-}
-
 AISBuildingSystemBase* AISBuildingSystemBase::GetBuildingSystemBase_Implementation()
 {
 	return this;
+}
+
+void AISBuildingSystemBase::InitItemConfig()
+{
+	Super::InitItemConfig();
+	BuildHP = BuildMaxHP;
 }
 
 //获取建筑的吸附判定框（数组）

@@ -31,6 +31,6 @@ public:
 	UFUNCTION()
 	void StorageUIClose(APlayerController* TargetController);
 	virtual void InteractOnServer(AController* InPlayerController) override;
-	virtual void BeginPlay() override;
 	virtual void OnBuildingWasInteract_Implementation(const AActor* InteractingActor, const UActorComponent* InteractingComponent) override;
+	virtual void InitItemConfig() override;
 };

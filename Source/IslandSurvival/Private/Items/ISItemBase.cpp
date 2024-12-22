@@ -21,6 +21,7 @@ AISItemBase::AISItemBase()
 void AISItemBase::BeginPlay()
 {
 	Super::BeginPlay();
+	InitItemConfig();
 }
 
 // Called every frame
@@ -37,6 +38,11 @@ void AISItemBase::UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* Ta
 FName AISItemBase::GetName_Implementation()
 {
 	return ItemID;
+}
+
+void AISItemBase::InitItemConfig()
+{
+	
 }
 
 void AISItemBase::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)

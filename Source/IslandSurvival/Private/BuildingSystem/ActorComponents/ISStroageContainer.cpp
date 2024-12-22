@@ -5,6 +5,8 @@
 
 #include "Character/ISCharacter.h"
 #include "Data/ISCraftItemInformation.h"
+#include "Game/ISGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 
 //制造按钮点击的时候会执行这个函数，这个函数的任务是查询玩家以及制造台库存的背包里的所有可用于制造的物品，一旦查询成功则扣除相应的物品
@@ -15,7 +17,7 @@ void UISStroageContainer::CraftAction(UISCraftingComponent* TargetCraftingCompon
 	AActor* Owner = TargetCraftingComponent->GetOwner();
 	AISCharacter* SourceCharacter = Cast<AISCharacter>(Owner);
 	if(!SourceCharacter) return;
-	APlayerController* SourceController = Cast<APlayerController>(SourceCharacter->GetController());
+	APlayerController* SourceController = Cast<APlayerController>(SourceCharacter->GetInstigatorController());
 	if(!SourceController && !SourceController->IsLocalPlayerController()) return;
 	
 	UISHotBarInventory* CharacterHotBar = SourceCharacter->GetComponentByClass<UISHotBarInventory>();  //获取角色物品栏组件
@@ -53,9 +55,83 @@ void UISStroageContainer::CraftAction(UISCraftingComponent* TargetCraftingCompon
 				DiscardItem(Index,Value);
 			}
 		}
+		for(int32 Index = 0;Index < CharacterHotBar->InventoryContainer.Num(); Index++)
+		{
+			if(CharacterHotBar->InventoryContainer[Index].ItemID == DataTableRef.ItemID)
+			{
+				const int32 Value = CharacterHotBar->InventoryContainer[Index].ItemQuantity;
+				Result += Value;
+				if(Result == DataTableRef.ItemQuantity)
+				{
+					CharacterHotBar->DiscardItem(Index,Result);
+					Result = 0;
+					break;
+				}
+				if(Result > DataTableRef.ItemQuantity)
+				{
+					CharacterHotBar->DiscardItem(Index,Value);
+					Result = 0;
+					break;
+				}
+
+				CharacterHotBar->DiscardItem(Index,Value);
+			}
+		}
+		for(int32 Index = 0; Index < CharacterBackPack->InventoryContainer.Num(); Index++)
+		{
+			if(CharacterBackPack->InventoryContainer[Index].ItemID == DataTableRef.ItemID)
+			{
+				const int32 Value = CharacterBackPack->InventoryContainer[Index].ItemQuantity;
+				Result += Value;
+				if(Result == DataTableRef.ItemQuantity)
+				{
+					CharacterBackPack->DiscardItem(Index,Result);
+					Result = 0;
+					break;
+				}
+				if(Result > DataTableRef.ItemQuantity)
+				{
+					CharacterBackPack->DiscardItem(Index,Value);
+					Result = 0;
+					break;
+				}
+				CharacterBackPack->DiscardItem(Index,Value);
+				
+			}
+		}
 	}
 }
 
+bool UISStroageContainer::CheckStorageEmptySlots()
+{
+	for(int32 Index = 0; Index < InventoryContainer.Num(); Index++)
+	{
+		if(InventoryContainer[Index].ItemID == -1)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void UISStroageContainer::SaveToStorageContainer_Implementation(const int32 TargetID)
+{
+	UISGameInstance* SourceGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetOwner()));
+	if(!SourceGameInstance) return;
+	UDataTable* UserInfo = SourceGameInstance->ItemDataTable;
+
+	FName Trans = FName(FString::Printf(TEXT("%d"),TargetID));
+	FItemInformation* GetItemInfo = UserInfo->FindRow<FItemInformation>(Trans,TEXT("ItemInfo"));
+
+	for(auto&ContainerRef : InventoryContainer)
+	{
+		if(ContainerRef.ItemID == -1)
+		{
+			ContainerRef = *GetItemInfo;   //直接改变数组
+			return;
+		}
+	}
+}
 void UISStroageContainer::BeginPlay()
 {
 	
