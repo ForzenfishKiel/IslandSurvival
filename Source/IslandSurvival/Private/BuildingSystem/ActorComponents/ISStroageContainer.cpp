@@ -47,7 +47,7 @@ void UISStroageContainer::CraftAction(UISCraftingComponent* TargetCraftingCompon
 				}
 				if(Result > DataTableRef.ItemQuantity)
 				{
-					DiscardItem(Index,Value);
+					DiscardItem(Index,DataTableRef.ItemQuantity);
 					Result = 0;
 					break;
 				}
@@ -69,7 +69,7 @@ void UISStroageContainer::CraftAction(UISCraftingComponent* TargetCraftingCompon
 				}
 				if(Result > DataTableRef.ItemQuantity)
 				{
-					CharacterHotBar->DiscardItem(Index,Value);
+					CharacterHotBar->DiscardItem(Index,DataTableRef.ItemQuantity);
 					Result = 0;
 					break;
 				}
@@ -91,12 +91,11 @@ void UISStroageContainer::CraftAction(UISCraftingComponent* TargetCraftingCompon
 				}
 				if(Result > DataTableRef.ItemQuantity)
 				{
-					CharacterBackPack->DiscardItem(Index,Value);
+					CharacterBackPack->DiscardItem(Index,DataTableRef.ItemQuantity);
 					Result = 0;
 					break;
 				}
 				CharacterBackPack->DiscardItem(Index,Value);
-				
 			}
 		}
 	}
