@@ -162,7 +162,6 @@ AISPlayerState* AISCharacter::GetPlayerState_Implementation()
 	return SourcePlayerState;
 }
 
-
 bool AISCharacter::CheckIsFastRun()
 {
 	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
@@ -255,6 +254,25 @@ void AISCharacter::SetOwnerWhenCharacterControlActor_Implementation(const TArray
 			{
 				ContainerOwner->SetOwner(InController);
 			}
+		}
+	}
+}
+
+
+void AISCharacter::SetSingleOwnerWhenCharacterControlActor_Implementation(const UISItemsContainer* InItemsContainer,
+	APlayerController* InController)
+{
+	AActor* TargetActor = InItemsContainer->GetOwner();
+	if(!TargetActor) return;
+	if(TargetActor->GetOwner() == nullptr)
+	{
+		TargetActor->SetOwner(InController);
+	}
+	else
+	{
+		if(TargetActor->GetOwner() != InController)
+		{
+			TargetActor->SetOwner(InController);
 		}
 	}
 }

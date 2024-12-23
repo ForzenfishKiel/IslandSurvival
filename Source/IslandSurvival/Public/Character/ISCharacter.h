@@ -42,6 +42,8 @@ public:
 	virtual AISPlayerState*GetPlayerState_Implementation() override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
+	UFUNCTION(Server,Reliable)
+	void SetSingleOwnerWhenCharacterControlActor(const UISItemsContainer* InItemsContainer,APlayerController* InController);
 
 	UFUNCTION(BlueprintCallable)
 	bool CheckIsFastRun();

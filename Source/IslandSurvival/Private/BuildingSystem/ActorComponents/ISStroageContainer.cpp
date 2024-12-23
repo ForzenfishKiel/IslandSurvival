@@ -17,9 +17,10 @@ void UISStroageContainer::CraftAction(UISCraftingComponent* TargetCraftingCompon
 	AActor* Owner = TargetCraftingComponent->GetOwner();
 	AISCharacter* SourceCharacter = Cast<AISCharacter>(Owner);
 	if(!SourceCharacter) return;
+	
 	APlayerController* SourceController = Cast<APlayerController>(SourceCharacter->GetInstigatorController());
 	if(!SourceController && !SourceController->IsLocalPlayerController()) return;
-	
+
 	UISHotBarInventory* CharacterHotBar = SourceCharacter->GetComponentByClass<UISHotBarInventory>();  //获取角色物品栏组件
 	UISCharacterInventory* CharacterBackPack = SourceCharacter->GetComponentByClass<UISCharacterInventory>();  //获取角色背包组件
 	if(!CharacterHotBar && !CharacterBackPack) return;
