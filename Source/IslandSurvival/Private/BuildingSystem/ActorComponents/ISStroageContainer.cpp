@@ -132,8 +132,3 @@ void UISStroageContainer::SaveToStorageContainer_Implementation(const int32 Targ
 		}
 	}
 }
-void UISStroageContainer::BeginPlay()
-{
-	
-}
-
