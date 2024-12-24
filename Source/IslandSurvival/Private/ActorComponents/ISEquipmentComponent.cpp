@@ -98,7 +98,7 @@ void UISEquipmentComponent::UnUseConsumable_Implementation()
 //装备防具
 void UISEquipmentComponent::EquipGear_Implementation(const FItemInformation TargetInformation)
 {
-	if(TargetInformation.ArmorType==EArmorType::Helmet)
+	if(TargetInformation.ArmorType == EArmorType::Helmet)
 	{
 		if(!ISHelmet)
 		{

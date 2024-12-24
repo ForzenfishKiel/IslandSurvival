@@ -15,5 +15,5 @@ class ISLANDSURVIVAL_API UISGearEquipComponent : public UISItemsContainer
 	GENERATED_BODY()
 public:
 	virtual void BeginPlay() override;
-	void InitializeEquipContainer();
+	virtual void InitializeComponent() override;
 };

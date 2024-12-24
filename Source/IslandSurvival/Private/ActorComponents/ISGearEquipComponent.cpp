@@ -2,6 +2,8 @@
 
 
 #include "ActorComponents/ISGearEquipComponent.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 void UISGearEquipComponent::BeginPlay()
@@ -9,10 +11,17 @@ void UISGearEquipComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UISGearEquipComponent::InitializeEquipContainer()
+//初始化组件，且不重写父类
+void UISGearEquipComponent::InitializeComponent()
 {
-	GearEquipContainer.Add(EArmorType::Helmet,ItemInfo);
-	GearEquipContainer.Add(EArmorType::Chest,ItemInfo);
-	GearEquipContainer.Add(EArmorType::Pants,ItemInfo);
-	GearEquipContainer.Add(EArmorType::Boots,ItemInfo);
+	FItemInformation NewItemInfo;
+
+	NewItemInfo.ArmorType = EArmorType::Helmet;
+	InventoryContainer.Emplace(NewItemInfo);
+	NewItemInfo.ArmorType = EArmorType::Chest;
+	InventoryContainer.Emplace(NewItemInfo);
+	NewItemInfo.ArmorType = EArmorType::Pants;
+	InventoryContainer.Emplace(NewItemInfo);
+	NewItemInfo.ArmorType = EArmorType::Boots;
+	InventoryContainer.Emplace(NewItemInfo);
 }

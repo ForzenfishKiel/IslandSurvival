@@ -17,7 +17,7 @@
 // Sets default values for this component's properties
 UISItemsContainer::UISItemsContainer()
 {
-	bWantsInitializeComponent = true;  //启用组件的Initialize功能，使其允许复写
+	bWantsInitializeComponent = true;  //启用组件的Initialize功能，使其允许复写InitializeComponent
 	SetIsReplicatedByDefault(true); //默认打开复制
 	PrimaryComponentTick.bCanEverTick = true;
 }
@@ -100,7 +100,7 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 	 * 2.当物品不可堆叠时，则无条件交换
 	 */
 	if(!TargetItemsContainer) return;
-	if(CheckGearSlotEcchanged(TargetItemsContainer,TargetIndex,SourceIndex)) return;  //是否是来自装备的交换
+	if(CheckGearSlotExchanged(TargetItemsContainer,TargetIndex,SourceIndex)) return;  //是否是来自装备的交换
 	//相同ID的物品可堆叠与不可堆叠
 	if(TargetItemsContainer->InventoryContainer[TargetIndex].ItemID==InventoryContainer[SourceIndex].ItemID)
 	{
@@ -125,7 +125,7 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 	}
 }
 
-bool UISItemsContainer::CheckGearSlotEcchanged(UISItemsContainer* TargetGear, const int32 TargetIndex,const int32 SourceIndex)
+bool UISItemsContainer::CheckGearSlotExchanged(UISItemsContainer* TargetGear, const int32 TargetIndex,const int32 SourceIndex)
 {
 	//两个装备栏不做交换
 	if(Cast<UISGearEquipComponent>(TargetGear)&&GetClass()==UISGearEquipComponent::StaticClass()) return true;
@@ -133,34 +133,39 @@ bool UISItemsContainer::CheckGearSlotEcchanged(UISItemsContainer* TargetGear, co
 	if(!SourceCharacter) return false;
 	UISEquipmentComponent*EquipmentComponent = SourceCharacter->GetComponentByClass<UISEquipmentComponent>();
 	//如果拖动源是来自装备栏
-	if(UISGearEquipComponent*GearEquipComponent = Cast<UISGearEquipComponent>(TargetGear))
+	if(UISGearEquipComponent* GearEquipComponent = Cast<UISGearEquipComponent>(TargetGear))
 	{
 		//装备交换
-		if(InventoryContainer[SourceIndex].ArmorType!=EArmorType::None)  //如果放置的位置是某一个装备
+		if(InventoryContainer[SourceIndex].ArmorType!=EArmorType::None && InventoryContainer[SourceIndex].ItemID != -1)  //如果放置的位置是某一个装备
 		{
-			TArray<EArmorType> MapArray;
-			GearEquipComponent->GearEquipContainer.GenerateKeyArray(MapArray);  //将Map里的键用数组储存
-			FItemInformation Information = GearEquipComponent->GearEquipContainer[InventoryContainer[SourceIndex].ArmorType];  //获取放置位的物品信息
-			EquipmentComponent->OnUnEquipGear.Broadcast(*GearEquipComponent->GearEquipContainer.Find(MapArray[TargetIndex]));  //广播卸下装备
-			GearEquipComponent->GearEquipContainer[InventoryContainer[SourceIndex].ArmorType] = InventoryContainer[SourceIndex]; //装备栏装备交换的物品信息
-			EquipmentComponent->OnEquipGear.Broadcast(*GearEquipComponent->GearEquipContainer.Find(InventoryContainer[SourceIndex].ArmorType));//广播穿上装备
+			if(GearEquipComponent->InventoryContainer[TargetIndex].ArmorType != InventoryContainer[SourceIndex].ArmorType) return true;  //两个装备交换必须是同物品的
+			
+			FItemInformation Information = GearEquipComponent->InventoryContainer[TargetIndex];  //获取拖动源位置的物品信息
+			
+			EquipmentComponent->OnUnEquipGear.Broadcast(GearEquipComponent->InventoryContainer[TargetIndex]);  //广播卸下装备
+			
+			EquipmentComponent->OnEquipGear.Broadcast(GearEquipComponent->InventoryContainer[TargetIndex]);//广播穿上装备
+
+			GearEquipComponent->InventoryContainer[TargetIndex] = InventoryContainer[SourceIndex]; //装备栏装备交换的物品信息
+			
 			InventoryContainer[SourceIndex] = Information;//放置位置进行交换
-			TargetGear->InventoryUpdate.Broadcast(); //更新双方库存
-			InventoryUpdate.Broadcast();  //除了装备以外的库存
+			
 			return true;
 		}
-		else if(InventoryContainer[SourceIndex].ItemID==-1)
+		else if(InventoryContainer[SourceIndex].ItemID==-1)  //如果放置源位置是空
 		{
-			TArray<EArmorType> MapArray;
-			GearEquipComponent->GearEquipContainer.GenerateKeyArray(MapArray);  //将Map里的键用数组储存
-			FItemInformation*TargetGearSlot = GearEquipComponent->GearEquipContainer.Find(MapArray[TargetIndex]);  //找到这个装备插槽里的装备
-			if(TargetGearSlot == nullptr) return true;  //数据异常，跳过当前执行
-			InventoryContainer[SourceIndex] =*TargetGearSlot;  //解引用并储存数据
-			EquipmentComponent->OnUnEquipGear.Broadcast(*TargetGearSlot);  //广播脱下装备
-			GearEquipComponent->GearEquipContainer[MapArray[TargetIndex]] = ItemInfo;  //清空装备槽显示
-			//更新双方背包
-			TargetGear->InventoryUpdate.Broadcast();
-			InventoryUpdate.Broadcast();
+			
+			FItemInformation TargetGearSlot = GearEquipComponent->InventoryContainer[TargetIndex];  //找到这个装备插槽里的装备
+			
+			FItemInformation NewItemInfo;
+			NewItemInfo.ArmorType = GearEquipComponent->InventoryContainer[TargetIndex].ArmorType;
+			
+			InventoryContainer[SourceIndex] = GearEquipComponent->InventoryContainer[TargetIndex];  //解引用并储存数据
+			
+			EquipmentComponent->OnUnEquipGear.Broadcast(TargetGearSlot);  //广播脱下装备
+			
+			GearEquipComponent->InventoryContainer[TargetIndex] = NewItemInfo;
+
 			return true;  //跳过当前执行
 		}
 		else
@@ -168,25 +173,39 @@ bool UISItemsContainer::CheckGearSlotEcchanged(UISItemsContainer* TargetGear, co
 			return true;
 		}
 	}
-	//如果拖动源是来自其他库存
+	//如果拖动源是来自其他库存，放置源是装备栏
 	else if(GetClass()==UISGearEquipComponent::StaticClass())
 	{
 		if(TargetGear->InventoryContainer[TargetIndex].ArmorType!=EArmorType::None)
 		{
-			TArray<EArmorType> MapArray;
-			GearEquipContainer.GenerateKeyArray(MapArray);  //将Map里的键用数组储存
-			FItemInformation Information = GearEquipContainer[TargetGear->InventoryContainer[TargetIndex].ArmorType];
-			EquipmentComponent->OnUnEquipGear.Broadcast(*GearEquipContainer.Find(MapArray[SourceIndex]));  //广播卸下装备
-			GearEquipContainer[TargetGear->InventoryContainer[TargetIndex].ArmorType] = TargetGear->InventoryContainer[TargetIndex];
-			EquipmentComponent->OnEquipGear.Broadcast(GearEquipContainer[TargetGear->InventoryContainer[TargetIndex].ArmorType]);  //广播穿上装备
+			if(InventoryContainer[SourceIndex].ArmorType != TargetGear->InventoryContainer[TargetIndex].ArmorType) return true;
+			
+			FItemInformation Information = InventoryContainer[SourceIndex];
+			
+			EquipmentComponent->OnUnEquipGear.Broadcast(InventoryContainer[SourceIndex]);  //广播卸下装备
+			
+			EquipmentComponent->OnEquipGear.Broadcast(TargetGear->InventoryContainer[TargetIndex]);  //广播穿上装备
+
+			InventoryContainer[SourceIndex] = TargetGear->InventoryContainer[TargetIndex];
+			
 			TargetGear->InventoryContainer[TargetIndex] = Information;  //目标位置等于被替换的装备位置
-			TargetGear->InventoryUpdate.Broadcast(); //更新双方库存
-			InventoryUpdate.Broadcast(); //更新双方库存
+			
+			
 			return true;
 		}
-		else
+		else if(InventoryContainer[SourceIndex].ItemID == -1)
 		{
-			return true;  //跳过当前执行
+			if(InventoryContainer[SourceIndex].ArmorType != TargetGear->InventoryContainer[TargetIndex].ArmorType) return true;
+			
+			FItemInformation TargetGearSlot = TargetGear->InventoryContainer[TargetIndex];
+
+			EquipmentComponent->OnEquipGear.Broadcast(TargetGear->InventoryContainer[TargetIndex]);  //广播穿上装备
+			
+			InventoryContainer[SourceIndex] = TargetGearSlot;
+
+			TargetGear->InventoryContainer[TargetIndex] = ItemInfo;
+
+			return true;
 		}
 	}
 	return false;
@@ -224,7 +243,7 @@ void UISItemsContainer::DiscardItemFromID_Implementation(const int32 TargetID, c
 }
 
 
-void UISItemsContainer::OnRep_CotainerChange()
+void UISItemsContainer::OnRep_ContainerChange()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("本地数组更新变化"));
 	InventoryUpdate.Broadcast();
@@ -296,7 +315,6 @@ void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInform
 		}
 	}
 }
-
 // Called when the game starts
 void UISItemsContainer::BeginPlay()
 {

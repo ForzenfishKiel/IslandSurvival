@@ -49,7 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void WhenItemExchanged(UISItemsContainer*TargetItemsContainer,const int32 SourceIndex,const int32 TargetIndex);
 	
-	bool CheckGearSlotEcchanged(UISItemsContainer*TargetGear,const int32 TargetIndex,const int32 SourceIndex);
+	bool CheckGearSlotExchanged(UISItemsContainer*TargetGear,const int32 TargetIndex,const int32 SourceIndex);
 	
 	UFUNCTION(Server,Reliable)
 	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
@@ -65,15 +65,12 @@ public:
 	
 	bool CheckInventoryEmpty(const FItemInformation Information);
 	
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_CotainerChange)
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_ContainerChange)
 	TArray<FItemInformation>InventoryContainer;//背包
 
 	UFUNCTION()
-	void OnRep_CotainerChange();
-
+	void OnRep_ContainerChange();
 	
-	UPROPERTY(BlueprintReadOnly)
-	TMap<EArmorType,FItemInformation> GearEquipContainer;//装备栏
 protected:
 	virtual void BeginPlay() override;
 public:	
