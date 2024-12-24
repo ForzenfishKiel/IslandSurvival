@@ -5,6 +5,7 @@
 
 #include "Character/ISCharacter.h"
 #include "Data/ISCraftItemInformation.h"
+#include "Data/ISForgeCraftingInformation.h"
 #include "Game/ISGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -123,12 +124,94 @@ void UISStroageContainer::SaveToStorageContainer_Implementation(const int32 Targ
 	FName Trans = FName(FString::Printf(TEXT("%d"),TargetID));
 	FItemInformation* GetItemInfo = UserInfo->FindRow<FItemInformation>(Trans,TEXT("ItemInfo"));
 
-	for(auto&ContainerRef : InventoryContainer)
+	for(auto& ContainerRef : InventoryContainer)
 	{
+		if(ContainerRef.ItemID == TargetID)
+		{
+			if(ContainerRef.CanStack)
+			{
+				ContainerRef.ItemQuantity += GetItemInfo->ItemQuantity;
+				return;
+			}
+		}
 		if(ContainerRef.ItemID == -1)
 		{
 			ContainerRef = *GetItemInfo;   //直接改变数组
 			return;
 		}
 	}
+}
+
+
+
+
+
+bool UISStroageContainer::CheckForgeFuelList(const UDataTable* TargetDT)
+{
+	for(auto& ContainerRef : InventoryContainer)
+	{
+		FName Trans = FName(FString::Printf(TEXT("%d"),ContainerRef.ItemID));
+		FForgeRecipe* TargetForgeRecipe = TargetDT->FindRow<FForgeRecipe>(Trans,TEXT("ForgeRecipe"));
+		if(TargetForgeRecipe)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UISStroageContainer::CheckForgeList(const UDataTable* TargetDT)
+{
+	for(auto& ContainerRef : InventoryContainer)
+	{
+		FName Trans = FName(FString::Printf(TEXT("%d"),ContainerRef.ItemID));
+		FForgeRecipe* TargetForgeRecipe = TargetDT->FindRow<FForgeRecipe>(Trans,TEXT("ForgeRecipe"));
+		if(TargetForgeRecipe)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+float UISStroageContainer::FindFuelTime(const UDataTable* TargetDT)
+{
+	for(auto& ContainerRef : InventoryContainer)
+	{
+		FName Trans = FName(FString::Printf(TEXT("%d"),ContainerRef.ItemID));
+		FForgeRecipe* TargetForgeRecipe = TargetDT->FindRow<FForgeRecipe>(Trans,TEXT("ForgeRecipe"));
+		if(TargetForgeRecipe)
+		{
+			return TargetForgeRecipe->FiringTime;
+		}
+	}
+	return 0.f;
+}
+
+float UISStroageContainer::FindForgeTime(const UDataTable* TargetDT)
+{
+	for(auto& ContainerRef : InventoryContainer)
+	{
+		FName Trans = FName(FString::Printf(TEXT("%d"),ContainerRef.ItemID));
+		FForgeRecipe* TargetForgeRecipe = TargetDT->FindRow<FForgeRecipe>(Trans,TEXT("ForgeRecipe"));
+		if(TargetForgeRecipe)
+		{
+			return TargetForgeRecipe->FiringTime;
+		}
+	}
+	return 0.f;
+}
+
+int32 UISStroageContainer::FindFuel(const UDataTable* TargetDT)
+{
+	for(auto& ContainerRef : InventoryContainer)
+	{
+		FName Trans = FName(FString::Printf(TEXT("%d"),ContainerRef.ItemID));
+		FForgeRecipe* TargetForgeRecipe = TargetDT->FindRow<FForgeRecipe>(Trans,TEXT("ForgeRecipe"));
+		if(TargetForgeRecipe)
+		{
+			return TargetForgeRecipe->ItemID;
+		}
+	}
+	return -1;
 }

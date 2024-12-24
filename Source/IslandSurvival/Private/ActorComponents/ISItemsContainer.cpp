@@ -207,12 +207,28 @@ void UISItemsContainer::DiscardItem_Implementation(const int32 TargetIndex, cons
 }
 
 
+void UISItemsContainer::DiscardItemFromID_Implementation(const int32 TargetID, const int32 TargetQuantity)
+{
+	for(auto& ContainerRef : InventoryContainer)
+	{
+		if(ContainerRef.ItemID==TargetID)
+		{
+			ContainerRef.ItemQuantity -= TargetQuantity;
+			if(ContainerRef.ItemQuantity==0)
+			{
+				ContainerRef = ItemInfo;
+				return;
+			}
+		}
+	}
+}
+
+
 void UISItemsContainer::OnRep_CotainerChange()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("本地数组更新变化"));
 	InventoryUpdate.Broadcast();
 }
-
 
 void UISItemsContainer::InitializeContainerSpace(const int32 Space)
 {

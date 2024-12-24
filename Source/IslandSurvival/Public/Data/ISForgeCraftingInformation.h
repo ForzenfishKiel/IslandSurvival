@@ -11,14 +11,14 @@
  * 
  */
 USTRUCT(BlueprintType)
-struct FForgeRequire
+struct FForgeOutPut
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 ItemID;  //需要的物品ID
+	int32 ItemID;  //产出的物品ID
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 ItemQuantity;  //需要的数量
+	int32 ItemQuantity;  //产出的数量
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UTexture2D* TargetIcon;  //需要的对方的图片
 };
@@ -37,7 +37,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UTexture2D* ItemIcon;  //物品UI
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FForgeRequire> ItemRequired;  //需要的物品陈列表
+	TArray<FForgeOutPut> ItemOutPut;  //产出
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float ItemExperience;  //给予经验
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

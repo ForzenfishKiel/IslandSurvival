@@ -54,8 +54,11 @@ public:
 	UFUNCTION(Server,Reliable)
 	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
 	
-	UFUNCTION(Server,Reliable)
+	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void DiscardItem(const int32 TargetIndex,const int32 TargetQuantity);  //丢弃物品
+
+	UFUNCTION(BlueprintCallable,Server,Reliable)
+	void DiscardItemFromID(const int32 TargetID , const int32 TargetQuantity); //丢弃物品 
 	
 	UFUNCTION()
 	void InitializeContainerSpace(const int32 Space);
