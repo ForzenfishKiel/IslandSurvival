@@ -116,12 +116,10 @@ bool UISCraftingComponent::IsCanBeCrafting(const UDataTable* TargetDT, const int
 
 void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 TargetID)
 {
-	UISGameInstance*ISGameplayInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));  //获取本地游戏实例
-	if(!ISGameplayInstance) return;
 	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetOwner());
 	UISHotBarInventory*CharacterHotBar = SourceCharacter->GetComponentByClass<UISHotBarInventory>();  //获取物品栏
 	UISCharacterInventory*CharacterInventory = SourceCharacter->GetComponentByClass<UISCharacterInventory>();  //获取背包
-	UISItemsContainer*ItemsContainer = SourceCharacter->GetComponentByClass<UISItemsContainer>();  //获取系统库存组件
+
 
 	FName Trans = FName(FString::Printf(TEXT("%d"),TargetID));
 	int32 Result = 0;
@@ -156,18 +154,26 @@ void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 
 				}
 			}
 		}
-		SendXPToTarget(UserInfo->ItemExperience);  //传输制造获得的经验值
-		UDataTable*ItemTable = ISGameplayInstance->ItemDataTable;
 
-		//(暂定)制作完成后将制作完成的物品添加到角色
-		if(FItemInformation*Information = ItemTable->FindRow<FItemInformation>(Trans,TEXT("name")))
-		{
-			ItemsContainer->PickUpItemForID(SourceCharacter,Trans,1);
-		}
 	}
 	return;
 }
 
+void UISCraftingComponent::AddToCharacterBackPack_Implementation(const UDataTable* TargetDT, const int32 TargetID)
+{
+	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetOwner());
+	if(!SourceCharacter) return;
+	UISItemsContainer*ItemsContainer = SourceCharacter->GetComponentByClass<UISItemsContainer>();  //获取系统库存组件
+	
+	FName Trans = FName(FString::Printf(TEXT("%d"),TargetID));
+	//(暂定)制作完成后将制作完成的物品添加到角色
+	ItemsContainer->PickUpItemForID(SourceCharacter,Trans,1);
+
+	if(FItemRecipe*UserInfo = TargetDT->FindRow<FItemRecipe>(Trans,TEXT("name")))
+	{
+		SendXPToTarget(UserInfo->ItemExperience);  //传输制造获得的经验值
+	}
+}
 //发送给角色相应的经验值
 void UISCraftingComponent::SendXPToTarget_Implementation(float TargetXP)
 {
