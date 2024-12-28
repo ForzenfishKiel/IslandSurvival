@@ -18,3 +18,10 @@ UISEquipableDataAsset* UISAbilitysystemLibary::GetEquipableDataAsset(const UObje
 	if(!SourceGameMode) return nullptr;
 	return SourceGameMode->EquipableDataAsset;
 }
+
+UISWeaponDataAsset* UISAbilitysystemLibary::GetSweaponDataAsset(const UObject* WorldContextObject)
+{
+	AISGameplayMode*SourceGameMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(!SourceGameMode) return nullptr;
+	return SourceGameMode->WeaponDataAsset;
+}
