@@ -42,6 +42,14 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>>EquipableActivateAbilities;  //武器主动能力
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ItemConfig")
 	TArray<TSubclassOf<UGameplayAbility>>EquibablePassiveAbilities;//武器被动能力
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,ReplicatedUsing = OnRep_AmmoChanged,Category="ItemConfig")
+	int32 Ammos = 0;  //弹药
+	UFUNCTION()
+	void OnRep_AmmoChanged();
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite,Category="ItemConfig")
+	int32 MaxAmmos = 0; //最大弹药量
 public:
 	virtual void UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) override;
 	virtual void UnUseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC) override;
@@ -52,4 +60,5 @@ public:
 	virtual void RemoveTargetEffect(UAbilitySystemComponent* TargetASC, TSubclassOf<UGameplayEffect> EffectClass) override;
 	virtual ECharacterEquipState GetTargetEquipState() override;
 	virtual EItemRarity GetItemRarity_Implementation() override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };

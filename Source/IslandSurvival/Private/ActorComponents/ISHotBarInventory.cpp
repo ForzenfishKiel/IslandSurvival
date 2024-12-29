@@ -8,3 +8,8 @@ void UISHotBarInventory::BeginPlay()
 	Super::BeginPlay();
 	ItemPickup.AddDynamic(this,&UISItemsContainer::ToPickUpItemsInBackPack);
 }
+
+void UISHotBarInventory::UpdateAmmos(const int32 InCurrentAmmo, const int32 InMaxAmmo)
+{
+	OnInventoryUpdateCurrentAmmos.Broadcast(InCurrentAmmo,InMaxAmmo,CurrentChooseIndex);
+}

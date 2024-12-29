@@ -25,8 +25,12 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int32 LastChooseIndex = -1;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int32 CurrentChooseIndex = -1;
 	
 	FItemInformation ItemInfo;
+
+
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	EContainerType ContainerType = EContainerType::None;

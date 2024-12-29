@@ -32,6 +32,15 @@ void AISEquipable::SetEquipableCollision()
 	PickUpCheckSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void AISEquipable::OnRep_AmmoChanged()
+{
+	AISCharacter* OwnerCharacter = Cast<AISCharacter>(GetOwner());
+	check(OwnerCharacter);
+
+	UISHotBarInventory* CharacterHotBar = OwnerCharacter->GetComponentByClass<UISHotBarInventory>();
+	CharacterHotBar->UpdateAmmos(Ammos,MaxAmmos);
+}
+
 void AISEquipable::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)
 {
 	Super::UseItem(TargetCharacter, TargetASC);
@@ -111,4 +120,11 @@ ECharacterEquipState AISEquipable::GetTargetEquipState()
 EItemRarity AISEquipable::GetItemRarity_Implementation()
 {
 	return ItemRarity;
+}
+
+void AISEquipable::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AISEquipable,Ammos);
 }

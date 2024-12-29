@@ -43,6 +43,7 @@ void UISItemsContainer::InitializeComponent()
 
 void UISItemsContainer::WhenInventoryChange(UISItemsContainer* TargetContainer, const int32 TargetIndex)
 {
+	CurrentChooseIndex = TargetIndex;
 	//若目标位置可用
 	if(TargetContainer->InventoryContainer[TargetIndex].ItemID!=-1&&IsValid(TargetContainer->InventoryContainer[TargetIndex].ItemClassRef))
 	{
