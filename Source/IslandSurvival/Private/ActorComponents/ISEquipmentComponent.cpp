@@ -16,16 +16,16 @@ UISEquipmentComponent::UISEquipmentComponent()
 }
 
 //Setter
-void UISEquipmentComponent::SetAttachSocket(FName NewSocketName)
+void UISEquipmentComponent::SetTPAttachSocket(FName NewSocketName)
 {
-	AttachSocket = NewSocketName;
+	Tp_AttachSocket = NewSocketName;
 }
 
-void UISEquipmentComponent::SetWeaponInformation(const FItemInformation TargetInfo)
+void UISEquipmentComponent::SetFPAttachSocket(FName NewSocketName)
 {
-	WeaponInformation = TargetInfo;
-	MARK_PROPERTY_DIRTY_FROM_NAME(UISEquipmentComponent, WeaponInformation, this) 
+	Fp_AttachSocket = NewSocketName;
 }
+
 //Setter
 
 void UISEquipmentComponent::InitializeEquipmentComponent(UAbilitySystemComponent*TargetASC)
@@ -47,17 +47,28 @@ void UISEquipmentComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	FDoRepLifetimeParams SharedParams;
 	SharedParams.bIsPushBased = true;
 	
-	
-	DOREPLIFETIME(UISEquipmentComponent, Equipable);
 	DOREPLIFETIME(UISEquipmentComponent,CharacterEquipState);
 	DOREPLIFETIME(UISEquipmentComponent,ISHelmet);
 	DOREPLIFETIME(UISEquipmentComponent,ISChest);
 	DOREPLIFETIME(UISEquipmentComponent,ISPants);
 	DOREPLIFETIME(UISEquipmentComponent,ISBoots);
-	DOREPLIFETIME(UISEquipmentComponent,AttachSocket);
+	DOREPLIFETIME(UISEquipmentComponent,Tp_AttachSocket);
+	DOREPLIFETIME(UISEquipmentComponent,Fp_AttachSocket);
 
 	
-	DOREPLIFETIME_WITH_PARAMS_FAST(UISEquipmentComponent,WeaponInformation,SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UISEquipmentComponent,Equipable,SharedParams);
+}
+
+void UISEquipmentComponent::OnRep_EquipableChanged()
+{
+	if(Equipable == nullptr)
+	{
+		UnEquipOnClient();
+	}
+	else
+	{
+		SpawnEquipOnClient();
+	}
 }
 
 //在服务器完成武器的初始化
@@ -66,53 +77,50 @@ void UISEquipmentComponent::Equip_Implementation(const FItemInformation TargetIn
 	UISWeaponDataAsset* SourceWeaponData = UISAbilitysystemLibary::GetSweaponDataAsset(GetOwner());
 	if(!SourceWeaponData) return;
 	FWeaponInfo WeaponInfo = SourceWeaponData->GetWeaponInfo(TargetInformation.ItemID);
-	SetAttachSocket(WeaponInfo.AttachSocket);
+	
+	SetTPAttachSocket(WeaponInfo.Tp_AttachSocket);
+	SetFPAttachSocket(WeaponInfo.Fp_AttachSocket);
 	
 	
 	//确定储存的武器数据不为空
 	Equipable = GetWorld()->SpawnActorDeferred<AISEquipable>(TargetInformation.ItemClassRef,FTransform::Identity,GetOwner());
 	UGameplayStatics::FinishSpawningActor(Equipable,FTransform::Identity);
+
+
+	Equipable->UseItem(GetOwner(),SourceASC);
+
+	
 	Equipable->InitializeEquipableConfig(TargetInformation);  //初始化其配置
 	CharacterEquipState = Equipable->EquipState;
-	Equipable->UseItem(GetOwner(),SourceASC);
+
 	USceneComponent* AttachThirdPerson = Equipable->GetAttachThirdPersonParent(Cast<APawn>(Equipable->GetOwner()));
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("服务器触发: %s"), *Equipable->GetOwner()->GetName()));
-	SpawnEquip_Implementation(AttachThirdPerson);
-
-	SetWeaponInformation(TargetInformation);
+	Equipable->SetEquipableCollision();
+	
+	SpawnEquip(AttachThirdPerson);
 }
+
 // NetMulticast
 void UISEquipmentComponent::SpawnEquip_Implementation(USceneComponent* AttachEquip)
 {
-	Equipable->SetEquipableCollision();
-	Equipable->ItemsStaticMesh->bOwnerNoSee = true;
+	if(!Equipable) return;
 	Equipable->SetActorRelativeTransform(FTransform::Identity);
-	Equipable->AttachToComponent(AttachEquip,FAttachmentTransformRules::KeepRelativeTransform,AttachSocket);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("多播触发！！"));
-}
-
-
-void UISEquipmentComponent::OnRep_WeaponInformationChange()
-{
-	SpawnEquipOnClient(WeaponInformation);
+	Equipable->AttachToComponent(AttachEquip,FAttachmentTransformRules::KeepRelativeTransform,Tp_AttachSocket);
 }
 
 //客户端调用武器装备
-void UISEquipmentComponent::SpawnEquipOnClient_Implementation(const FItemInformation TargetInformation)
+void UISEquipmentComponent::SpawnEquipOnClient_Implementation()
 {
-	EquipableClient = GetWorld()->SpawnActorDeferred<AISEquipable>(TargetInformation.ItemClassRef,FTransform::Identity,GetOwner());
-	UGameplayStatics::FinishSpawningActor(EquipableClient,FTransform::Identity);
-	EquipableClient->SetEquipableCollision();
-	EquipableClient->ItemsStaticMesh->bOnlyOwnerSee = true;
-	USceneComponent*AttachThirdPerson = EquipableClient->GetAttachTarget(Cast<APawn>(EquipableClient->GetOwner()));
-	EquipableClient->SetActorRelativeTransform(FTransform::Identity);
-	EquipableClient->AttachToComponent(AttachThirdPerson,FAttachmentTransformRules::KeepRelativeTransform,AttachSocket);
+
+	USceneComponent*AttachThirdPerson = Equipable->GetAttachTarget(Cast<APawn>(Equipable->GetOwner()));
+	Equipable->SetActorRelativeTransform(FTransform::Identity);
+	Equipable->AttachToComponent(AttachThirdPerson,FAttachmentTransformRules::KeepRelativeTransform,Fp_AttachSocket);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("客户端触发！！！"));
 }
 
+//UnEquip Run On Server
 void UISEquipmentComponent::UnEquip_Implementation()
 {
-	
 	CharacterEquipState = ECharacterEquipState::None;
 	Equipable->UnUseItem(GetOwner(),SourceASC);
 	Equipable->Destroy();
@@ -120,8 +128,7 @@ void UISEquipmentComponent::UnEquip_Implementation()
 }
 void UISEquipmentComponent::UnEquipOnClient_Implementation()
 {
-	EquipableClient->Destroy();
-	EquipableClient = nullptr;
+	
 }
 //使用物品
 void UISEquipmentComponent::UseConsumable_Implementation(TSubclassOf<AISItemBase> ItemClass)

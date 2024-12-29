@@ -25,8 +25,8 @@ public:
 	UISEquipmentComponent();
 	
 	//Player Attach Socket Setter.
-	void SetAttachSocket(FName NewSocketName);
-	void SetWeaponInformation(const FItemInformation TargetInfo);
+	void SetTPAttachSocket(FName NewSocketName);
+	void SetFPAttachSocket(FName NewSocketName);
 	
 	//用于通知一些功能的实现，例如通知装备动画的播放，并传递一些数值
 	UPROPERTY(BlueprintAssignable, Category="Custom Events")
@@ -47,11 +47,10 @@ public:
 	ECharacterEquipState CharacterEquipState = ECharacterEquipState::None;
 
 	
-	UPROPERTY(BlueprintReadOnly,Replicated)
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_EquipableChanged)
 	TObjectPtr<AISEquipable> Equipable = nullptr;//用于储存角色可装备的物品
-	
-	UPROPERTY()
-	TObjectPtr<AISEquipable> EquipableClient = nullptr;
+	UFUNCTION()
+	void OnRep_EquipableChanged();
 
 	UPROPERTY()
 	TObjectPtr<AISConsumable> ISConsumable = nullptr;
@@ -75,12 +74,12 @@ public:
 	void Equip(const FItemInformation TargetInformation);
 
 	
-	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void SpawnEquip(USceneComponent*AttachEquip);
 
 	
 	UFUNCTION(BlueprintCallable,Client, Reliable)
-	void SpawnEquipOnClient(const FItemInformation TargetInformation);
+	void SpawnEquipOnClient();
 
 	
 	UFUNCTION(BlueprintCallable,Server, Reliable)
@@ -113,10 +112,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 private:
 	UPROPERTY(Replicated)
-	FName AttachSocket;  //附加套接字
+	FName Tp_AttachSocket;  //附加第三人称套接字
 
-	UPROPERTY(ReplicatedUsing = OnRep_WeaponInformationChange)
-	FItemInformation WeaponInformation;
-	UFUNCTION()
-	void OnRep_WeaponInformationChange();
+	UPROPERTY(Replicated)
+	FName Fp_AttachSocket;  //附加第一人称套接字
 };

@@ -15,7 +15,10 @@ struct FWeaponInfo
 	GENERATED_BODY()
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
-	FName AttachSocket;
+	FName Fp_AttachSocket;
+		
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
+	FName Tp_AttachSocket;
 };
 UCLASS(BlueprintType)
 class ISLANDSURVIVAL_API UISWeaponDataAsset : public UDataAsset
