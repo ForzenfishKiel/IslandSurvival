@@ -146,7 +146,14 @@ void AISPlayerController::InputPressedAbility(const FGameplayTag InputTag)
 
 void AISPlayerController::InputHeldAbility(const FGameplayTag InputTag)
 {
-	
+	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetPawn());
+	AISPlayerState*SourcePlayerState = SourceCharacter->GetPlayerState<AISPlayerState>();
+	if(SourcePlayerState)
+	{
+		UISAbilitySystemComponent*LocalASC =Cast<UISAbilitySystemComponent>( UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourcePlayerState));
+		if(!LocalASC) return;
+		LocalASC->InputHoldFunc(InputTag);
+	}
 }
 
 void AISPlayerController::InputReleasedAbility(const FGameplayTag InputTag)

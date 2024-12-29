@@ -72,6 +72,24 @@ void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 	}
 }
 
+void UISAbilitySystemComponent::InputHoldFunc(const FGameplayTag& InputTag)
+{
+	if(!InputTag.IsValid()) return;
+	FGameplayTagsManager GameplayTagsManager = FGameplayTagsManager::Get();  //从Tag库中获取Tag
+	if(InputTag == GameplayTagsManager.Input_Attack_LMB) return;   //暂定
+	FScopedAbilityListLock ActiveScopeLoc(*this);
+	for(FGameplayAbilitySpec&AbilitySpec:GetActivatableAbilities())  //从所有可激活的能力中查找
+	{
+		if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			if(!AbilitySpec.IsActive())
+			{
+				TryActivateAbility(AbilitySpec.Handle);
+			}
+		}
+	}
+}
+
 void UISAbilitySystemComponent::RemoveCharacterAbility(TArray<TSubclassOf<UGameplayAbility>>& CharacterAbilities)
 {
 	if(CharacterAbilities.Num() > 0)
