@@ -74,7 +74,7 @@ public:
 	void Equip(const FItemInformation TargetInformation);
 
 	
-	UFUNCTION(BlueprintCallable,Server, Reliable)
+	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
 	void SpawnEquip(USceneComponent*AttachEquip);
 
 	
