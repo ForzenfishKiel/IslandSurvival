@@ -34,6 +34,7 @@ public:
 	EItemRarity ItemRarity = EItemRarity::None;
 	void SetEquipableCollision();  //设置武器的碰撞条件
 	void InitializeEquipableConfig(const FItemInformation&TargetInfo);
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ItemConfig")
 	TSubclassOf<UGameplayEffect>EquipableDefaultAttribute;  //武器默认属性的提供
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ItemConfig")
@@ -47,6 +48,8 @@ public:
 	int32 Ammos = 0;  //弹药
 	UFUNCTION()
 	void OnRep_AmmoChanged();
+	UFUNCTION(BlueprintCallable)
+	int32 CheckMagazine(const int32 TargetID); //检查是否有弹匣并返回指定位置
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite,Category="ItemConfig")
 	int32 MaxAmmos = 0; //最大弹药量

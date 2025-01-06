@@ -41,6 +41,31 @@ void AISEquipable::OnRep_AmmoChanged()
 	CharacterHotBar->UpdateAmmos(Ammos,MaxAmmos);
 }
 
+int32 AISEquipable::CheckMagazine(const int32 TargetID)
+{
+	if(TargetID == -1) return -1;
+	AISCharacter* OwnerCharacter = Cast<AISCharacter>(GetOwner());
+	check(OwnerCharacter);
+	UISCharacterInventory* CharacterInventory = OwnerCharacter->GetComponentByClass<UISCharacterInventory>();
+	UISHotBarInventory* CharacterHotBar = OwnerCharacter->GetComponentByClass<UISHotBarInventory>();
+	if(!CharacterInventory && !CharacterHotBar) return -1;
+	for(int32 i = 0; i < CharacterInventory->InventoryContainer.Num(); i++)
+	{
+		if(CharacterInventory->InventoryContainer[i].ItemID == TargetID)
+		{
+			return i;
+		}
+	}
+	for(int32 i = 0; i < CharacterHotBar->InventoryContainer.Num(); i++)
+	{
+		if(CharacterHotBar->InventoryContainer[i].ItemID == TargetID)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 void AISEquipable::UseItem(AActor* TargetCharacter, UAbilitySystemComponent* TargetASC)
 {
 	Super::UseItem(TargetCharacter, TargetASC);
