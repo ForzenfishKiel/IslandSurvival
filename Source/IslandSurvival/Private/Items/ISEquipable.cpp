@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Game/ISGameplayTagsManager.h"
 
+
 USceneComponent* AISEquipable::GetAttachTarget(APawn* TargetPawn) const
 {
 	USceneComponent*AttachTarget = TargetPawn->GetRootComponent();
