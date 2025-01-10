@@ -36,7 +36,7 @@ void AISPlayerController::SetupInputComponent()
 	ISEnhanceInputComponent->BindAction(IA_LeftClick,ETriggerEvent::Started,this,&AISPlayerController::PrimaryInteract);
 	ISEnhanceInputComponent->BindChooseItemActions(ChooseHotBarInputData,this,&AISPlayerController::ChooseHotBar);
 	ISEnhanceInputComponent->BindAbilityActions(InputAbilityData,this,&AISPlayerController::InputPressedAbility
-		,&AISPlayerController::InputHeldAbility,&AISPlayerController::InputHeldAbility);
+		,&AISPlayerController::InputHeldAbility,&AISPlayerController::InputReleasedAbility);
 	ISEnhanceInputComponent->BindAction(IA_SecInteract,ETriggerEvent::Started,this,&AISPlayerController::SecondaryInteract);
 	ISEnhanceInputComponent->BindAction(IA_DemoBuilding,ETriggerEvent::Triggered,this,&AISPlayerController::OneClickToDemoBuilding);
 }

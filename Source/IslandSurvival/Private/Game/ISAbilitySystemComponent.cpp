@@ -41,6 +41,7 @@ void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 {
 	if(!InputTag.IsValid()) return;
 	FGameplayTagsManager GameplayTagsManager = FGameplayTagsManager::Get();  //从Tag库中获取Tag
+
 	FScopedAbilityListLock ActiveScopeLoc(*this);
 	for(FGameplayAbilitySpec&AbilitySpec:GetActivatableAbilities())  //从所有可激活的能力中查找
 	{
@@ -76,6 +77,9 @@ void UISAbilitySystemComponent::InputHoldFunc(const FGameplayTag& InputTag)
 {
 	if(!InputTag.IsValid()) return;
 	FGameplayTagsManager GameplayTagsManager = FGameplayTagsManager::Get();  //从Tag库中获取Tag
+	
+	FString TagName = InputTag.RequestDirectParent().ToString();
+	
 	if(InputTag == GameplayTagsManager.Input_Attack_LMB) return;   //暂定
 	FScopedAbilityListLock ActiveScopeLoc(*this);
 	for(FGameplayAbilitySpec&AbilitySpec:GetActivatableAbilities())  //从所有可激活的能力中查找
