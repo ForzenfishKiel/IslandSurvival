@@ -40,6 +40,7 @@ public:
 	FGameplayTag Input_Attack_FastRun;
 	FGameplayTag Input_Attack_SecondInteract;
 	FGameplayTag Input_Attack_Fire; //角色开火
+	FGameplayTag Input_Attack_BowShoot;  //弓箭射击
 	/*输入事件结束*/
 
 	/*输入触发状态事件*/

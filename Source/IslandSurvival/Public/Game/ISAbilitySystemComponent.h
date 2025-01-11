@@ -18,6 +18,7 @@ public:
 	void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&CharacterAbilities);
 	void InputPressedFunc(const FGameplayTag&InputTag);
 	void InputHoldFunc(const FGameplayTag&InputTag);
+	void InputReleased(const FGameplayTag&InputTag);
 	void RemoveCharacterAbility(TArray<TSubclassOf<UGameplayAbility>>&CharacterAbilities);
 	void RemoveCharacterAttribute(const TSubclassOf<UGameplayEffect>AbilityToRemoveEffect);
 	virtual void OnRep_ActivateAbilities() override;

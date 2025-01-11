@@ -78,17 +78,40 @@ void UISAbilitySystemComponent::InputHoldFunc(const FGameplayTag& InputTag)
 	if(!InputTag.IsValid()) return;
 	FGameplayTagsManager GameplayTagsManager = FGameplayTagsManager::Get();  //从Tag库中获取Tag
 	
-	FString TagName = InputTag.RequestDirectParent().ToString();
 	
-	if(InputTag == GameplayTagsManager.Input_Attack_LMB) return;   //暂定
-	FScopedAbilityListLock ActiveScopeLoc(*this);
-	for(FGameplayAbilitySpec&AbilitySpec:GetActivatableAbilities())  //从所有可激活的能力中查找
+	if(InputTag == GameplayTagsManager.Input_Attack_Fire)
 	{
-		if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		FScopedAbilityListLock ActiveScopeLoc(*this);
+		for(FGameplayAbilitySpec&AbilitySpec:GetActivatableAbilities())  //从所有可激活的能力中查找
 		{
-			if(!AbilitySpec.IsActive())
+			if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 			{
-				TryActivateAbility(AbilitySpec.Handle);
+				if(!AbilitySpec.IsActive())
+				{
+					TryActivateAbility(AbilitySpec.Handle);
+				}
+			}
+		}
+	}
+}
+
+void UISAbilitySystemComponent::InputReleased(const FGameplayTag& InputTag)
+{
+	if(!InputTag.IsValid()) return;
+	{
+		FGameplayTagsManager GameplayTagsManager = FGameplayTagsManager::Get();  //从Tag库中获取Tag
+		if(InputTag == GameplayTagsManager.Input_Attack_BowShoot)
+		{
+			FScopedAbilityListLock ActiveScopeLoc(*this);
+			for(FGameplayAbilitySpec&AbilitySpec:GetActivatableAbilities())  //从所有可激活的能力中查找
+			{
+				if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+				{
+					if(!AbilitySpec.IsActive())
+					{
+						TryActivateAbility(AbilitySpec.Handle);
+					}
+				}
 			}
 		}
 	}
