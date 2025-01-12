@@ -110,6 +110,10 @@ void AISHarvestingBase::ApplyDamageToTarget_Implementation(AActor* TargetActor)
 //计算实际采集的数量（提供武器，人物等级等）
 int32 AISHarvestingBase::GetNumsFromMultiplier_Implementation(AActor* TargetTool, int32 TargetNums)
 {
+	AISCharacter*SourceCharacter = Cast<AISCharacter>(TargetTool->GetOwner());
+	if(!SourceCharacter) return 0;
+	AISPlayerState*SourcePlayerState = SourceCharacter->GetPlayerState<AISPlayerState>();
+	UISAttributeSet*SourceAS = Cast<UISAttributeSet>( SourcePlayerState->GetAttributeSet());  //获取角色的属性
 
 	UISEquipableDataAsset*TargetDataAsset = UISAbilitysystemLibary::GetEquipableDataAsset(TargetTool);
 	if(!TargetDataAsset) return 0;
@@ -127,8 +131,9 @@ int32 AISHarvestingBase::GetNumsFromMultiplier_Implementation(AActor* TargetTool
 	{
 		if(EquipItemRarityContainer.ItemRarity==IISEquipableInterface::Execute_GetItemRarity(TargetTool))
 		{
+			const float ToolDamage = SourceAS->GetGatheringDamage();  //角色使用工具采集，计算工具的伤害
 			const float BoostMultiplier = EquipItemRarityContainer.BootMultiplier.GetValueAtLevel(1.f);
-			const int32 Result = FMath::RoundToFloat(TargetNums * BoostMultiplier);
+			const int32 Result = FMath::RoundToFloat(TargetNums * BoostMultiplier + TargetNums * (ToolDamage / 10.f));
 			return Result;
 		}
 	}

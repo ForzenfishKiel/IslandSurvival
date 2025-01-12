@@ -83,7 +83,7 @@ void UISEquipmentComponent::Equip_Implementation(const FItemInformation TargetIn
 	
 	
 	//确定储存的武器数据不为空
-	Equipable = GetWorld()->SpawnActorDeferred<AISEquipable>(TargetInformation.ItemClassRef,FTransform::Identity,GetOwner());
+	Equipable = GetWorld()->SpawnActorDeferred<AISEquipable>(TargetInformation.ItemClassRef,FTransform::Identity,GetOwner(),GetOwner()->GetInstigatorController()->GetPawn());
 	UGameplayStatics::FinishSpawningActor(Equipable,FTransform::Identity);
 
 

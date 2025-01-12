@@ -21,6 +21,7 @@ enum class ECharacterEquipState:uint8
 	EquipBow = 3 UMETA(DisplayName = "EquipBow"),
 	EquipRifle = 4 UMETA(DisplayName = "EquipRifle"),
 	EquipRPG = 5 UMETA(DisplayName = "EquipRPG"),
+	EquipSpear = 6 UMETA(DisplayName = "EquipSpear"),
 };
 UCLASS()
 class ISLANDSURVIVAL_API AISEquipable : public AISItemBase,public IISEquipableInterface
