@@ -5,6 +5,7 @@
 #include "Character/ISCharacter.h"
 #include "Math/MathFwd.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UISBuildingComponent::UISBuildingComponent()
@@ -135,6 +136,13 @@ bool UISBuildingComponent::GetSnappingPoint(const AActor* TargetActor, UActorCom
 	}
 	return false;
 }
+
+void UISBuildingComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UISBuildingComponent, Isfloating);
+}
+
 //设置预览建筑物的颜色
 void UISBuildingComponent::SetPreviewBuildingColor()
 {
@@ -150,7 +158,7 @@ void UISBuildingComponent::SetPreviewBuildingColor()
 			//需要进行浮空检测的，添加浮空检测判定语句
 			for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
 			{
-				FISBuildBooleanCheck BuildBooleanCheck(BuildingStaticMesh,i,ISBuildingRef->BuildingConfig.DoFloatCheck,CheckForOverlap(),CheckBuildFloating(),
+				FISBuildBooleanCheck BuildBooleanCheck(BuildingStaticMesh,i,ISBuildingRef->BuildingConfig.DoFloatCheck,CheckForOverlap(),Isfloating,
 					ISBuildingRef->BuildingConfig.CanPlaceOnFoundation,CheckBuildOnFoundation());
 				OnCallSetMaterial.Broadcast(BuildBooleanCheck);
 			}
@@ -204,18 +212,17 @@ bool UISBuildingComponent::CheckForOverlap()
 	}
 }
 
-bool UISBuildingComponent::CheckBuildFloating()
+void UISBuildingComponent::CheckBuildFloating_Implementation()
 {
-	if(!ISBuildingRef) return false;
+	if(!ISBuildingRef) return;
 	FVector EndLocation = ISBuildingTransformRef.GetLocation();
 	EndLocation-=FVector(0,0,50);
 	TArray<AActor*>IgnoreActor;
 	IgnoreActor.Add(GetOwner());
 	IgnoreActor.Add(ISBuildingRef);
 	FHitResult Hit;
-	return (GetWorld()->LineTraceSingleByChannel(Hit,ISBuildingTransformRef.GetLocation(),EndLocation,ECC_GameTraceChannel12));
+	Isfloating = GetWorld()->LineTraceSingleByChannel(Hit,ISBuildingTransformRef.GetLocation(),EndLocation,ECC_GameTraceChannel12);
 }
-
 bool UISBuildingComponent::CheckBuildOnFoundation()
 {
 	if(!ISBuildingRef) return false;

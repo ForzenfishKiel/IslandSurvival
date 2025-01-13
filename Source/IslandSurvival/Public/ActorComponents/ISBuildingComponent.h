@@ -58,7 +58,8 @@ public:
 	void TraceToMoveBuildPreview();
 	void SetPreviewBuildingColor();
 	bool CheckForOverlap();  //检查预览建筑物是否发生了碰撞
-	bool CheckBuildFloating();//检查预览建筑物是否在地面
+	UFUNCTION(Server,Reliable)
+	void CheckBuildFloating();//检查预览建筑物是否在地面
 	bool CheckBuildOnFoundation(); //检查建筑物是否只能被放置于地基
 	UFUNCTION(Server,Reliable)
 	void SpawnBuildOnServer(TSubclassOf<AISItemBase>BuildingSystemBaseClass,FTransform Transform,bool bBuildingWasCreated);
@@ -79,4 +80,9 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool bCanBeBuild = false;
 	int32 SaveHotBarIndex = -1;
+private:
+	UPROPERTY(Replicated)
+	bool Isfloating = false;
+
+	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };
