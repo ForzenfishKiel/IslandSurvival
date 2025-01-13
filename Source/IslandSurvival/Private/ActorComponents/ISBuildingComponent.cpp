@@ -213,8 +213,7 @@ bool UISBuildingComponent::CheckBuildFloating()
 	IgnoreActor.Add(GetOwner());
 	IgnoreActor.Add(ISBuildingRef);
 	FHitResult Hit;
-	return (UKismetSystemLibrary::LineTraceSingle(GetOwner(),ISBuildingTransformRef.GetLocation(),EndLocation,ISBuildingRef->BuildingConfig.TraceType,true,IgnoreActor
-		,EDrawDebugTrace::None,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f));
+	return (GetWorld()->LineTraceSingleByChannel(Hit,ISBuildingTransformRef.GetLocation(),EndLocation,ECC_GameTraceChannel12));
 }
 
 bool UISBuildingComponent::CheckBuildOnFoundation()
