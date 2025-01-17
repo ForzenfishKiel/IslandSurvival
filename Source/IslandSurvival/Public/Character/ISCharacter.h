@@ -46,6 +46,15 @@ public:
 	void SetSingleOwnerWhenCharacterControlActor(const UISItemsContainer* InItemsContainer,APlayerController* InController);
 
 	UFUNCTION(BlueprintCallable)
+	TSubclassOf<AISHarvestingBase> CheckHarvestDataAsset(const FString& InName);
+	UFUNCTION(BlueprintCallable)
+	AISHarvestingBase* ReplaceToActor(const TSubclassOf<AISHarvestingBase> InClassTemp,
+		UInstancedStaticMeshComponent* TargetComponent,const int32 TargetItemNum);
+	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
+	void MulticastToRemoveStaticMesh(UInstancedStaticMeshComponent* TargetComponent,const int32 TargetItemNum);
+
+	
+	UFUNCTION(BlueprintCallable)
 	bool CheckIsFastRun();
 
 	UPROPERTY(EditAnywhere,Category = "Config")

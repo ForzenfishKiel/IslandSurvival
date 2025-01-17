@@ -2,10 +2,15 @@
 
 
 #include "Items/ISEquipable.h"
+
+#include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Character/ISCharacter.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
+#include "Game/ISGameplayMode.h"
 #include "Net/UnrealNetwork.h"
 #include "Game/ISGameplayTagsManager.h"
+#include "Kismet/GameplayStatics.h"
 
 
 USceneComponent* AISEquipable::GetAttachTarget(APawn* TargetPawn) const
@@ -153,4 +158,34 @@ void AISEquipable::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AISEquipable,Ammos);
+}
+
+//检查采集的物品是否在数据表中 
+TSubclassOf<AISHarvestingBase> AISEquipable::CheckHarvestDataAsset(const FString& InName)
+{
+	AISGameplayMode* SourceGamemomde = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(GetOwner()));
+	if(!SourceGamemomde)return nullptr;
+
+	UISHarvestDataAsset* HarvestDataAsset = UISAbilitysystemLibary::GetHarvestDataAsset(GetOwner());
+	if(!HarvestDataAsset)return nullptr;
+
+	return HarvestDataAsset->GetHarvest(InName); //返回对应的类模板
+}
+
+AISHarvestingBase* AISEquipable::ReplaceToActor(const TSubclassOf<AISHarvestingBase> InClassTemp
+	,UInstancedStaticMeshComponent* TargetComponent, const int32 TargetItemNum)
+{
+	FTransform OutTransform;
+	if(!TargetComponent->GetInstanceTransform(TargetItemNum,OutTransform,true)) return nullptr;
+	MulticastToRemoveStaticMesh(TargetComponent,TargetItemNum); //删除原来的模型
+	
+	AISHarvestingBase* HarvestingBaseRef = GetWorld()->SpawnActor<AISHarvestingBase>(InClassTemp,OutTransform); //在原位置生成Actor
+	return HarvestingBaseRef;
+}
+
+void AISEquipable::MulticastToRemoveStaticMesh_Implementation(UInstancedStaticMeshComponent* TargetComponent,
+	const int32 TargetItemNum)
+{
+	if(!IsValid(TargetComponent) && TargetItemNum <= 0) return;
+	TargetComponent->RemoveInstance(TargetItemNum);
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Data/ISPlayerItemDataTable.h"
+#include "Havesting/ISHarvestingBase.h"
 #include "Interface/ISEquipableInterface.h"
 #include "Items/ISItemBase.h"
 #include "ISEquipable.generated.h"
@@ -36,6 +37,13 @@ public:
 	EItemRarity ItemRarity = EItemRarity::None;
 	void SetEquipableCollision();  //设置武器的碰撞条件
 	void InitializeEquipableConfig(const FItemInformation&TargetInfo);
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<AISHarvestingBase> CheckHarvestDataAsset(const FString& InName);
+	UFUNCTION(BlueprintCallable)
+	AISHarvestingBase* ReplaceToActor(const TSubclassOf<AISHarvestingBase> InClassTemp,
+		UInstancedStaticMeshComponent* TargetComponent,const int32 TargetItemNum);
+	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
+	void MulticastToRemoveStaticMesh(UInstancedStaticMeshComponent* TargetComponent,const int32 TargetItemNum);
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ItemConfig")
 	TSubclassOf<UGameplayEffect>EquipableDefaultAttribute;  //武器默认属性的提供

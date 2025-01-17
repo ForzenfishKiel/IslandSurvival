@@ -55,7 +55,7 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 	AISCharacter* SourceCharacter = Cast<AISCharacter>(TargetActor);
 	if(!SourceCharacter) return;  //如果为目标角色
 	UISItemsContainer* ItemContainer = SourceCharacter->GetComponentByClass<UISItemsContainer>();
-	UISDropCollectibleDataAsset* CollectibleDataAsset = UISAbilitysystemLibary::GetCollectibleDataAsset(this);
+	UISDropCollectibleDataAsset* CollectibleDataAsset = UISAbilitysystemLibary::GetDropCollectibleDataAsset(this);
 	const FDropInformation DropInfo = CollectibleDataAsset->GetDropConfig(CollectibleClass);
 
 	Execute_ApplyDamageToTarget(this,TargetActor); //计算伤害
