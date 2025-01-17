@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "ISEquipableInterface.generated.h"
 
+class AISEquipable;
 enum class EItemRarity : uint8;
 struct FEquipInfoConfig;
 enum class ECharacterEquipState : uint8;
@@ -30,4 +31,8 @@ public:
 	void EndAbilityActivate();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	EItemRarity GetItemRarity();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	AISEquipable* GetEquipable() ;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnEquipableWasInteract(AActor* InteractingActor);
 };

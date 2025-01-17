@@ -176,7 +176,7 @@ void AISPlayerController::SecondaryInteract()
 	if(!InteractionComponent) return;
 	InteractionComponent->SecondaryInteract();
 }
-
+//销毁当前检测的建筑
 void AISPlayerController::OneClickToDemoBuilding()
 {
 	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetPawn());

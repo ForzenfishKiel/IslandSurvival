@@ -36,6 +36,7 @@ USceneComponent* AISEquipable::GetAttachThirdPersonParent(APawn* TargetPawn) con
 void AISEquipable::SetEquipableCollision()
 {
 	PickUpCheckSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ItemsStaticMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel1,ECR_Ignore);
 }
 
 void AISEquipable::OnRep_AmmoChanged()
@@ -158,6 +159,16 @@ void AISEquipable::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AISEquipable,Ammos);
+}
+
+AISEquipable* AISEquipable::GetEquipable_Implementation()
+{
+	return this;
+}
+
+void AISEquipable::OnEquipableWasInteract_Implementation(AActor* InteractingActor)
+{
+	IISEquipableInterface::OnEquipableWasInteract_Implementation(InteractingActor);
 }
 
 //检查采集的物品是否在数据表中 

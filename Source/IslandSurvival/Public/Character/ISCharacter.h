@@ -11,7 +11,6 @@
 #include "ActorComponents/ISInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Character/ISCharacterBase.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Interface/ISPlayerInterface.h"
 #include "ISCharacter.generated.h"

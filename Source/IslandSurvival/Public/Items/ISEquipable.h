@@ -23,6 +23,7 @@ enum class ECharacterEquipState:uint8
 	EquipRifle = 4 UMETA(DisplayName = "EquipRifle"),
 	EquipRPG = 5 UMETA(DisplayName = "EquipRPG"),
 	EquipSpear = 6 UMETA(DisplayName = "EquipSpear"),
+	EquipRock = 7 UMETA(DisplayName = "EquipRock"),
 };
 UCLASS()
 class ISLANDSURVIVAL_API AISEquipable : public AISItemBase,public IISEquipableInterface
@@ -74,4 +75,6 @@ public:
 	virtual ECharacterEquipState GetTargetEquipState() override;
 	virtual EItemRarity GetItemRarity_Implementation() override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual AISEquipable* GetEquipable_Implementation() override;
+	virtual void OnEquipableWasInteract_Implementation(AActor* InteractingActor) override;
 };

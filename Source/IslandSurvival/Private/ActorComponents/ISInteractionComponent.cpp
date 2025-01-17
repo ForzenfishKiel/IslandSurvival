@@ -15,6 +15,7 @@ UISInteractionComponent::UISInteractionComponent()
 	SetIsReplicatedByDefault(true); //默认打开复制
 }
 
+//Not Tick
 void UISInteractionComponent::PrimaryInteract_Implementation()
 {
 	AISCharacter*ISCharacter = Cast<AISCharacter>(GetOwner());
@@ -55,7 +56,7 @@ void UISInteractionComponent::PrimaryInteract_Implementation()
 		}
 	}
 }
-
+//这个交互模式是指角色在识别到可交互的物品时，只要允许交互，无论角色当前是否处于某种状态，都会执行，例如角色打开箱子，按下按钮，捡起石头
 void UISInteractionComponent::SecondaryInteract_Implementation()
 {
 	AISCharacter*ISCharacter = Cast<AISCharacter>(GetOwner());
@@ -79,17 +80,23 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 				CurrentBuilding = IISBuildInterface::Execute_GetBuildingSystemBase(CompOwner);
 				AISPlayerController* SourcePC = Cast<AISPlayerController>(GetOwner()->GetInstigatorController());
 				SourcePC->OnOpenInventoryEvent.AddDynamic(this,&UISInteractionComponent::ReciveControllerOpenUIEvent);
-				PossessedBuildingOnServer(CurrentBuilding);
+				PossessedObjectOnServer<AISBuildingSystemBase>(CurrentBuilding);
 				
 				IISBuildInterface::Execute_OnBuildingWasInteract(CompOwner, GetOwner(), HitComponent);
 				return;
 			}
-			else if(HitActor->Implements<UISBuildInterface>())
+			if(HitActor->Implements<UISEquipableInterface>())
+			{
+				PossessedObjectOnServer<AISEquipable>(IISEquipableInterface::Execute_GetEquipable(HitActor));
+				IISEquipableInterface::Execute_OnEquipableWasInteract(HitActor, GetOwner());
+				return;
+			}
+			if(HitActor->Implements<UISBuildInterface>())
 			{
 				CurrentBuilding = IISBuildInterface::Execute_GetBuildingSystemBase(CompOwner);
 				AISPlayerController* SourcePC = Cast<AISPlayerController>(GetOwner()->GetInstigatorController());
 				SourcePC->OnOpenInventoryEvent.AddDynamic(this,&UISInteractionComponent::ReciveControllerOpenUIEvent);
-				PossessedBuildingOnServer(CurrentBuilding);
+				PossessedObjectOnServer<AISBuildingSystemBase>(CurrentBuilding);
 				
 				IISBuildInterface::Execute_OnBuildingWasInteract(HitActor, GetOwner(), HitComponent);
 				return;
@@ -106,20 +113,13 @@ void UISInteractionComponent::ReciveControllerOpenUIEvent(APlayerController* InC
 	{
 		AISPlayerController* SourcePC = Cast<AISPlayerController>(InController);
 		SourcePC->OnOpenInventoryEvent.RemoveDynamic(this,&UISInteractionComponent::ReciveControllerOpenUIEvent);
-		PossessedBuildingOnServer(CurrentBuilding);
+		PossessedObjectOnServer<AISBuildingSystemBase>(CurrentBuilding);
 		CurrentBuilding = nullptr;
 	}
 }
 
-//调用建筑物的控制器事件
-void UISInteractionComponent::PossessedBuildingOnServer_Implementation(AISBuildingSystemBase* Building)
-{
-	if(!Building) return;
-	AISCharacter* ISCharacter = Cast<AISCharacter>(GetOwner());
-	Building->InteractOnServer(ISCharacter->GetController());
-}
 
-
+//tick检测，实时检测当前准星面对的对象
 void UISInteractionComponent::TickInteractline()
 {
 	AISCharacter* ISCharacter = Cast<AISCharacter>(GetOwner());
@@ -143,7 +143,15 @@ void UISInteractionComponent::TickInteractline()
 			UISMainUIBase*ISMainUI = PlayerMainHUD->IsMainUI;  //获取角色的主UI
 			if(!ISMainUI) return;
 			LastBuildingActor =  IISBuildInterface::Execute_GetBuildingSystemBase(Hit.GetActor());  //获取检测到的建筑
-			ISMainUI->SendBuildingInfo(LastBuildingActor);
+			ISMainUI->SendObjectInfo(LastBuildingActor);
+			bIsInteractTrace = true;
+		}
+		else if(Hit.GetActor() && Hit.GetActor()->Implements<UISEquipableInterface>() && !bIsInteractTrace)
+		{
+			UISMainUIBase*ISMainUI = PlayerMainHUD->IsMainUI;  //获取主UI
+			if(!ISMainUI) return;
+			AISEquipable* TargetEquipable = IISEquipableInterface::Execute_GetEquipable(Hit.GetActor());  //获取接口的对象
+			ISMainUI->SendObjectInfo(TargetEquipable);
 			bIsInteractTrace = true;
 		}
 	}
@@ -175,4 +183,13 @@ void UISInteractionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UISInteractionComponent,LastActor);
 	DOREPLIFETIME(UISInteractionComponent,LastComponent);
+}
+
+template <typename T>
+void UISInteractionComponent::PossessedObjectOnServer(T* InTarget)
+{
+	if(!InTarget) return;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("背包已满！！"));
+	AISPlayerController* SourcePC = Cast<AISPlayerController>(UGameplayStatics::GetPlayerController(GetOwner(),0));
+	InTarget->SetOwner(SourcePC);  //给予对方网络权限
 }

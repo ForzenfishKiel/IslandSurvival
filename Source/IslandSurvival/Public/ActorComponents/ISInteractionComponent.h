@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "BuildingSystem/ISBuildingSystemBase.h"
 #include "Components/ActorComponent.h"
+#include "Game/ISPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "ISInteractionComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -17,7 +19,7 @@ public:
 	UISInteractionComponent();
 	UFUNCTION(BlueprintCallable,Client, Reliable)
 	void PrimaryInteract();
-	UFUNCTION(BlueprintCallable,Client, Reliable)
+	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void SecondaryInteract();
 	void TickInteractline();
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
@@ -35,8 +37,9 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	bool bIsInteractTrace = false;
 
+	template<typename T>
 	UFUNCTION(Server,Reliable)
-	void PossessedBuildingOnServer(AISBuildingSystemBase* Building);
+	void PossessedObjectOnServer(T* Building);
 	
 	UFUNCTION()
 	void ReciveControllerOpenUIEvent(APlayerController* InController);
@@ -49,3 +52,4 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };
+

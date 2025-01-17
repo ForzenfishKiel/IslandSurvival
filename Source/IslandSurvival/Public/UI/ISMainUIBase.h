@@ -22,7 +22,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerWasSet();
 	UFUNCTION(BlueprintImplementableEvent)
-	void SendBuildingInfo(const AISBuildingSystemBase* TargetBuilding);
+	void SendObjectInfo(UObject* TargetBuilding);
 	UFUNCTION(BlueprintImplementableEvent)
 	void SendTickTraceWasEnd();
 };
