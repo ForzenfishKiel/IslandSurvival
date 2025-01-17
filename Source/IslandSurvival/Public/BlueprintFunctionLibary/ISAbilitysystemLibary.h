@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Data/ISDropCollectibleDataAsset.h"
-#include "DataAsset/ISCollectbleDataAsset.h"
 #include "DataAsset/ISCraftingContainer.h"
 #include "DataAsset/ISEquipableDataAsset.h"
 #include "DataAsset/ISWeaponDataAsset.h"
@@ -22,5 +21,4 @@ public:
 	static UISDropCollectibleDataAsset* GetCollectibleDataAsset(const UObject* WorldContextObject);
 	static UISEquipableDataAsset* GetEquipableDataAsset(const UObject* WorldContextObject);
 	static UISWeaponDataAsset* GetSweaponDataAsset(const UObject* WorldContextObject);
-	static UISCollectbleDataAsset* GetISCollectibleDataAsset(const UObject* WorldContextObject);
 };

@@ -25,10 +25,3 @@ UISWeaponDataAsset* UISAbilitysystemLibary::GetSweaponDataAsset(const UObject* W
 	if(!SourceGameMode) return nullptr;
 	return SourceGameMode->WeaponDataAsset;
 }
-
-UISCollectbleDataAsset* UISAbilitysystemLibary::GetISCollectibleDataAsset(const UObject* WorldContextObject)
-{
-	AISGameplayMode*SourceGameMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if(!SourceGameMode) return nullptr;
-	return SourceGameMode->CollectbleData;
-}
