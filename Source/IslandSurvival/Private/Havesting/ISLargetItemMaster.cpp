@@ -3,3 +3,9 @@
 
 #include "Havesting/ISLargetItemMaster.h"
 
+AISLargetItemMaster::AISLargetItemMaster()
+{
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>("RootSceneComponent");
+	SetRootComponent(RootSceneComponent);
+	HarvestStaticMesh->SetupAttachment(RootSceneComponent);
+}

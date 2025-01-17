@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/ISCollectibleDataAsset.h"
+#include "Data/ISDropCollectibleDataAsset.h"
 #include "UObject/Interface.h"
 #include "ISCollectibleInterface.generated.h"
 

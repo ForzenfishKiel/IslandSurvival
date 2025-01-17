@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/ISCollectibleDataAsset.h"
+#include "Data/ISDropCollectibleDataAsset.h"
+#include "DataAsset/ISCollectbleDataAsset.h"
 #include "DataAsset/ISCraftingContainer.h"
 #include "DataAsset/ISEquipableDataAsset.h"
 #include "DataAsset/ISWeaponDataAsset.h"
@@ -18,7 +19,8 @@ class ISLANDSURVIVAL_API UISAbilitysystemLibary : public UBlueprintFunctionLibra
 {
 	GENERATED_BODY()
 public:
-	static UISCollectibleDataAsset* GetCollectibleDataAsset(const UObject* WorldContextObject);
+	static UISDropCollectibleDataAsset* GetCollectibleDataAsset(const UObject* WorldContextObject);
 	static UISEquipableDataAsset* GetEquipableDataAsset(const UObject* WorldContextObject);
 	static UISWeaponDataAsset* GetSweaponDataAsset(const UObject* WorldContextObject);
+	static UISCollectbleDataAsset* GetISCollectibleDataAsset(const UObject* WorldContextObject);
 };

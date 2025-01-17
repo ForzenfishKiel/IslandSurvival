@@ -5,11 +5,11 @@
 #include "Game/ISGameplayMode.h"
 #include "Kismet/GameplayStatics.h"
 
-UISCollectibleDataAsset* UISAbilitysystemLibary::GetCollectibleDataAsset(const UObject* WorldContextObject)
+UISDropCollectibleDataAsset* UISAbilitysystemLibary::GetCollectibleDataAsset(const UObject* WorldContextObject)
 {
 	AISGameplayMode*SourceGameMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if(!SourceGameMode) return nullptr;
-	return SourceGameMode->CollectibleDataAsset;
+	return SourceGameMode->CollectibleDropDataAsset;
 }
 
 UISEquipableDataAsset* UISAbilitysystemLibary::GetEquipableDataAsset(const UObject* WorldContextObject)
@@ -24,4 +24,11 @@ UISWeaponDataAsset* UISAbilitysystemLibary::GetSweaponDataAsset(const UObject* W
 	AISGameplayMode*SourceGameMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if(!SourceGameMode) return nullptr;
 	return SourceGameMode->WeaponDataAsset;
+}
+
+UISCollectbleDataAsset* UISAbilitysystemLibary::GetISCollectibleDataAsset(const UObject* WorldContextObject)
+{
+	AISGameplayMode*SourceGameMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(!SourceGameMode) return nullptr;
+	return SourceGameMode->CollectbleData;
 }

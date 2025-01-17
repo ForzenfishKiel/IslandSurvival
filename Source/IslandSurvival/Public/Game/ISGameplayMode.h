@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/ISCollectibleDataAsset.h"
+#include "Data/ISDropCollectibleDataAsset.h"
+#include "DataAsset/ISCollectbleDataAsset.h"
 #include "DataAsset/ISEquipableDataAsset.h"
 #include "DataAsset/ISWeaponDataAsset.h"
 #include "GameFramework/GameModeBase.h"
@@ -20,11 +21,13 @@ private:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
-	TObjectPtr<UISCollectibleDataAsset> CollectibleDataAsset;
+	TObjectPtr<UISDropCollectibleDataAsset> CollectibleDropDataAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
 	TObjectPtr<UISEquipableDataAsset> EquipableDataAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
 	TObjectPtr<UISWeaponDataAsset> WeaponDataAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
+	TObjectPtr<UISCollectbleDataAsset> CollectbleData;
 
 	UPROPERTY()
 	TSet<TWeakObjectPtr<APlayerController>> LoginPlayerList;

@@ -13,5 +13,9 @@ UCLASS()
 class ISLANDSURVIVAL_API AISLargetItemMaster : public AISHarvestingBase
 {
 	GENERATED_BODY()
-	
+public:
+	AISLargetItemMaster();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<USceneComponent> RootSceneComponent;
 };

@@ -55,7 +55,7 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 	AISCharacter* SourceCharacter = Cast<AISCharacter>(TargetActor);
 	if(!SourceCharacter) return;  //如果为目标角色
 	UISItemsContainer* ItemContainer = SourceCharacter->GetComponentByClass<UISItemsContainer>();
-	UISCollectibleDataAsset* CollectibleDataAsset = UISAbilitysystemLibary::GetCollectibleDataAsset(this);
+	UISDropCollectibleDataAsset* CollectibleDataAsset = UISAbilitysystemLibary::GetCollectibleDataAsset(this);
 	const FDropInformation DropInfo = CollectibleDataAsset->GetDropConfig(CollectibleClass);
 
 	Execute_ApplyDamageToTarget(this,TargetActor); //计算伤害
@@ -102,29 +102,31 @@ void AISHarvestingBase::ApplyDamageToTarget_Implementation(AActor* TargetActor)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("采集完毕"));
 		HarvestStaticMesh->SetCollisionObjectType(ECC_WorldDynamic);
-		HarvestStaticMesh->SetCollisionResponseToChannel(ECC_Pawn,ECR_Ignore);
-		HarvestStaticMesh->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+		HarvestStaticMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 		EnableHarvestionBreak(TargetActor);
 	}
 }
 //计算实际采集的数量（提供武器，人物等级等）
 int32 AISHarvestingBase::GetNumsFromMultiplier_Implementation(AActor* TargetTool, int32 TargetNums)
 {
-	AISCharacter*SourceCharacter = Cast<AISCharacter>(TargetTool->GetOwner());
-	if(!SourceCharacter) return 0;
-	AISPlayerState*SourcePlayerState = SourceCharacter->GetPlayerState<AISPlayerState>();
-	UISAttributeSet*SourceAS = Cast<UISAttributeSet>( SourcePlayerState->GetAttributeSet());  //获取角色的属性
-
-	UISEquipableDataAsset*TargetDataAsset = UISAbilitysystemLibary::GetEquipableDataAsset(TargetTool);
+	
+	UISEquipableDataAsset*TargetDataAsset = UISAbilitysystemLibary::GetEquipableDataAsset(this);
 	if(!TargetDataAsset) return 0;
 	//角色不使用工具采集
 	if(TargetTool->Implements<UISCombatInterface>())
 	{
 		FEquipItemRarityContainer EquipItemRarity = TargetDataAsset->GetTargetItemRarityContainer(FName("0"));
-		const float BoostMultiplier = EquipItemRarity.RarityContainer[0].BootMultiplier.GetValueAtLevel(1.f);
+		const float BoostMultiplier = EquipItemRarity.RarityContainer[0].BootMultiplier.GetValue();
 		const int32 Result = FMath::RoundToFloat(TargetNums * BoostMultiplier);
 		return Result;
 	}
+	
+	AISCharacter*SourceCharacter = Cast<AISCharacter>(TargetTool->GetOwner());
+	if(!SourceCharacter) return 0;
+	AISPlayerState*SourcePlayerState = SourceCharacter->GetPlayerState<AISPlayerState>();
+	UISAttributeSet*SourceAS = Cast<UISAttributeSet>( SourcePlayerState->GetAttributeSet());  //获取角色的属性
+
+
 	//角色使用工具采集
 	FEquipItemRarityContainer EquipItemRarity = TargetDataAsset->GetTargetItemRarityContainer(IISItemInterface::Execute_GetName(TargetTool));
 	for(auto&EquipItemRarityContainer:EquipItemRarity.RarityContainer)
