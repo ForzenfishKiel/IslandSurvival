@@ -64,6 +64,7 @@ void AISPlayerState::SetAttributePoint(int32 InAttributePoint)
 	
 }
 
+//向作为属性一部分的对应属性加点的值进行添加
 void AISPlayerState::AddTargetAttributeLevel(const FGameplayAttribute TargetPointType)
 {
 	if(AttributePoint>=1)

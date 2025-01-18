@@ -18,5 +18,4 @@ class ISLANDSURVIVAL_API UMMC_GatheringDamage : public UGameplayModMagnitudeCalc
 	virtual float CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const override;
 private:
 	FGameplayEffectAttributeCaptureDefinition PlayerWeaponAttack;
-	FGameplayEffectAttributeCaptureDefinition PlayerGatheringDamage;
 };

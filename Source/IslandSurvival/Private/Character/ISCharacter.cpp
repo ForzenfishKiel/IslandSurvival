@@ -166,6 +166,10 @@ AISPlayerState* AISCharacter::GetPlayerState_Implementation()
 	return SourcePlayerState;
 }
 
+void AISCharacter::Die()
+{
+	
+}
 
 
 bool AISCharacter::CheckIsFastRun()

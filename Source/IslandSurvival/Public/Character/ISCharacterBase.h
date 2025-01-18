@@ -34,9 +34,21 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	//自身虚函数
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void ActivateCharacterAbility_Implementation() override;
 	virtual void EndActivateCharacterAbility_Implementation() override;
+	virtual void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
+	virtual void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	virtual void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	UFUNCTION(NetMulticast,Reliable)
+	virtual void MulticastHandleDeath();
+	virtual void Die();  //角色死亡
+	//ICombatInterface虚函数
+	virtual AISCharacterBase* GetAvaActor_Implementation() override;
 };
+
+
+

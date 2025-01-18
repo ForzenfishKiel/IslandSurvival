@@ -32,3 +32,33 @@ void AISCharacterBase::EndActivateCharacterAbility_Implementation()
 	IISCombatInterface::EndActivateCharacterAbility_Implementation();
 }
 
+void AISCharacterBase::InitializePlayerAttribute(UAbilitySystemComponent* ASC,
+	TSubclassOf<UGameplayEffect> AttributeClass)
+{
+	
+}
+
+void AISCharacterBase::AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>& TargetActivateAbilities)
+{
+	
+}
+
+void AISCharacterBase::AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>& TargetActivateAbilities)
+{
+	
+}
+
+void AISCharacterBase::MulticastHandleDeath_Implementation()
+{
+	
+}
+
+void AISCharacterBase::Die()
+{
+	
+}
+
+AISCharacterBase* AISCharacterBase::GetAvaActor_Implementation()
+{
+	return this;  //接口获取自身
+}

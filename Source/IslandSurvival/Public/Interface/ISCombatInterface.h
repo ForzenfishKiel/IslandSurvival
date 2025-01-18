@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "ISCombatInterface.generated.h"
 
+class AISCharacterBase;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UISCombatInterface : public UInterface
@@ -26,4 +27,6 @@ public:
 	void ActivateCharacterAbility();
 	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
 	void EndActivateCharacterAbility();
+	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
+	AISCharacterBase* GetAvaActor();
 };

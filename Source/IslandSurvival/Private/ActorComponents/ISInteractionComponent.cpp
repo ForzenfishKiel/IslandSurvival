@@ -189,7 +189,6 @@ template <typename T>
 void UISInteractionComponent::PossessedObjectOnServer(T* InTarget)
 {
 	if(!InTarget) return;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("背包已满！！"));
 	AISPlayerController* SourcePC = Cast<AISPlayerController>(UGameplayStatics::GetPlayerController(GetOwner(),0));
 	InTarget->SetOwner(SourcePC);  //给予对方网络权限
 }

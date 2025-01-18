@@ -30,9 +30,7 @@ void AISStorageMaster::OnBuildingWasInteract_Implementation(const AActor* Intera
 	}
 }
 
-
-
-void AISStorageMaster::StorageUIOpen(APlayerController* TargetController)
+void AISStorageMaster::StorageUIOpen_Implementation(APlayerController* TargetController)
 {
 	check(StorageWidget);
 	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);  //转换成本地PC
@@ -52,7 +50,7 @@ void AISStorageMaster::StorageUIOpen(APlayerController* TargetController)
 	}
 }
 
-void AISStorageMaster::StorageUIClose(APlayerController* TargetController)
+void AISStorageMaster::StorageUIClose_Implementation(APlayerController* TargetController)
 {
 	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);
 	if(!SourcePC) return;

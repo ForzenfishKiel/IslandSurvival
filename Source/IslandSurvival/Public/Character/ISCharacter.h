@@ -39,6 +39,7 @@ public:
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
 	virtual void LevelUp_Implementation() override;  //角色升级，播放粒子特效或音效等
 	virtual AISPlayerState*GetPlayerState_Implementation() override;
+	virtual void Die() override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
 	UFUNCTION(Server,Reliable)
@@ -89,11 +90,11 @@ public:
 private:
 	void InitAbilityActorInfo();
 	
-	void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
+	virtual void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass) override;
 	
-	void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	virtual void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities) override;
 	
-	void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	virtual void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities) override;
 	
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void AddAttributeLevel(const FGameplayAttribute TargetPointType);
