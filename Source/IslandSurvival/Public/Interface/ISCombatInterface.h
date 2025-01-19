@@ -29,4 +29,8 @@ public:
 	void EndActivateCharacterAbility();
 	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
 	AISCharacterBase* GetAvaActor();
+	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
+	FName GetCharacterName();
+	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
+	int32 GetLevel();
 };

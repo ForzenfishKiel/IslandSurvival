@@ -31,6 +31,9 @@ class ISLANDSURVIVAL_API AISCharacterBase : public ACharacter,public IISCombatIn
 
 public:
 	AISCharacterBase();
+
+	UPROPERTY(EditDefaultsOnly,Category = "Config")
+	FName CharacterName; //此角色的身份
 protected:
 	virtual void BeginPlay() override;
 
@@ -43,11 +46,14 @@ public:
 	virtual void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass);
 	virtual void AddCharacterActivateAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
 	virtual void AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAbility>>&TargetActivateAbilities);
+	virtual void InitAbilityActorInfo();
 	UFUNCTION(NetMulticast,Reliable)
 	virtual void MulticastHandleDeath();
 	virtual void Die();  //角色死亡
 	//ICombatInterface虚函数
 	virtual AISCharacterBase* GetAvaActor_Implementation() override;
+	virtual FName GetCharacterName_Implementation() override;
+	virtual int32 GetLevel_Implementation() override;
 };
 
 

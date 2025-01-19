@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Data/ISDropCollectibleDataAsset.h"
+#include "DataAsset/ISCharacterClassInfo.h"
 #include "DataAsset/ISEquipableDataAsset.h"
 #include "DataAsset/ISHarvestDataAsset.h"
 #include "DataAsset/ISWeaponDataAsset.h"
@@ -28,6 +29,8 @@ public:
 	TObjectPtr<UISWeaponDataAsset> WeaponDataAsset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
 	TObjectPtr<UISHarvestDataAsset> HarvestDataAsset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
+	TObjectPtr<UISCharacterClassInfo> ISCharacterClassInfo;
 
 	UPROPERTY()
 	TSet<TWeakObjectPtr<APlayerController>> LoginPlayerList;

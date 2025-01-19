@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Data/ISDropCollectibleDataAsset.h"
+#include "DataAsset/ISCharacterClassInfo.h"
 #include "DataAsset/ISCraftingContainer.h"
 #include "DataAsset/ISEquipableDataAsset.h"
 #include "DataAsset/ISHarvestDataAsset.h"
@@ -23,4 +24,7 @@ public:
 	static UISEquipableDataAsset* GetEquipableDataAsset(const UObject* WorldContextObject);
 	static UISWeaponDataAsset* GetSweaponDataAsset(const UObject* WorldContextObject);
 	static UISHarvestDataAsset* GetHarvestDataAsset(const UObject* WorldContextObject);
+	static UISCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+	static void InitializeCharacterDefaultAttributes(const UObject* WorldContextObject,FName InName,float Level,UAbilitySystemComponent* ASC);
+	static void GiveStartupAbilities(const UObject* WorldContextObject,UAbilitySystemComponent* ASC,FName InName);
 };

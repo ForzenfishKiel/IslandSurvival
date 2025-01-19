@@ -48,6 +48,11 @@ void AISCharacterBase::AddCharacterPassiveAbility(TArray<TSubclassOf<UGameplayAb
 	
 }
 
+void AISCharacterBase::InitAbilityActorInfo()
+{
+	
+}
+
 void AISCharacterBase::MulticastHandleDeath_Implementation()
 {
 	
@@ -61,4 +66,14 @@ void AISCharacterBase::Die()
 AISCharacterBase* AISCharacterBase::GetAvaActor_Implementation()
 {
 	return this;  //接口获取自身
+}
+
+FName AISCharacterBase::GetCharacterName_Implementation()
+{
+	return CharacterName;
+}
+
+int32 AISCharacterBase::GetLevel_Implementation()
+{
+	return 1;
 }
