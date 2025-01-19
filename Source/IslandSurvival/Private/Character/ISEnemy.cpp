@@ -5,8 +5,10 @@
 
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISAttributeSet.h"
+#include "UI/ISMainUIBase.h"
 
 AISEnemy::AISEnemy()
 {
@@ -17,6 +19,9 @@ AISEnemy::AISEnemy()
 	ISEnemyAbilitysystem->SetIsReplicated(true);
 	ISEnemyAbilitysystem->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);  //仅复制最少量信息
 	ISEnemyAttribute = CreateDefaultSubobject<UISAttributeSet>(TEXT("ISEnemyAttribute"));
+
+	HealthBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	HealthBar->SetupAttachment(GetRootComponent());
 }
 
 void AISEnemy::Die()
@@ -48,6 +53,40 @@ void AISEnemy::PossessedBy(AController* NewController)
 	
 }
 
+void AISEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+	InitAbilityActorInfo();  //初始化角色技能信息
+
+	if(HasAuthority())
+	{
+		UISAbilitysystemLibary::GiveStartupAbilities(this,ISEnemyAbilitysystem,CharacterName);
+	}
+
+	if(UISMainUIBase* HealthWidget = Cast<UISMainUIBase>(HealthBar->GetUserWidgetObject()))
+	{
+		HealthWidget->SetWidgetController(this);
+	}
+
+	if(const UISAttributeSet* AS = Cast<UISAttributeSet>(GetEnemyAttribute()))
+	{
+		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda([this]
+				(const FOnAttributeChangeData& Data)
+			{
+				OnAttributeChange.Broadcast(Data.NewValue);
+			}
+		);
+		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda([this]
+		(const FOnAttributeChangeData& Data)
+			{
+				OnAttributeChange.Broadcast(Data.NewValue);
+			}
+		);
+		OnAttributeChange.Broadcast(AS->GetHealth());
+		OnAttributeChange.Broadcast(AS->GetMaxHealth());
+	}
+}
+
 UAttributeSet* AISEnemy::GetEnemyAttribute() const
 {
 	return ISEnemyAttribute;
@@ -65,7 +104,7 @@ void AISEnemy::InitAbilityActorInfo()
 //初始化角色属性
 void AISEnemy::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubclassOf<UGameplayEffect> AttributeClass)
 {
-	
+	UISAbilitysystemLibary::InitializeCharacterDefaultAttributes(this,CharacterName,Level,ASC);
 }
 
 int32 AISEnemy::GetLevel_Implementation()

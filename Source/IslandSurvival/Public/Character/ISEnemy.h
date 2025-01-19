@@ -7,6 +7,7 @@
 #include "Character/ISCharacterBase.h"
 #include "Components/WidgetComponent.h"
 #include "Game/ISAIController.h"
+#include "WidgetController/ISMainUIWidgetController.h"
 #include "ISEnemy.generated.h"
 
 /**
@@ -32,11 +33,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Config")
 	int32 Level = 1.f;  //敌人的等级
 public:
+	UPROPERTY(BlueprintAssignable) 
+	FOnPlayerStateChangeSignature OnAttributeChange;  //原始数值变化
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerStateChangeSignature OnMaxAttributeChange;  //最大数值变化
+public:
 	//角色自身虚函数
 	virtual void Die() override;
 	virtual void MulticastHandleDeath() override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void BeginPlay() override;
 	UAttributeSet* GetEnemyAttribute() const;
 private:
 	virtual void InitAbilityActorInfo() override;
