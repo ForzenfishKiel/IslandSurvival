@@ -43,7 +43,7 @@ UISCharacterClassInfo* UISAbilitysystemLibary::GetCharacterClassInfo(const UObje
 	return SourceGameplayMode->ISCharacterClassInfo;
 }
 
-void UISAbilitysystemLibary::InitializeCharacterDefaultAttributes(const UObject* WorldContextObject, FName InName,
+void UISAbilitysystemLibary::InitializeCharacterAttributes(const UObject* WorldContextObject, FName InName,
 	float Level, UAbilitySystemComponent* ASC)
 {
 	const AActor* AvatarActor = ASC->GetAvatarActor();

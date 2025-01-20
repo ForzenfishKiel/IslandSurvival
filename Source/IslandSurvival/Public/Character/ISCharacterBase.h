@@ -50,6 +50,7 @@ public:
 	UFUNCTION(NetMulticast,Reliable)
 	virtual void MulticastHandleDeath();
 	virtual void Die();  //角色死亡
+	virtual void BindAttributeSet() const;
 	//ICombatInterface虚函数
 	virtual AISCharacterBase* GetAvaActor_Implementation() override;
 	virtual FName GetCharacterName_Implementation() override;

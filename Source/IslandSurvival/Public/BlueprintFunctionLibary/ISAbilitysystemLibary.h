@@ -25,6 +25,6 @@ public:
 	static UISWeaponDataAsset* GetSweaponDataAsset(const UObject* WorldContextObject);
 	static UISHarvestDataAsset* GetHarvestDataAsset(const UObject* WorldContextObject);
 	static UISCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
-	static void InitializeCharacterDefaultAttributes(const UObject* WorldContextObject,FName InName,float Level,UAbilitySystemComponent* ASC);
+	static void InitializeCharacterAttributes(const UObject* WorldContextObject,FName InName,float Level,UAbilitySystemComponent* ASC);
 	static void GiveStartupAbilities(const UObject* WorldContextObject,UAbilitySystemComponent* ASC,FName InName);
 };

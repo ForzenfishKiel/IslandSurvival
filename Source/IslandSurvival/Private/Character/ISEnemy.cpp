@@ -8,6 +8,8 @@
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISAttributeSet.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "UI/ISMainUIBase.h"
 
 AISEnemy::AISEnemy()
@@ -22,6 +24,11 @@ AISEnemy::AISEnemy()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthBar->SetupAttachment(GetRootComponent());
+}
+
+void AISEnemy::SetAISpeed(const EAISpeed InState)
+{
+	GetCharacterMovement()->MaxWalkSpeed = *AISpeedManager.Find(InState);
 }
 
 void AISEnemy::Die()
@@ -104,10 +111,15 @@ void AISEnemy::InitAbilityActorInfo()
 //初始化角色属性
 void AISEnemy::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubclassOf<UGameplayEffect> AttributeClass)
 {
-	UISAbilitysystemLibary::InitializeCharacterDefaultAttributes(this,CharacterName,Level,ASC);
+	UISAbilitysystemLibary::InitializeCharacterAttributes(this,CharacterName,Level,ASC);
 }
 
 int32 AISEnemy::GetLevel_Implementation()
 {
 	return Level;
+}
+
+AISAIController* AISEnemy::GetAIController_Implementation()
+{
+	return Cast<AISAIController>(GetController());
 }

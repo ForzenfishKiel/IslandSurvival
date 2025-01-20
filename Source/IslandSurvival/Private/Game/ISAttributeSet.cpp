@@ -31,6 +31,7 @@ void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxHealthLevel,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,Armor,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,GearArmor,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISAttributeSet,MaxSpeed,COND_None,REPNOTIFY_Always);
 }
 void UISAttributeSet::SetEffectContext(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties)
 {
@@ -186,4 +187,9 @@ void UISAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
 void UISAttributeSet::OnRep_GearArmor(const FGameplayAttributeData& OldGearArmor) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,GearArmor,OldGearArmor);
+}
+
+void UISAttributeSet::OnRep_MaxSpeed(const FGameplayAttributeData& OldMaxSpeed) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,MaxSpeed,OldMaxSpeed);
 }

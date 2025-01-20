@@ -63,6 +63,11 @@ void AISCharacterBase::Die()
 	
 }
 
+void AISCharacterBase::BindAttributeSet() const
+{
+	
+}
+
 AISCharacterBase* AISCharacterBase::GetAvaActor_Implementation()
 {
 	return this;  //接口获取自身

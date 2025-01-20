@@ -55,15 +55,19 @@ class ISLANDSURVIVAL_API UISAttributeSet : public UAttributeSet
 public:
 	UISAttributeSet();
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth,Category = "SecondaryAttributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth,Category = "PrimaryAttributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet, MaxHealth)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxSpeed, Category = "PrimaryAttributes")
+	FGameplayAttributeData MaxSpeed;
+	ATTRIBUTE_ACCESSORS(UISAttributeSet, MaxSpeed)
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health,Category = "PrimaryAttributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health,Category = "SecondaryAttributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,Health)
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Attack,Category = "SecondaryAttributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Attack,Category = "PrimaryAttributes")
 	FGameplayAttributeData Attack;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,Attack)
 
@@ -71,15 +75,15 @@ public:
 	FGameplayAttributeData Vigor;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,Vigor)
 
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxVigor,Category = "SecondaryAttributes")
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxVigor,Category = "PrimaryAttributes")
 	FGameplayAttributeData MaxVigor;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxVigor)
 
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_WeaponAttack,Category = "SecondaryAttributes")
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_WeaponAttack,Category = "PrimaryAttributes")
 	FGameplayAttributeData WeaponAttack;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,WeaponAttack);  //武器伤害
 
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_GatheringDamage,Category = "SecondaryAttributes")
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_GatheringDamage,Category = "PrimaryAttributes")
 	FGameplayAttributeData GatheringDamage;  //角色本身自带的采集伤害
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,GatheringDamage)
 	
@@ -87,7 +91,7 @@ public:
 	FGameplayAttributeData Hunger; //人物饱食度
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,Hunger)
 	
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxHunger,Category = "SecondaryAttributes")
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxHunger,Category = "PrimaryAttributes")
 	FGameplayAttributeData MaxHunger;  //饱食度最大值
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxHunger)
 
@@ -95,11 +99,11 @@ public:
 	FGameplayAttributeData Thirst;  //口渴值
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,Thirst);
 
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxThirst,Category = "SecondaryAttributes")
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxThirst,Category = "PrimaryAttributes")
 	FGameplayAttributeData MaxThirst;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxThirst);
 
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Armor,Category = "SecondaryAttributes")
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Armor,Category = "PrimaryAttributes")
 	FGameplayAttributeData Armor;  //总护甲
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,Armor);
 
@@ -153,6 +157,8 @@ public:
 	void OnRep_Armor(const FGameplayAttributeData&OldArmor) const;
 	UFUNCTION()
 	void OnRep_GearArmor(const FGameplayAttributeData&OldHelmetArmor) const;
+	UFUNCTION()
+	void OnRep_MaxSpeed(const FGameplayAttributeData&OldMaxSpeed) const;
 protected:
 	void SetEffectContext(const FGameplayEffectModCallbackData& Data,FEffectProperties&Properties);
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;

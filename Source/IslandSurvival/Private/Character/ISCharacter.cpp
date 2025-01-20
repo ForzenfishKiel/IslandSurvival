@@ -171,7 +171,6 @@ void AISCharacter::Die()
 	
 }
 
-
 bool AISCharacter::CheckIsFastRun()
 {
 	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
@@ -213,6 +212,7 @@ void AISCharacter::InitAbilityActorInfo()
 		}
 	}
 	CharacterEquipment->InitializeEquipmentComponent(SourceASC);
+	BindAttributeSet();  //绑定一些部分的值
 	InitializePlayerAttribute(SourceASC,PlayerDefaultAttribute);
 	InitializePlayerAttribute(SourceASC,PlayerSecondaryAttribute);
 }
@@ -222,7 +222,7 @@ void AISCharacter::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubc
 	check(AttributeClass);
 	FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(AttributeClass,1.f,EffectContextHandle);
+	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(AttributeClass,GetLevel_Implementation(),EffectContextHandle);
 	SourceASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
@@ -313,4 +313,20 @@ void AISCharacter::MulticastToRemoveStaticMesh_Implementation(UInstancedStaticMe
 {
 	if(!IsValid(TargetComponent) && TargetItemNum <= 0) return;
 	TargetComponent->RemoveInstance(TargetItemNum);
+}
+
+void AISCharacter::BindAttributeSet() const
+{
+	AISPlayerState* SourcePS = GetPlayerState<AISPlayerState>();
+	UAbilitySystemComponent* Asc = Cast<UAbilitySystemComponent>(SourcePS->GetAbilitySystemComponent());
+	UISAttributeSet* SourceAS = Cast<UISAttributeSet>(SourcePS->GetAttributeSet());
+
+	if(!Asc) return;
+
+	Asc->GetGameplayAttributeValueChangeDelegate(SourceAS->GetMaxSpeedAttribute()).AddLambda([this]
+		(const FOnAttributeChangeData& Data)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+	}
+		);
 }
