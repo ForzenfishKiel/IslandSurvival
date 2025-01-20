@@ -25,4 +25,8 @@ class ISLANDSURVIVAL_API IISEnemyInterface
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AISAIController* GetAIController();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	EAIState GetAIState() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetAIState(EAIState State);
 };

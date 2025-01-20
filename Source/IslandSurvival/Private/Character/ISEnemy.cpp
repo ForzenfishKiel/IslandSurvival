@@ -10,6 +10,7 @@
 #include "Game/ISAttributeSet.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "UI/ISMainUIBase.h"
 
 AISEnemy::AISEnemy()
@@ -114,6 +115,12 @@ void AISEnemy::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubclass
 	UISAbilitysystemLibary::InitializeCharacterAttributes(this,CharacterName,Level,ASC);
 }
 
+void AISEnemy::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AISEnemy,AIState);
+}
+
 int32 AISEnemy::GetLevel_Implementation()
 {
 	return Level;
@@ -122,4 +129,14 @@ int32 AISEnemy::GetLevel_Implementation()
 AISAIController* AISEnemy::GetAIController_Implementation()
 {
 	return Cast<AISAIController>(GetController());
+}
+
+EAIState AISEnemy::GetAIState_Implementation() const
+{
+	return AIState;
+}
+
+void AISEnemy::SetAIState_Implementation(EAIState State)
+{
+	AIState = State;
 }

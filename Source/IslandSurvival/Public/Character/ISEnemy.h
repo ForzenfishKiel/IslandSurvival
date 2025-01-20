@@ -33,6 +33,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Config")
 	int32 Level = 1.f;  //敌人的等级
+
+	UPROPERTY(EditDefaultsOnly,Replicated,BlueprintReadOnly, Category="Config")
+	TEnumAsByte<EAIState> AIState;
+	
 public:
 	UPROPERTY(BlueprintAssignable) 
 	FOnPlayerStateChangeSignature OnAttributeChange;  //原始数值变化
@@ -50,11 +54,13 @@ public:
 private:
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubclassOf<UGameplayEffect> AttributeClass) override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	//ICombatInterface 战斗接口
 	virtual int32 GetLevel_Implementation() override;
 	//IEnemyInterface 接口
 	virtual AISAIController* GetAIController_Implementation() override;
-	
+	virtual EAIState GetAIState_Implementation() const override;
+	virtual void SetAIState_Implementation(EAIState State) override;
 	UPROPERTY(EditDefaultsOnly)
 	TMap<TEnumAsByte<EAISpeed>,float> AISpeedManager;
 };

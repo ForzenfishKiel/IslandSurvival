@@ -38,7 +38,7 @@ void AISAIController::SetSpeed(const EAISpeed InSpeed)
 
 void AISAIController::SetAIState(const EAIState InAIState)
 {
-	Blackboard->SetValueAsEnum("State", InAIState);  //设置黑板上的键为某一值
+	IISEnemyInterface::Execute_SetAIState(GetPawn(), InAIState);  //设置AI的状态
 }
 
 
