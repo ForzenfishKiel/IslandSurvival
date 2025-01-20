@@ -24,6 +24,13 @@ enum EAISpeed : uint8
 	Running = 2 UMETA(DisplayName = "Running"), //跑
 	Sprinting = 3 UMETA(DisplayName = "Sprinting"), //冲刺
 };
+UENUM(BlueprintType)
+enum EAISense : uint8
+{
+	Sighting = 0 UMETA(DisplayName = "Sighting"),
+	Hearing = 1 UMETA(DisplayName = "Hearing"),
+	TakeDamage = 2 UMETA(DisplayName = "TakeDamage"),
+};
 UCLASS()
 class ISLANDSURVIVAL_API UISAIEnum : public UObject
 {
