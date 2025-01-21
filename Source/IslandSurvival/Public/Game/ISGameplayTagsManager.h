@@ -58,6 +58,9 @@ public:
 	FGameplayTag Input_Combo_Combo03;
 	FGameplayTag Input_Combo_Combo04;
 	FGameplayTag Input_Combo_CanCombo;
+
+	/*AI状态*/
+	FGameplayTag AI_State_Eating;
 private:
 	static FGameplayTagsManager GameplayTags;
 };

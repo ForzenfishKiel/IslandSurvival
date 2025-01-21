@@ -43,7 +43,7 @@ void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 	FGameplayTagsManager GameplayTagsManager = FGameplayTagsManager::Get();  //从Tag库中获取Tag
 
 	FScopedAbilityListLock ActiveScopeLoc(*this);
-	for(FGameplayAbilitySpec&AbilitySpec:GetActivatableAbilities())  //从所有可激活的能力中查找
+	for(FGameplayAbilitySpec& AbilitySpec:GetActivatableAbilities())  //从所有可激活的能力中查找
 	{
 		if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
@@ -52,7 +52,7 @@ void UISAbilitySystemComponent::InputPressedFunc(const FGameplayTag& InputTag)
 			{
 				//第一次攻击触发
 				if(!HasMatchingGameplayTag(GameplayTagsManager.State_Attacking)&&
-					AbilitySpec.Ability->AbilityTags.HasTagExact(GameplayTagsManager.Input_Combo_Combo01)&&!AbilitySpec.IsActive())
+					AbilitySpec.Ability->AbilityTags.HasTagExact(GameplayTagsManager.Input_Combo_Combo01) && !AbilitySpec.IsActive())
 				{
 					TryActivateAbility(AbilitySpec.Handle);
 				}

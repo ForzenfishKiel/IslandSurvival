@@ -55,6 +55,10 @@ public:
 	virtual AISCharacterBase* GetAvaActor_Implementation() override;
 	virtual FName GetCharacterName_Implementation() override;
 	virtual int32 GetLevel_Implementation() override;
+	virtual FTaggedMontage FindMontageFromTag_Implementation(const FGameplayTag Tag) const override;
+private:
+	UPROPERTY(EditDefaultsOnly,Category = "Config")
+	TArray<FTaggedMontage> CharacterTaggedMontage;
 };
 
 

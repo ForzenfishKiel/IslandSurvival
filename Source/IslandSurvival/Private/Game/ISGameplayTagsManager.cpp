@@ -71,4 +71,7 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 
 	GameplayTags.Input_State_Collecting =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.State.Collecting"),FString("采集中"));
+
+	GameplayTags.AI_State_Eating =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("AI.State.Eating"),FString("AI吃东西"));
 }

@@ -82,3 +82,16 @@ int32 AISCharacterBase::GetLevel_Implementation()
 {
 	return 1;
 }
+
+FTaggedMontage AISCharacterBase::FindMontageFromTag_Implementation(const FGameplayTag Tag) const
+{
+	if(!Tag.IsValid()) return FTaggedMontage();
+	for(const FTaggedMontage MontageTag : CharacterTaggedMontage)
+	{
+		if(MontageTag.AnimMontageTag.MatchesTagExact(Tag))
+		{
+			return MontageTag;
+		}
+	}
+	return FTaggedMontage();
+}

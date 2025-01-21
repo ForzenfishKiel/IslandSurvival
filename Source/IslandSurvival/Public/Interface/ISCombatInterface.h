@@ -3,11 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "ISCombatInterface.generated.h"
 
+class FOnCharacterAbilityEnd;
 class AISCharacterBase;
 // This class does not need to be modified.
+USTRUCT(BlueprintType)
+struct FTaggedMontage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	UAnimMontage* Montage = nullptr;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	FGameplayTag AnimMontageTag;  //触发动画的蒙太奇 
+};
 UINTERFACE(MinimalAPI)
 class UISCombatInterface : public UInterface
 {
@@ -33,4 +46,6 @@ public:
 	FName GetCharacterName();
 	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
 	int32 GetLevel();
+	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
+	FTaggedMontage FindMontageFromTag( const FGameplayTag Tag ) const;
 };

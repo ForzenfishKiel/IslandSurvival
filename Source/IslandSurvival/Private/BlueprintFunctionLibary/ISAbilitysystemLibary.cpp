@@ -83,11 +83,7 @@ void UISAbilitysystemLibary::GiveStartupAbilities(const UObject* WorldContextObj
 	for(const TSubclassOf<UGameplayAbility>& ActivateAbilityRef : CharacterDefaultInfo.StartupActivateAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(ActivateAbilityRef,CharacterLevel);
-		if(const UISInputAbility* InputAbility = Cast<UISInputAbility>(AbilitySpec.Ability))
-		{
-			AbilitySpec.DynamicAbilityTags.AddTag(InputAbility->InputTag);
-			ASC->GiveAbility(AbilitySpec);
-		}
+		ASC->GiveAbility(AbilitySpec);
 	}
 
 	for(const TSubclassOf<UGameplayAbility>& AbilityClass : CharacterDefaultInfo.StartupPassiveAbilities)
