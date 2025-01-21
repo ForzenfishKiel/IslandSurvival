@@ -92,3 +92,16 @@ void UISAbilitysystemLibary::GiveStartupAbilities(const UObject* WorldContextObj
 		ASC->GiveAbilityAndActivateOnce(AbilitySpec);  //应用并激活一次
 	}
 }
+
+int32 UISAbilitysystemLibary::GetXPRewardForClassAndLevel(const UObject* WorldContextObject, FName EnemyName,
+	int32 CharacterLevel)
+{
+	UISCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if(CharacterClassInfo == nullptr) return 0;
+
+	const FCharacterClassDefaultInfo& CharacterClassDefaultInfo = CharacterClassInfo->GetCharacterClassData(EnemyName);
+
+	const float XPReward = CharacterClassDefaultInfo.XPReward.GetValueAtLevel(CharacterLevel);
+
+	return static_cast<int32>(XPReward);  //返回查找表的怪物的经验值
+}

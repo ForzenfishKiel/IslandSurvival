@@ -116,6 +116,10 @@ public:
 	FGameplayAttributeData InComingXP;  //角色获得的XP
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,InComingXP);
 
+	UPROPERTY(BlueprintReadOnly,Category = "MetaAttributes")
+	FGameplayAttributeData InComingDamage; //角色受到的伤害
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,InComingDamage);
+
 	/*角色等级*/
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_PlayerLevel,Category = "CharacterLevel")
 	FGameplayAttributeData PlayerLevel;
@@ -161,5 +165,6 @@ public:
 	void OnRep_MaxSpeed(const FGameplayAttributeData&OldMaxSpeed) const;
 protected:
 	void SetEffectContext(const FGameplayEffectModCallbackData& Data,FEffectProperties&Properties);
+	void SendGameplayXP(const FEffectProperties& Props);
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 };

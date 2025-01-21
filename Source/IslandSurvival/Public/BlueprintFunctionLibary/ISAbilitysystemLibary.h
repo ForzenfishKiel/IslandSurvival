@@ -27,4 +27,5 @@ public:
 	static UISCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 	static void InitializeCharacterAttributes(const UObject* WorldContextObject,FName InName,float Level,UAbilitySystemComponent* ASC);
 	static void GiveStartupAbilities(const UObject* WorldContextObject,UAbilitySystemComponent* ASC,FName InName);
+	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject,FName EnemyName,int32 CharacterLevel);
 };

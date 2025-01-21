@@ -2,9 +2,14 @@
 
 
 #include "Game/ISAttributeSet.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
+#include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
+#include "Game/ISGameplayTagsManager.h"
 #include "GameFramework/Character.h"
 #include "Interface/ISCombatInterface.h"
+#include "Interface/ISEnemyInterface.h"
 #include "Interface/ISPlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
@@ -85,6 +90,24 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 	{
 		SetVigor(FMath::Clamp(GetVigor(),0.f,GetMaxVigor()));
 	}
+	if(Data.EvaluatedData.Attribute == GetInComingDamageAttribute())
+	{
+		const float LocalValue = GetInComingDamage();
+		if(LocalValue > 0.f)
+		{
+			const float NewHealth = GetHealth() - LocalValue;
+			SetHealth(FMath::Clamp(NewHealth,0.f,GetMaxHealth()));
+			const bool bFatal = NewHealth <= 0;  //生命值是否小于等于？
+			if(!bFatal)
+			{
+				//播放人物或者AI的受到攻击的状态
+			}
+			else if(Properties.TargetCharacter->Implements<UISEnemyInterface>())
+			{
+				SendGameplayXP(Properties);  //死亡后发送经验值
+			}
+		}
+	}
 	if(Data.EvaluatedData.Attribute == GetInComingXPAttribute())
 	{
 		const float LocalInComingXP = GetInComingXP();  //保存当前得到的经验值
@@ -112,6 +135,24 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 		}
 	}
 }
+
+
+void UISAttributeSet::SendGameplayXP(const FEffectProperties& Props)
+{
+	if(IISCombatInterface* CombatInterface = Cast<IISCombatInterface>(Props.TargetCharacter))
+	{
+		const int32 TargetLevel = IISCombatInterface::Execute_GetLevel(Props.TargetCharacter);
+		const FName TargetName = IISCombatInterface::Execute_GetCharacterName(Props.TargetCharacter);
+		const int32 XPReward = UISAbilitysystemLibary::GetXPRewardForClassAndLevel(Props.TargetCharacter, TargetName , TargetLevel);
+
+		const FGameplayTagsManager& GameplayTags = FGameplayTagsManager::Get();
+		FGameplayEventData Payload; //创建Payload
+		Payload.EventTag = GameplayTags.Attribute_Meta_InComingXP;
+		Payload.EventMagnitude = XPReward;  //输送经验和对应的Tag
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.TargetCharacter, GameplayTags.Attribute_Meta_InComingXP,Payload);
+	}
+}
+
 
 void UISAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
