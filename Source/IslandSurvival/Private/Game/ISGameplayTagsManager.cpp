@@ -4,6 +4,7 @@
 #include "Game/ISGameplayTagsManager.h"
 
 #include "GameplayTagsManager.h"
+#include "GameplayTagsSettings.h"
 
 
 FGameplayTagsManager FGameplayTagsManager::GameplayTags;
@@ -44,6 +45,8 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("State.VigorRecover"),FString("体力回复标签"));
 	GameplayTags.State_Attacking =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("State.Attacking"),FString("正在攻击状态"));
+	GameplayTags.State_Ability_Cooldown =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("State.Ability.Cooldown"),FString("技能冷却状态"));
 
 	GameplayTags.Input_Attack_Roll = 
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Attack.Roll"),FString("翻滚标签"));
@@ -74,4 +77,5 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 
 	GameplayTags.AI_State_Eating =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("AI.State.Eating"),FString("AI吃东西"));
+	
 }

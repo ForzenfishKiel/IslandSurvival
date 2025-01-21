@@ -126,6 +126,7 @@ int32 AISEnemy::GetLevel_Implementation()
 	return Level;
 }
 
+
 AISAIController* AISEnemy::GetAIController_Implementation()
 {
 	return Cast<AISAIController>(GetController());
@@ -139,4 +140,16 @@ EAIState AISEnemy::GetAIState_Implementation() const
 void AISEnemy::SetAIState_Implementation(EAIState State)
 {
 	AIState = State;
+}
+
+FGameplayAbilitySpecHandle AISEnemy::FindActivateAbility_Implementation(const FGameplayTag InTag) const
+{
+	for( const FGameplayAbilitySpec& AbilitySpec : ISEnemyAbilitysystem->GetActivatableAbilities())
+	{
+		if(AbilitySpec.Ability->AbilityTags.HasTagExact(InTag) && !AbilitySpec.IsActive())
+		{
+			return AbilitySpec.Handle;
+		}
+	}
+	return FGameplayAbilitySpecHandle();
 }

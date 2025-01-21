@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayAbilitySpec.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "ISCombatInterface.generated.h"
@@ -48,4 +49,6 @@ public:
 	int32 GetLevel();
 	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
 	FTaggedMontage FindMontageFromTag( const FGameplayTag Tag ) const;
+	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
+	FGameplayAbilitySpecHandle FindActivateAbility(const FGameplayTag InTag) const;
 };

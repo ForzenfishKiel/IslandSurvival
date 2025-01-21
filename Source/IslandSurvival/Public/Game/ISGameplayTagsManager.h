@@ -51,6 +51,7 @@ public:
 	FGameplayTag State_Equip;
 	FGameplayTag State_UnEquip;
 	FGameplayTag State_VigorRecover;
+	FGameplayTag State_Ability_Cooldown;  //技能冷却
 
 	/*连招判定*/
 	FGameplayTag Input_Combo_Combo01;

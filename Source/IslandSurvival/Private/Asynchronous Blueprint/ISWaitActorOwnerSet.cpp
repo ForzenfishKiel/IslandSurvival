@@ -17,7 +17,6 @@ void UISWaitActorOwnerSet::Activate()
 {
 	Super::Activate();
 
-
 	if(SourcePC->IsLocalPlayerController())
 	{
 		AISCharacter*SourcePlayer = Cast<AISCharacter>(SourcePC->GetPawn());
@@ -28,9 +27,4 @@ void UISWaitActorOwnerSet::Activate()
 		
 		OnActorOwnerSetChanged.Broadcast(true);
 	}
-}
-
-void UISWaitActorOwnerSet::SetActorOwner_Implementation()
-{
-	
 }

@@ -26,8 +26,6 @@ public:
 	
 protected:
 	virtual void Activate() override;
-	UFUNCTION(Server,Reliable)
-	void SetActorOwner();
 private:
 	UPROPERTY()
 	APlayerController* SourcePC;

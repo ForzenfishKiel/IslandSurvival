@@ -57,6 +57,7 @@ private:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	//ICombatInterface 战斗接口
 	virtual int32 GetLevel_Implementation() override;
+	virtual FGameplayAbilitySpecHandle FindActivateAbility_Implementation(const FGameplayTag InTag) const override;
 	//IEnemyInterface 接口
 	virtual AISAIController* GetAIController_Implementation() override;
 	virtual EAIState GetAIState_Implementation() const override;
