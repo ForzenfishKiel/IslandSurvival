@@ -34,9 +34,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category = "Config")
 	FName CharacterName; //此角色的身份
+	UPROPERTY(EditDefaultsOnly,Category = "Config")
+	TSubclassOf<UGameplayEffect> CharacterTakeDamageEffectClass;
 protected:
 	virtual void BeginPlay() override;
-
 public:
 	//自身虚函数
 	virtual void Tick(float DeltaTime) override;
@@ -56,9 +57,12 @@ public:
 	virtual FName GetCharacterName_Implementation() override;
 	virtual int32 GetLevel_Implementation() override;
 	virtual FTaggedMontage FindMontageFromTag_Implementation(const FGameplayTag Tag) const override;
+	virtual void ApplyDamageToTarget_Implementation(AActor* Target) override;
 private:
 	UPROPERTY(EditDefaultsOnly,Category = "Config")
 	TArray<FTaggedMontage> CharacterTaggedMontage;
+
+
 };
 
 

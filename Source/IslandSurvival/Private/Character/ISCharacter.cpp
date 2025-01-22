@@ -2,16 +2,20 @@
 
 
 #include "Character/ISCharacter.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "ActorComponents/ISGearEquipComponent.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISGameplayMode.h"
+#include "Game/ISGameplayTagsManager.h"
 #include "Game/ISPlayerController.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Game/ISPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Interface/ISEnemyInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -329,4 +333,27 @@ void AISCharacter::BindAttributeSet() const
 		GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 	}
 		);
+}
+
+void AISCharacter::ApplyDamageToTarget_Implementation(AActor* Target)
+{
+	if(!Target->Implements<UISEnemyInterface>()) return;
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
+	if(!TargetASC) return;
+	AISPlayerState* SourcePS =  GetPlayerState<AISPlayerState>();
+	UAbilitySystemComponent* SourcePlayerASC = SourcePS->GetAbilitySystemComponent();
+	if(!SourcePlayerASC) return;
+
+	int32 CharacterLevel = SourcePS->GetPlayerLevel();
+
+	check(CharacterTakeDamageEffectClass);
+
+	FGameplayEffectContextHandle GameplayEffectContextHandle = SourcePlayerASC->MakeEffectContext();
+	GameplayEffectContextHandle.AddSourceObject(this);
+	FGameplayEffectSpecHandle GameplayEffectSpecHandle = SourcePlayerASC->MakeOutgoingSpec(CharacterTakeDamageEffectClass,CharacterLevel,GameplayEffectContextHandle);
+	UISAttributeSet* SourceAS = Cast<UISAttributeSet>(SourcePS->GetAttributeSet());
+	if(!SourceAS) return;
+
+	
+	const FActiveGameplayEffectHandle ActivateGameplayEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
 }

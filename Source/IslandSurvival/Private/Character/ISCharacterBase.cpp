@@ -95,3 +95,8 @@ FTaggedMontage AISCharacterBase::FindMontageFromTag_Implementation(const FGamepl
 	}
 	return FTaggedMontage();
 }
+
+void AISCharacterBase::ApplyDamageToTarget_Implementation(AActor* Target)
+{
+	IISCombatInterface::ApplyDamageToTarget_Implementation(Target);
+}

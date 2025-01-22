@@ -12,6 +12,7 @@
 #include "Interface/ISEnemyInterface.h"
 #include "Interface/ISPlayerInterface.h"
 #include "Net/UnrealNetwork.h"
+#include "Perception/AISense_Damage.h"
 
 UISAttributeSet::UISAttributeSet()
 {
@@ -100,6 +101,9 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 			const bool bFatal = NewHealth <= 0;  //生命值是否小于等于？
 			if(!bFatal)
 			{
+				//触发敌人伤害反应
+				UAISense_Damage::ReportDamageEvent(Properties.TargetCharacter,Properties.TargetCharacter,Properties.SourceCharacter
+					,LocalValue,Properties.SourceCharacter->GetActorLocation(),Properties.SourceCharacter->GetActorLocation());
 				//播放人物或者AI的受到攻击的状态
 			}
 			else if(Properties.TargetCharacter->Implements<UISEnemyInterface>())

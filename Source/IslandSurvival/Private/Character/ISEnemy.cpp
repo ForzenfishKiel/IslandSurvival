@@ -3,13 +3,16 @@
 
 #include "Character/ISEnemy.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISAttributeSet.h"
+#include "Game/ISGameplayTagsManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Interface/ISPlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "UI/ISMainUIBase.h"
 
@@ -81,12 +84,16 @@ void AISEnemy::BeginPlay()
 		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda([this]
 				(const FOnAttributeChangeData& Data)
 			{
+				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, DebugMessage);
 				OnAttributeChange.Broadcast(Data.NewValue);
 			}
 		);
 		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda([this]
 		(const FOnAttributeChangeData& Data)
 			{
+				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, DebugMessage);
 				OnAttributeChange.Broadcast(Data.NewValue);
 			}
 		);
@@ -152,4 +159,21 @@ FGameplayAbilitySpecHandle AISEnemy::FindActivateAbility_Implementation(const FG
 		}
 	}
 	return FGameplayAbilitySpecHandle();
+}
+
+void AISEnemy::ApplyDamageToTarget_Implementation(AActor* Target)
+{
+	AISPlayerState* CharacterState = IISPlayerInterface::Execute_GetPlayerState(Target);
+	if(!CharacterState) return;
+
+	UAbilitySystemComponent* TargetASC = CharacterState->GetAbilitySystemComponent();
+	if(!TargetASC) return;
+
+	FGameplayEffectContextHandle EffectContextHandle = ISEnemyAbilitysystem->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle GameplayEffectSpecHandle = ISEnemyAbilitysystem->MakeOutgoingSpec(CharacterTakeDamageEffectClass,Level,EffectContextHandle);
+	UISAttributeSet* SourceAS = Cast<UISAttributeSet> (ISEnemyAttribute);
+	if(!SourceAS) return;
+	
+	const FActiveGameplayEffectHandle ActivateEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
 }

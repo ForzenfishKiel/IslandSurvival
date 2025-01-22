@@ -8,6 +8,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISense_Damage.h"
 
 AISAIController::AISAIController()
 {
@@ -52,6 +53,7 @@ void AISAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 		if(!ActorRef->Implements<UISPlayerInterface>()) return;  //如果看到的不是玩家类则返回
 		if(AIPerception->GetActorsPerception(ActorRef, ActorPerceptionInfo))
 		{
+			
 			Blackboard->SetValueAsObject(FName("TargetActor"),ActorRef);  //设置黑板的键值
 		}
 	}
@@ -63,7 +65,12 @@ FAIStimulus AISAIController::GetPerceptionInfo(const EAISense InAISense)
 	for(const FAIStimulus AIStimulus : ActorPerceptionInfo.LastSensedStimuli)
 	{
 		TSubclassOf<UAISense> Sense = UAIPerceptionSystem::GetSenseClassForStimulus(this,AIStimulus);
+		
 		if(InAISense == EAISense::Sighting && Sense.Get() == UAISense_Sight::StaticClass())
+		{
+			return AIStimulus;
+		}
+		if(InAISense == EAISense::TakeDamage && Sense.Get() == UAISense_Damage::StaticClass())
 		{
 			return AIStimulus;
 		}

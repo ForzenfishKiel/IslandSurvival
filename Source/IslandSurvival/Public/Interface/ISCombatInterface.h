@@ -51,4 +51,6 @@ public:
 	FTaggedMontage FindMontageFromTag( const FGameplayTag Tag ) const;
 	UFUNCTION( BlueprintNativeEvent,BlueprintCallable)
 	FGameplayAbilitySpecHandle FindActivateAbility(const FGameplayTag InTag) const;
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void ApplyDamageToTarget(AActor* Target);
 };
