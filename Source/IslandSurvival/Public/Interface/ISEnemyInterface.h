@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "ISEnemyInterface.generated.h"
 
+class AISEnemy;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UISEnemyInterface : public UInterface
@@ -25,6 +26,8 @@ class ISLANDSURVIVAL_API IISEnemyInterface
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AISAIController* GetAIController();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	AISEnemy* GetEnemy();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	EAIState GetAIState() const;
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)

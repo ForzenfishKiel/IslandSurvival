@@ -39,9 +39,9 @@ protected:
 	
 public:
 	UPROPERTY(BlueprintAssignable) 
-	FOnPlayerStateChangeSignature OnAttributeChange;  //原始数值变化
+	FOnPlayerStateChangeSignature OnHealthAttributeChange;  //原始数值变化
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerStateChangeSignature OnMaxAttributeChange;  //最大数值变化
+	FOnPlayerStateChangeSignature OnMaxHealthAttributeChange;  //最大数值变化
 	void SetAISpeed(const EAISpeed InState);
 public:
 	//角色自身虚函数
@@ -63,6 +63,7 @@ private:
 	virtual AISAIController* GetAIController_Implementation() override;
 	virtual EAIState GetAIState_Implementation() const override;
 	virtual void SetAIState_Implementation(EAIState State) override;
+	virtual AISEnemy* GetEnemy_Implementation() override;
 	UPROPERTY(EditDefaultsOnly)
 	TMap<TEnumAsByte<EAISpeed>,float> AISpeedManager;
 };

@@ -86,7 +86,7 @@ void AISEnemy::BeginPlay()
 			{
 				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, DebugMessage);
-				OnAttributeChange.Broadcast(Data.NewValue);
+				OnHealthAttributeChange.Broadcast(Data.NewValue);
 			}
 		);
 		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda([this]
@@ -94,11 +94,11 @@ void AISEnemy::BeginPlay()
 			{
 				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, DebugMessage);
-				OnAttributeChange.Broadcast(Data.NewValue);
+				OnHealthAttributeChange.Broadcast(Data.NewValue);
 			}
 		);
-		OnAttributeChange.Broadcast(AS->GetHealth());
-		OnAttributeChange.Broadcast(AS->GetMaxHealth());
+		OnHealthAttributeChange.Broadcast(AS->GetHealth());
+		OnMaxHealthAttributeChange.Broadcast(AS->GetMaxHealth());
 	}
 }
 
@@ -147,6 +147,11 @@ EAIState AISEnemy::GetAIState_Implementation() const
 void AISEnemy::SetAIState_Implementation(EAIState State)
 {
 	AIState = State;
+}
+
+AISEnemy* AISEnemy::GetEnemy_Implementation()
+{
+	return this;
 }
 
 FGameplayAbilitySpecHandle AISEnemy::FindActivateAbility_Implementation(const FGameplayTag InTag) const
