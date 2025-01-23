@@ -28,6 +28,7 @@ AISEnemy::AISEnemy()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthBar->SetupAttachment(GetRootComponent());
+	HealthBar->SetIsReplicated(true);
 }
 
 void AISEnemy::SetAISpeed(const EAISpeed InState)
@@ -81,24 +82,31 @@ void AISEnemy::BeginPlay()
 
 	if(const UISAttributeSet* AS = Cast<UISAttributeSet>(GetEnemyAttribute()))
 	{
+		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda([this]
+				(const FOnAttributeChangeData& Data)
+			{
+				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, DebugMessage);
+			
+				const UISAttributeSet* AS = Cast<UISAttributeSet>(GetEnemyAttribute());
+				Health = AS->GetHealth();
+				OnHealthChange.Broadcast(Health,Data.NewValue);
+			}
+		);	
 		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda([this]
 				(const FOnAttributeChangeData& Data)
 			{
 				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, DebugMessage);
-				OnHealthAttributeChange.Broadcast(Data.NewValue);
+
+				const UISAttributeSet* AS = Cast<UISAttributeSet>(GetEnemyAttribute());
+				MaxHealth = AS->GetMaxHealth();
+				OnHealthChange.Broadcast(Data.NewValue,MaxHealth);
 			}
 		);
-		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda([this]
-		(const FOnAttributeChangeData& Data)
-			{
-				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, DebugMessage);
-				OnHealthAttributeChange.Broadcast(Data.NewValue);
-			}
-		);
-		OnHealthAttributeChange.Broadcast(AS->GetHealth());
-		OnMaxHealthAttributeChange.Broadcast(AS->GetMaxHealth());
+		Health = AS->GetHealth();
+		MaxHealth = AS->GetMaxHealth();
+		OnHealthChange.Broadcast(Health,MaxHealth);
 	}
 }
 
@@ -126,6 +134,8 @@ void AISEnemy::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AISEnemy,AIState);
+	DOREPLIFETIME(AISEnemy,Health);
+	DOREPLIFETIME(AISEnemy,MaxHealth);
 }
 
 int32 AISEnemy::GetLevel_Implementation()
@@ -154,6 +164,8 @@ AISEnemy* AISEnemy::GetEnemy_Implementation()
 	return this;
 }
 
+
+
 FGameplayAbilitySpecHandle AISEnemy::FindActivateAbility_Implementation(const FGameplayTag InTag) const
 {
 	for( const FGameplayAbilitySpec& AbilitySpec : ISEnemyAbilitysystem->GetActivatableAbilities())
@@ -181,4 +193,13 @@ void AISEnemy::ApplyDamageToTarget_Implementation(AActor* Target)
 	if(!SourceAS) return;
 	
 	const FActiveGameplayEffectHandle ActivateEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
+}
+void AISEnemy::OnRep_MaxHealth()
+{
+	OnHealthChange.Broadcast(Health,MaxHealth);
+}
+
+void AISEnemy::OnRep_Health()
+{
+	OnHealthChange.Broadcast(Health,MaxHealth);
 }
