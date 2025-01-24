@@ -63,6 +63,7 @@ public:
 	/*AI状态*/
 	FGameplayTag AI_State_Eating;  //AI进食
 	FGameplayTag AI_State_Dying;  //AI死亡
+	FGameplayTag AI_State_Attacking; //AI攻击中
 private:
 	static FGameplayTagsManager GameplayTags;
 };

@@ -211,7 +211,6 @@ void AISEnemy::SpawnEnemyCorpse_Implementation()
 	EnemyCorpse->CollectibleMaxHP = 100.f;
 	EnemyCorpse->CollectibleHP = EnemyCorpse->CollectibleMaxHP;
 	EnemyCorpse->CollectibleClass = ECollectibleClass::Corpse;
-	EnemyCorpse->HarvestStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	EnemyCorpse->CollectibleName = CharacterName; 
 	
 	UGameplayStatics::FinishSpawningActor(EnemyCorpse,GetActorTransform());
