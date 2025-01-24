@@ -77,5 +77,7 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 
 	GameplayTags.AI_State_Eating =
 		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("AI.State.Eating"),FString("AI吃东西"));
+	GameplayTags.AI_State_Dying =
+	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("AI.State.Dying"),FString("AI正在死亡"));
 	
 }

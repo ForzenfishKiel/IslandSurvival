@@ -17,6 +17,7 @@ enum class ECollectibleClass : uint8
 	Tree = 1 UMETA(DisplayName = "Tree"),
 	Rock = 2 UMETA(DisplayName = "Rock"),
 	Tropical = 3 UMETA(DisplayName = "Tropical"),
+	Corpse = 4 UMETA(DisplayName = "Corpse"),  //尸体
 };
 
 USTRUCT(BlueprintType)

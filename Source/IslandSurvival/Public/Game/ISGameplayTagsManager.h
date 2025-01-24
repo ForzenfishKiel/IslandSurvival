@@ -61,7 +61,8 @@ public:
 	FGameplayTag Input_Combo_CanCombo;
 
 	/*AI状态*/
-	FGameplayTag AI_State_Eating;
+	FGameplayTag AI_State_Eating;  //AI进食
+	FGameplayTag AI_State_Dying;  //AI死亡
 private:
 	static FGameplayTagsManager GameplayTags;
 };

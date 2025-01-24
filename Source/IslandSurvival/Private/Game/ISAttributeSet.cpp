@@ -108,6 +108,11 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 			}
 			else if(Properties.TargetCharacter->Implements<UISEnemyInterface>())
 			{
+				//对象必须是敌人类且敌人类必须实现战斗接口
+				IISCombatInterface* CombatInterface = Cast<IISCombatInterface>(Properties.TargetCharacter);
+				if(!CombatInterface) return;
+				
+				CombatInterface->Die();
 				SendGameplayXP(Properties);  //死亡后发送经验值
 			}
 		}

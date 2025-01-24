@@ -7,12 +7,14 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
+#include "Components/CapsuleComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISAttributeSet.h"
 #include "Game/ISGameplayTagsManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Interface/ISPlayerInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "UI/ISMainUIBase.h"
 
@@ -38,7 +40,17 @@ void AISEnemy::SetAISpeed(const EAISpeed InState)
 
 void AISEnemy::Die()
 {
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
+	ISEnemyAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsDie"), true);  //改变行为树的值
+	
+	const FGameplayTagsManager& GameplayTags = FGameplayTagsManager::Get();
+	FGameplayEventData Payload; //创建Payload
+	Payload.EventTag = GameplayTags.AI_State_Dying;
+	Payload.EventMagnitude = 0.f;  //输送经验和对应的Tag
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this,  GameplayTags.AI_State_Dying,Payload);  //向其GA发送死亡事件
+
 }
 
 void AISEnemy::MulticastHandleDeath()
@@ -85,8 +97,6 @@ void AISEnemy::BeginPlay()
 		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda([this]
 				(const FOnAttributeChangeData& Data)
 			{
-				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, DebugMessage);
 			
 				const UISAttributeSet* AS = Cast<UISAttributeSet>(GetEnemyAttribute());
 				Health = AS->GetHealth();
@@ -96,16 +106,12 @@ void AISEnemy::BeginPlay()
 		ISEnemyAbilitysystem->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda([this]
 				(const FOnAttributeChangeData& Data)
 			{
-				FString DebugMessage = FString::Printf(TEXT("New Value: %f"), Data.NewValue);
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, DebugMessage);
 
 				const UISAttributeSet* AS = Cast<UISAttributeSet>(GetEnemyAttribute());
 				MaxHealth = AS->GetMaxHealth();
 				OnHealthChange.Broadcast(Data.NewValue,MaxHealth);
 			}
 		);
-		Health = AS->GetHealth();
-		MaxHealth = AS->GetMaxHealth();
 		OnHealthChange.Broadcast(Health,MaxHealth);
 	}
 }
@@ -165,7 +171,6 @@ AISEnemy* AISEnemy::GetEnemy_Implementation()
 }
 
 
-
 FGameplayAbilitySpecHandle AISEnemy::FindActivateAbility_Implementation(const FGameplayTag InTag) const
 {
 	for( const FGameplayAbilitySpec& AbilitySpec : ISEnemyAbilitysystem->GetActivatableAbilities())
@@ -194,6 +199,27 @@ void AISEnemy::ApplyDamageToTarget_Implementation(AActor* Target)
 	
 	const FActiveGameplayEffectHandle ActivateEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
 }
+
+//生成敌人的尸体，用于可采集
+void AISEnemy::SpawnEnemyCorpse_Implementation()
+{
+
+	IISEnemyInterface::SpawnEnemyCorpse_Implementation();
+
+	AISHarvestingBase* EnemyCorpse = GetWorld()->SpawnActorDeferred<AISHarvestingBase>(Corpse,GetActorTransform());  //在原地生成一个动物尸体
+
+	EnemyCorpse->CollectibleMaxHP = 100.f;
+	EnemyCorpse->CollectibleHP = EnemyCorpse->CollectibleMaxHP;
+	EnemyCorpse->CollectibleClass = ECollectibleClass::Corpse;
+	EnemyCorpse->HarvestStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	EnemyCorpse->CollectibleName = CharacterName; 
+	
+	UGameplayStatics::FinishSpawningActor(EnemyCorpse,GetActorTransform());
+	
+	Destroy();
+	
+}
+
 void AISEnemy::OnRep_MaxHealth()
 {
 	OnHealthChange.Broadcast(Health,MaxHealth);

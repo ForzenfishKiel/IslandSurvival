@@ -50,7 +50,6 @@ public:
 	virtual void InitAbilityActorInfo();
 	UFUNCTION(NetMulticast,Reliable)
 	virtual void MulticastHandleDeath();
-	virtual void Die();  //角色死亡
 	virtual void BindAttributeSet() const;
 	//ICombatInterface虚函数
 	virtual AISCharacterBase* GetAvaActor_Implementation() override;
@@ -58,6 +57,7 @@ public:
 	virtual int32 GetLevel_Implementation() override;
 	virtual FTaggedMontage FindMontageFromTag_Implementation(const FGameplayTag Tag) const override;
 	virtual void ApplyDamageToTarget_Implementation(AActor* Target) override;
+	virtual void Die() override;
 private:
 	UPROPERTY(EditDefaultsOnly,Category = "Config")
 	TArray<FTaggedMontage> CharacterTaggedMontage;

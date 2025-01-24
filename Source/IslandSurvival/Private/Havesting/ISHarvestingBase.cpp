@@ -55,17 +55,18 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 	AISCharacter* SourceCharacter = Cast<AISCharacter>(TargetActor);
 	if(!SourceCharacter) return;  //如果为目标角色
 	UISItemsContainer* ItemContainer = SourceCharacter->GetComponentByClass<UISItemsContainer>();
+	
 	UISDropCollectibleDataAsset* CollectibleDataAsset = UISAbilitysystemLibary::GetDropCollectibleDataAsset(this);
 	const FDropInformation DropInfo = CollectibleDataAsset->GetDropConfig(CollectibleClass);
 
 	Execute_ApplyDamageToTarget(this,TargetActor); //计算伤害
 
 	//计算掉落
-	for(auto&TargetRef:DropInfo.Drops)
+	for(auto& TargetRef:DropInfo.Drops)
 	{
 		if(TargetRef.TargetName==CollectibleName)
 		{
-			for(auto&TargetDropRef:TargetRef.Drops)
+			for(auto& TargetDropRef:TargetRef.Drops)
 			{
 				if(TargetDropRef.TargetID!=FName("None"))  //对应ID不为-1，防止出错
 				{

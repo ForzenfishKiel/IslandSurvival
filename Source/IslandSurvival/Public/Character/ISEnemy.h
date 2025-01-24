@@ -7,6 +7,7 @@
 #include "Character/ISCharacterBase.h"
 #include "Components/WidgetComponent.h"
 #include "Game/ISAIController.h"
+#include "Havesting/ISHarvestingBase.h"
 #include "Interface/ISEnemyInterface.h"
 #include "WidgetController/ISMainUIWidgetController.h"
 #include "ISEnemy.generated.h"
@@ -44,7 +45,6 @@ public:
 	void SetAISpeed(const EAISpeed InState);
 public:
 	//角色自身虚函数
-	virtual void Die() override;
 	virtual void MulticastHandleDeath() override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -58,13 +58,17 @@ private:
 	virtual int32 GetLevel_Implementation() override;
 	virtual FGameplayAbilitySpecHandle FindActivateAbility_Implementation(const FGameplayTag InTag) const override;
 	virtual void ApplyDamageToTarget_Implementation(AActor* Target) override;
+	virtual void Die() override;
 	//IEnemyInterface 接口
 	virtual AISAIController* GetAIController_Implementation() override;
 	virtual EAIState GetAIState_Implementation() const override;
 	virtual void SetAIState_Implementation(EAIState State) override;
 	virtual AISEnemy* GetEnemy_Implementation() override;
+	virtual void SpawnEnemyCorpse_Implementation() override;
 	UPROPERTY(EditDefaultsOnly)
 	TMap<TEnumAsByte<EAISpeed>,float> AISpeedManager;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AISHarvestingBase> Corpse;  // 动物尸体类
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth)
 	float MaxHealth;

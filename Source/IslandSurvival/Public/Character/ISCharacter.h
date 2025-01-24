@@ -39,7 +39,6 @@ public:
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
 	virtual void LevelUp_Implementation() override;  //角色升级，播放粒子特效或音效等
 	virtual AISPlayerState*GetPlayerState_Implementation() override;
-	virtual void Die() override;
 	virtual void BindAttributeSet() const override;
 	virtual void ApplyDamageToTarget_Implementation(AActor* Target) override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)

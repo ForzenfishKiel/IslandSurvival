@@ -32,4 +32,6 @@ public:
 	EAIState GetAIState() const;
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetAIState(EAIState State);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SpawnEnemyCorpse();
 };

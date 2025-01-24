@@ -53,4 +53,5 @@ public:
 	FGameplayAbilitySpecHandle FindActivateAbility(const FGameplayTag InTag) const;
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void ApplyDamageToTarget(AActor* Target);
+	virtual void Die() = 0;
 };

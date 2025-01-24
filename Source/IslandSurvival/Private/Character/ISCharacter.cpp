@@ -170,11 +170,6 @@ AISPlayerState* AISCharacter::GetPlayerState_Implementation()
 	return SourcePlayerState;
 }
 
-void AISCharacter::Die()
-{
-	
-}
-
 bool AISCharacter::CheckIsFastRun()
 {
 	AISPlayerState*ISPlayerState = GetPlayerState<AISPlayerState>();
@@ -337,6 +332,7 @@ void AISCharacter::BindAttributeSet() const
 
 void AISCharacter::ApplyDamageToTarget_Implementation(AActor* Target)
 {
+	if(!Target) return;
 	if(!Target->Implements<UISEnemyInterface>()) return;
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
 	if(!TargetASC) return;
