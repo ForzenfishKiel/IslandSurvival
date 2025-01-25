@@ -58,10 +58,9 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 	
 	UISDropCollectibleDataAsset* CollectibleDataAsset = UISAbilitysystemLibary::GetDropCollectibleDataAsset(this);
 	const FDropInformation DropInfo = CollectibleDataAsset->GetDropConfig(CollectibleClass);
-
-	Execute_ApplyDamageToTarget(this,TargetActor); //计算伤害
-
+	
 	//计算掉落
+
 	for(auto& TargetRef:DropInfo.Drops)
 	{
 		if(TargetRef.TargetName==CollectibleName)
@@ -83,6 +82,8 @@ void AISHarvestingBase::CollectionExecution_Implementation(AActor* TargetActor, 
 			}
 		}
 	}
+	
+	Execute_ApplyDamageToTarget(this,TargetActor); //计算伤害
 }
 
 //服务器运行

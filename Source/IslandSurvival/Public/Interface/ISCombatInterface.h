@@ -20,7 +20,10 @@ struct FTaggedMontage
 	UAnimMontage* Montage = nullptr;
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
-	FGameplayTag AnimMontageTag;  //触发动画的蒙太奇 
+	FGameplayTag AnimMontageTag;  //触发动画的蒙太奇
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	TArray<FName> CombatTipSocketName;  //触发技能的骨骼组
 };
 UINTERFACE(MinimalAPI)
 class UISCombatInterface : public UInterface
@@ -54,4 +57,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void ApplyDamageToTarget(AActor* Target);
 	virtual void Die() = 0;
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	USkeletalMeshComponent* GetTargetSkeletalMeshComponent();
 };

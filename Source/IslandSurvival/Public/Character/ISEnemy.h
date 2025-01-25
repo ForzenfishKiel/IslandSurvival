@@ -59,6 +59,7 @@ private:
 	virtual FGameplayAbilitySpecHandle FindActivateAbility_Implementation(const FGameplayTag InTag) const override;
 	virtual void ApplyDamageToTarget_Implementation(AActor* Target) override;
 	virtual void Die() override;
+	virtual USkeletalMeshComponent* GetTargetSkeletalMeshComponent_Implementation() override;
 	//IEnemyInterface 接口
 	virtual AISAIController* GetAIController_Implementation() override;
 	virtual EAIState GetAIState_Implementation() const override;

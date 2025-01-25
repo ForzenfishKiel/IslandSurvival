@@ -53,6 +53,11 @@ void AISEnemy::Die()
 
 }
 
+USkeletalMeshComponent* AISEnemy::GetTargetSkeletalMeshComponent_Implementation()
+{
+	return GetMesh();
+}
+
 void AISEnemy::MulticastHandleDeath()
 {
 	Super::MulticastHandleDeath();
