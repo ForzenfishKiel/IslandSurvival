@@ -75,6 +75,10 @@ public:
 	FGameplayAttributeData Vigor;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,Vigor)
 
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Coins,Category = "SecondaryAttributes")
+	FGameplayAttributeData Coins;
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,Coins)  //角色的钱币数量
+
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxVigor,Category = "PrimaryAttributes")
 	FGameplayAttributeData MaxVigor;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxVigor)
@@ -120,6 +124,10 @@ public:
 	FGameplayAttributeData InComingDamage; //角色受到的伤害
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,InComingDamage);
 
+	UPROPERTY(BlueprintReadOnly,Category = "MetaAttributes")
+	FGameplayAttributeData InComingCoins;  //钱币减少规范
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,InComingCoins);
+
 	/*角色等级*/
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_PlayerLevel,Category = "CharacterLevel")
 	FGameplayAttributeData PlayerLevel;
@@ -130,7 +138,9 @@ public:
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxHealthLevel,Category = "AttributeLevel")
 	FGameplayAttributeData MaxHealthLevel;
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,MaxHealthLevel);
-	
+
+	UFUNCTION()
+	void OnRep_Coins(const FGameplayAttributeData& OldCoins) const;
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
 	UFUNCTION()

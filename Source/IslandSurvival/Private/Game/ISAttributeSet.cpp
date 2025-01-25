@@ -163,6 +163,11 @@ void UISAttributeSet::SendGameplayXP(const FEffectProperties& Props)
 }
 
 
+void UISAttributeSet::OnRep_Coins(const FGameplayAttributeData& OldCoins) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,Coins,OldCoins);
+}
+
 void UISAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UISAttributeSet,Health,OldHealth);
