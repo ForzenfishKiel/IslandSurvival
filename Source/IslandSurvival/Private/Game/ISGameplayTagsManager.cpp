@@ -81,5 +81,6 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("AI.State.Dying"),FString("AI正在死亡"));
 	GameplayTags.AI_State_Attacking =
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("AI.State.Attacking"),FString("AI正在攻击"));
-	
+	GameplayTags.AI_State_Howl =
+	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("AI.State.Howl"),FString("AI正在嚎叫"));
 }
