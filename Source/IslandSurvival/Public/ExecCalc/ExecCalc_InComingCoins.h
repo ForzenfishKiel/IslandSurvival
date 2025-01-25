@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffectExecutionCalculation.h"
-#include "ExecCalc_ImComingCoins.generated.h"
+#include "ExecCalc_InComingCoins.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ISLANDSURVIVAL_API UExecCalc_ImComingCoins : public UGameplayEffectExecutionCalculation
+class ISLANDSURVIVAL_API UExecCalc_InComingCoins : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
 	

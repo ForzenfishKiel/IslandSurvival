@@ -128,6 +128,10 @@ public:
 	FGameplayAttributeData InComingCoins;  //钱币减少规范
 	ATTRIBUTE_ACCESSORS(UISAttributeSet,InComingCoins);
 
+	UPROPERTY(BlueprintReadOnly,Category = "MetaAttributes")
+	FGameplayAttributeData InRecoverCoins; //钱币增加规范
+	ATTRIBUTE_ACCESSORS(UISAttributeSet,InRecoverCoins);
+
 	/*角色等级*/
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_PlayerLevel,Category = "CharacterLevel")
 	FGameplayAttributeData PlayerLevel;

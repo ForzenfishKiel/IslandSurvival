@@ -8,6 +8,7 @@
 #include "DataAsset/ISCraftingContainer.h"
 #include "DataAsset/ISEquipableDataAsset.h"
 #include "DataAsset/ISHarvestDataAsset.h"
+#include "DataAsset/ISTraderSpecialData.h"
 #include "DataAsset/ISWeaponDataAsset.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ISAbilitysystemLibary.generated.h"
@@ -28,4 +29,5 @@ public:
 	static void InitializeCharacterAttributes(const UObject* WorldContextObject,FName InName,float Level,UAbilitySystemComponent* ASC);
 	static void GiveStartupAbilities(const UObject* WorldContextObject,UAbilitySystemComponent* ASC,FName InName);
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject,FName EnemyName,int32 CharacterLevel);
+	static UISTraderSpecialData* GetTraderSpecialData(const UObject* WorldContextObject);
 };

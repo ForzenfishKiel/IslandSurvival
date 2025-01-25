@@ -43,6 +43,14 @@ UISCharacterClassInfo* UISAbilitysystemLibary::GetCharacterClassInfo(const UObje
 	return SourceGameplayMode->ISCharacterClassInfo;
 }
 
+UISTraderSpecialData* UISAbilitysystemLibary::GetTraderSpecialData(const UObject* WorldContextObject)
+{
+	AISGameplayMode* SourceGamemode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(!SourceGamemode) return nullptr;
+	return SourceGamemode->ISTraderSpecialData;
+}
+
+
 void UISAbilitysystemLibary::InitializeCharacterAttributes(const UObject* WorldContextObject, FName InName,
 	float Level, UAbilitySystemComponent* ASC)
 {
