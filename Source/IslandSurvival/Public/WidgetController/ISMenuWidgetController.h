@@ -53,4 +53,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable,Category = "GAS|Attributes")
 	FOnPlayerMenuStateChangeSignature OnMaxThirstChange;//最大口渴值变化
+
+	UPROPERTY(BlueprintAssignable,Category = "GAS|Attributes")
+	FOnPlayerMenuStateChangeSignature OnCoinsChange;
 };

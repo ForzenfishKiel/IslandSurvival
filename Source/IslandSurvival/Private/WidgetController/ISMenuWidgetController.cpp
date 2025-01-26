@@ -56,6 +56,11 @@ void UISMenuWidgetController::BindCallBackDependencies()
 	{
 		OnMaxThirstChange.Broadcast(Data.NewValue);
 	});
+	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetCoinsAttribute()).AddLambda([this]
+	(const FOnAttributeChangeData& Data)
+	{
+		OnCoinsChange.Broadcast(Data.NewValue);
+	});
 }
 
 void UISMenuWidgetController::BroadcastInitialValues()

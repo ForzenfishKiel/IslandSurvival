@@ -3,10 +3,12 @@
 
 #include "ActorComponents/ISInteractionComponent.h"
 #include "Character/ISCharacter.h"
+#include "Character/ISNonePlayerCharacter.h"
 #include "Game/ISPlayerController.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Net/UnrealNetwork.h"
 #include "Interface/ISItemInterface.h"
+#include "Interface/ISNPCInterface.h"
 
 // Sets default values for this component's properties
 UISInteractionComponent::UISInteractionComponent()
@@ -91,6 +93,11 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 				IISEquipableInterface::Execute_OnEquipableWasInteract(HitActor, GetOwner());
 				return;
 			}
+			if(HitActor->Implements<UISNPCInterface>())
+			{
+				IISNPCInterface::Execute_OnNPCWasInteracted(Hit.GetActor(), GetOwner());
+				return;
+			}
 			if(HitActor->Implements<UISBuildInterface>())
 			{
 				CurrentBuilding = IISBuildInterface::Execute_GetBuildingSystemBase(CompOwner);
@@ -152,6 +159,15 @@ void UISInteractionComponent::TickInteractline()
 			if(!ISMainUI) return;
 			AISEquipable* TargetEquipable = IISEquipableInterface::Execute_GetEquipable(Hit.GetActor());  //获取接口的对象
 			ISMainUI->SendObjectInfo(TargetEquipable);
+			bIsInteractTrace = true;
+		}
+		else if(Hit.GetActor() && Hit.GetActor()->Implements<UISNPCInterface>() && !bIsInteractTrace)
+		{
+			UISMainUIBase* ISMainUI = PlayerMainHUD->IsMainUI;
+			if(!ISMainUI) return;
+			AISNonePlayerCharacter* TargetNPC = IISNPCInterface::Execute_GetNPC(Hit.GetActor());
+			if(TargetNPC) return;
+			ISMainUI->SendObjectInfo(TargetNPC);
 			bIsInteractTrace = true;
 		}
 	}

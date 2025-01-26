@@ -4,6 +4,7 @@
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 
 #include "Ability/ISInputAbility.h"
+#include "Game/ISGameInstance.h"
 #include "Game/ISGameplayMode.h"
 #include "Interface/ISCombatInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -52,7 +53,7 @@ UISTraderSpecialData* UISAbilitysystemLibary::GetTraderSpecialData(const UObject
 
 
 void UISAbilitysystemLibary::InitializeCharacterAttributes(const UObject* WorldContextObject, FName InName,
-	float Level, UAbilitySystemComponent* ASC)
+                                                           float Level, UAbilitySystemComponent* ASC)
 {
 	const AActor* AvatarActor = ASC->GetAvatarActor();
 
@@ -112,4 +113,15 @@ int32 UISAbilitysystemLibary::GetXPRewardForClassAndLevel(const UObject* WorldCo
 	const float XPReward = CharacterClassDefaultInfo.XPReward.GetValueAtLevel(CharacterLevel);
 
 	return static_cast<int32>(XPReward);  //返回查找表的怪物的经验值
+}
+
+FItemInformation* UISAbilitysystemLibary::GetItemInformation(const UObject* WorldContextObject,const FName InTargetID)
+{
+	if(!InTargetID.IsValid()) return nullptr;
+	UISGameInstance* SourceGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject)); //获取本地游戏实例
+	if(!SourceGameInstance) return nullptr;
+
+	UDataTable* GameItemDataTable = SourceGameInstance->ItemDataTable;  //获取物品制作表
+	if(!GameItemDataTable) return nullptr;
+	return GameItemDataTable->FindRow<FItemInformation>(InTargetID,TEXT("ID"));
 }

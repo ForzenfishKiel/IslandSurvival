@@ -4,6 +4,7 @@
 #include "ActorComponents/ISTradingSystemComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "ISAbilityTypes.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Character/ISCharacter.h"
 #include "Game/ISGameInstance.h"
@@ -58,7 +59,7 @@ void UISTradingSystemComponent::LoadingTradBackPack()
 }
 
 //玩家购买时
-void UISTradingSystemComponent::TradBegin_Implementation(AActor* TargetActor)
+void UISTradingSystemComponent::TradBegin_Implementation(AActor* TargetActor, const FName InTargetID)
 {
 	check(NPCTradInComingCoinEffect);  //断言，交易的对象不能是不可购买的
 	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(TargetActor);  //获取角色
@@ -74,17 +75,18 @@ void UISTradingSystemComponent::TradBegin_Implementation(AActor* TargetActor)
 	if(!SourceASC) return;
 
 	FGameplayEffectContextHandle ContextHandle = SourceASC->MakeEffectContext();
+
+	FISGameplayEffectContext* ISEffectContext = static_cast<FISGameplayEffectContext*>(ContextHandle.Get());
+	if(!ISEffectContext) return;
+	ISEffectContext->SetTargetSaleID(InTargetID);  //上下文里，导入交易的ID
+	
 	ContextHandle.AddSourceObject(GetOwner());
 	FGameplayEffectSpecHandle EffectSpecHandle = SourceASC->MakeOutgoingSpec(NPCTradInComingCoinEffect,1.f,ContextHandle);
 	const FActiveGameplayEffectHandle ActivateEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
-	if(!ActivateEffectHandle.IsValid())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("无法交易！！"));
-	}
 }
 
 //角色开始出售
-void UISTradingSystemComponent::SaleBegin_Implementation(AActor* TargetActor)
+void UISTradingSystemComponent::SaleBegin_Implementation(AActor* TargetActor, const FName InTargetID)
 {
 	check(NPCTradInRecoverCoinEffect);  //断言，交易的对象不能是不可出售的
 	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(TargetActor);  //获取角色
@@ -100,11 +102,12 @@ void UISTradingSystemComponent::SaleBegin_Implementation(AActor* TargetActor)
 	if(!SourceASC) return;
 
 	FGameplayEffectContextHandle ContextHandle = SourceASC->MakeEffectContext();
+
+	FISGameplayEffectContext* ISEffectContext = static_cast<FISGameplayEffectContext*>(ContextHandle.Get());
+	if(!ISEffectContext) return;
+	ISEffectContext->SetTargetSaleID(InTargetID);
+	
 	ContextHandle.AddSourceObject(GetOwner());
 	FGameplayEffectSpecHandle EffectSpecHandle = SourceASC->MakeOutgoingSpec(NPCTradInRecoverCoinEffect,1.f,ContextHandle);
 	const FActiveGameplayEffectHandle ActivateEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
-	if(!ActivateEffectHandle.IsValid())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("无法出售！！"));
-	}
 }

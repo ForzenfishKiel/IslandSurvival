@@ -5,7 +5,10 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
+#include "ISAbilityTypes.h"
+#include "ActorComponents/ISItemsContainer.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
+#include "Character/ISCharacter.h"
 #include "Game/ISGameplayTagsManager.h"
 #include "GameFramework/Character.h"
 #include "Interface/ISCombatInterface.h"
@@ -90,6 +93,29 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 	if(Data.EvaluatedData.Attribute == GetVigorAttribute())
 	{
 		SetVigor(FMath::Clamp(GetVigor(),0.f,GetMaxVigor()));
+	}
+	if(Data.EvaluatedData.Attribute == GetInComingCoinsAttribute())
+	{
+		const float LocalValue = GetInComingCoins();
+
+		const float NewCoin = GetCoins() - LocalValue;
+
+		const bool bHasMoney = NewCoin <= 0;
+		//如果玩家拥有的金币不足
+		if(bHasMoney)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("金币不足！！！"));
+		}
+		else
+		{
+			FISGameplayEffectContext* SourceEffectContext = static_cast<FISGameplayEffectContext*>(Properties.EffectContextHandle.Get());
+			if(FItemInformation* TargetItem = UISAbilitysystemLibary::GetItemInformation(Properties.TargetAvatarActor,SourceEffectContext->GetTargetSaleID()))
+			{
+				UISItemsContainer* PlayerBackPack = IISPlayerInterface::Execute_GetSourceCharacter(Properties.TargetAvatarActor)->GetComponentByClass<UISItemsContainer>();
+				if(!PlayerBackPack) return;
+				PlayerBackPack->ToPickUpItemsInBackPack(*TargetItem);
+			}
+		}
 	}
 	if(Data.EvaluatedData.Attribute == GetInComingDamageAttribute())
 	{

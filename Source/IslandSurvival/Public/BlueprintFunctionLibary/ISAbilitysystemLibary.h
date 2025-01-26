@@ -30,4 +30,5 @@ public:
 	static void GiveStartupAbilities(const UObject* WorldContextObject,UAbilitySystemComponent* ASC,FName InName);
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject,FName EnemyName,int32 CharacterLevel);
 	static UISTraderSpecialData* GetTraderSpecialData(const UObject* WorldContextObject);
+	static FItemInformation* GetItemInformation(const UObject* WorldContextObject,const FName ItemTargetID);
 };
