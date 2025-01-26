@@ -11,6 +11,11 @@ struct FISGameplayEffectContext : public FGameplayEffectContext
 public:
 	FName GetTargetSaleID() const { return TargetSaleID;}
 	void SetTargetSaleID(const FName InNewID) {	TargetSaleID = InNewID; }
+
+	virtual UScriptStruct* GetScriptStruct() const override
+	{
+		return StaticStruct();
+	}
 protected:
 	UPROPERTY()
 	FName TargetSaleID = FName();  //交易的ID
