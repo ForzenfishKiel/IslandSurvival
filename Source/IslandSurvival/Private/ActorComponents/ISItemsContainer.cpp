@@ -220,8 +220,8 @@ void UISItemsContainer::DiscardItem_Implementation(const int32 TargetIndex, cons
 		if(InventoryContainer[TargetIndex].ItemQuantity==0)
 		{
 			InventoryContainer[TargetIndex] = ItemInfo;
-			return;
 		}
+		InventoryUpdate.Broadcast();
 	}
 }
 
@@ -236,8 +236,9 @@ void UISItemsContainer::DiscardItemFromID_Implementation(const int32 TargetID, c
 			if(ContainerRef.ItemQuantity==0)
 			{
 				ContainerRef = ItemInfo;
-				return;
 			}
+			InventoryUpdate.Broadcast();
+			return;
 		}
 	}
 }
