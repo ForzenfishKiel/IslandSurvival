@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "ISPlayerInterface.generated.h"
 
+class AISCharacter;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UISPlayerInterface : public UInterface
@@ -53,4 +54,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	AISPlayerState*GetPlayerState();
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	AISCharacter* GetSourceCharacter();
 };

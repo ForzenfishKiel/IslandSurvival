@@ -3,3 +3,57 @@
 
 #include "ExecCalc/ExecCalc_InComingCoins.h"
 
+#include "AbilitySystemComponent.h"
+#include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
+#include "DataAsset/ISTraderSpecialData.h"
+#include "Interface/ISNPCInterface.h"
+
+struct ISCoinsStatic
+{
+	ISCoinsStatic()
+	{
+		
+	}
+};
+
+static const ISCoinsStatic& CoinStatic()
+{
+	static ISCoinsStatic CoinStatic;
+	return CoinStatic;
+}
+
+
+UExecCalc_InComingCoins::UExecCalc_InComingCoins()
+{
+	
+}
+
+void UExecCalc_InComingCoins::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+                                                     FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+{
+	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
+
+	const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
+	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
+
+	AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;  //获取自身
+	AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;  //获取对方
+
+	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();  //从效果实例中获取上下文句柄
+
+	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
+	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
+	FAggregatorEvaluateParameters EvaluateParams;
+	EvaluateParams.SourceTags = SourceTags;
+	EvaluateParams.TargetTags = TargetTags;
+
+	/*开始计算*/
+
+	//导入交易的价格表
+	const UISTraderSpecialData* TraderSpecialData = UISAbilitysystemLibary::GetTraderSpecialData(SourceAvatar);
+	if(!TraderSpecialData) return;
+
+	const FTraderSalesData TraderSalesData = TraderSpecialData->GetTraderSalesData(IISNPCInterface::Execute_GetCharacterName(SourceAvatar));
+	const UCurveTable* SalesCT = TraderSalesData.TradeSalesCurveTable;
+}

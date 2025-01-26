@@ -13,5 +13,8 @@ UCLASS()
 class ISLANDSURVIVAL_API UExecCalc_InComingCoins : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
-	
+public:
+	UExecCalc_InComingCoins();
+
+	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

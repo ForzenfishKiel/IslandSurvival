@@ -353,3 +353,8 @@ void AISCharacter::ApplyDamageToTarget_Implementation(AActor* Target)
 	
 	const FActiveGameplayEffectHandle ActivateGameplayEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
 }
+
+AISCharacter* AISCharacter::GetSourceCharacter_Implementation()
+{
+	return this;
+}

@@ -4,6 +4,7 @@
 #include "Character/ISNonePlayerCharacter.h"
 
 #include "Game/ISAbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AISNonePlayerCharacter::AISNonePlayerCharacter()
 {
@@ -24,6 +25,22 @@ AISNonePlayerCharacter* AISNonePlayerCharacter::GetNPC_Implementation()
 void AISNonePlayerCharacter::OnNPCWasInteracted_Implementation(AActor* InteractingActor)
 {
 	IISNPCInterface::OnNPCWasInteracted_Implementation(InteractingActor);
+}
+
+int32 AISNonePlayerCharacter::GetFavorability_Implementation() const
+{
+	return Favorability;
+}
+
+FName AISNonePlayerCharacter::GetCharacterName_Implementation() const
+{
+	return CharacterName;
+}
+
+void AISNonePlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AISNonePlayerCharacter,Favorability); //标记好感度为可复制
 }
 
 //调用NPC的获取其ASC的方法

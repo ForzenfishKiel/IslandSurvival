@@ -27,10 +27,13 @@ public:
 	//自身的ISNPCInterface接口
 	virtual AISNonePlayerCharacter* GetNPC_Implementation() override;
 	virtual void OnNPCWasInteracted_Implementation(AActor* InteractingActor) override;  //当NPC被交互时
+	virtual int32 GetFavorability_Implementation() const override; //获取NPC的好感度
+	virtual FName GetCharacterName_Implementation() const override;
+protected:
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Replicated)
+	int32 Favorability = 0;
 private:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> NPCTradInComingCoinEffect; //当角色向NPC购买物品时，NPC将会发送这个Effect扣除角色一定的金币
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> NPCTradInRecoverCoinEffect;  //当角色向NPC出售物品时，NPC僵毁发送这个Effect增加角色一定的金币
+
 };

@@ -33,7 +33,6 @@ void UISItemsContainer::InitializeComponent()
 			auto InventorySystem = UISInventorySystem::CreateInventory(this);  //创建背包对象，并传输背包的属性
 			check(InventorySystem);
 			RepInventories.Emplace(InventorySystem);
-
 		}
 		InitializeContainerSpace(InventorySpace);
 	}
