@@ -27,4 +27,8 @@ public:
 	AISNonePlayerCharacter* GetNPC();
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnNPCWasInteracted(AActor* InteractingActor);  //当挂在接口的对象被交互时
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	int32 GetFavorability() const;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	FName GetCharacterName() const;
 };

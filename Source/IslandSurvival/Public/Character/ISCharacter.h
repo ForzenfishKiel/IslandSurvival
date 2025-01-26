@@ -41,6 +41,7 @@ public:
 	virtual AISPlayerState*GetPlayerState_Implementation() override;
 	virtual void BindAttributeSet() const override;
 	virtual void ApplyDamageToTarget_Implementation(AActor* Target) override;
+	virtual AISCharacter* GetSourceCharacter_Implementation() override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
 	UFUNCTION(Server,Reliable)
