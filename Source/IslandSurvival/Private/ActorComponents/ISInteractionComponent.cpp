@@ -95,8 +95,8 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 			}
 			if(HitActor->Implements<UISNPCInterface>())
 			{
-				IISNPCInterface::Execute_OnNPCWasInteracted(Hit.GetActor(), GetOwner());
-				return;
+
+				PossessedObjectOnClient(HitActor);
 			}
 			if(HitActor->Implements<UISBuildInterface>())
 			{
@@ -112,6 +112,13 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 	}
 }
 
+
+void UISInteractionComponent::PossessedObjectOnClient_Implementation(AActor* TargetActor)
+{
+	PossessedObjectOnServer<AISNonePlayerCharacter>(IISNPCInterface::Execute_GetNPC(TargetActor));
+	IISNPCInterface::Execute_OnNPCWasInteracted(TargetActor, GetOwner());
+	return;
+}
 
 //控制器事件回调
 void UISInteractionComponent::ReciveControllerOpenUIEvent(APlayerController* InController)
@@ -166,7 +173,7 @@ void UISInteractionComponent::TickInteractline()
 			UISMainUIBase* ISMainUI = PlayerMainHUD->IsMainUI;
 			if(!ISMainUI) return;
 			AISNonePlayerCharacter* TargetNPC = IISNPCInterface::Execute_GetNPC(Hit.GetActor());
-			if(TargetNPC) return;
+			if(!TargetNPC) return;
 			ISMainUI->SendObjectInfo(TargetNPC);
 			bIsInteractTrace = true;
 		}

@@ -59,6 +59,11 @@ void UISMenuWidgetController::BindCallBackDependencies()
 	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetCoinsAttribute()).AddLambda([this]
 	(const FOnAttributeChangeData& Data)
 	{
+		int NewValue = Data.NewValue;
+		FString NewValueString = FString::Printf(TEXT("金币不足！！！ NewValue: %d"), NewValue);
+
+		// 显示调试信息
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, NewValueString);
 		OnCoinsChange.Broadcast(Data.NewValue);
 	});
 }
@@ -74,6 +79,7 @@ void UISMenuWidgetController::BroadcastInitialValues()
 	OnHungerChange.Broadcast(GetSourceAttributeSet()->GetHunger());
 	OnMaxThirstChange.Broadcast(GetSourceAttributeSet()->GetMaxThirst());
 	OnThirstChange.Broadcast(GetSourceAttributeSet()->GetThirst());
+	OnCoinsChange.Broadcast(GetSourceAttributeSet()->GetCoins());
 }
 
 //经验值更改广播

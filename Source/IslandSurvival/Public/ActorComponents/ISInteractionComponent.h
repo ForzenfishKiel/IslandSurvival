@@ -40,7 +40,8 @@ public:
 	template<typename T>
 	UFUNCTION(Server,Reliable)
 	void PossessedObjectOnServer(T* Building);
-	
+	UFUNCTION(Client, Reliable)
+	void PossessedObjectOnClient(AActor* TargetActor);
 	UFUNCTION()
 	void ReciveControllerOpenUIEvent(APlayerController* InController);
 protected:

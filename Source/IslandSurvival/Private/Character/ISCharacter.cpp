@@ -90,6 +90,7 @@ void AISCharacter::PossessedBy(AController* NewController)
 	{
 		InitAbilityActorInfo();  //服务器调用初始化操作
 	}
+	SetOwner(NewController);
 	AddCharacterActivateAbility(CharacterActivateAbilities);
 	AddCharacterPassiveAbility(CharacterPassiveAbilities);
 }

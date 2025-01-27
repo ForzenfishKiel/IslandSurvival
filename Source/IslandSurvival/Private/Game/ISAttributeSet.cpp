@@ -109,6 +109,7 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 		}
 		else
 		{
+			SetCoins(FMath::Clamp(NewCoin,0.f,99999));
 			FISGameplayEffectContext* SourceEffectContext = static_cast<FISGameplayEffectContext*>(Properties.EffectContextHandle.Get());
 			if(FItemInformation* TargetItem = UISAbilitysystemLibary::GetItemInformation(Properties.TargetAvatarActor,SourceEffectContext->GetTargetSaleID()))
 			{

@@ -28,5 +28,6 @@ class ISLANDSURVIVAL_API UISTraderSpecialData : public UDataAsset
 public:
 	FTraderSalesData GetTraderSalesData(const FName InName) const;
 private:
+	UPROPERTY(EditDefaultsOnly)
 	TMap<FName , FTraderSalesData> TraderSalesDataMap; //根据对应的商人名称获取其对应的交易表
 };

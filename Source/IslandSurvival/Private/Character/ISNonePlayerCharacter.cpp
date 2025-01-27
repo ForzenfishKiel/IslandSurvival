@@ -18,23 +18,20 @@ AISNonePlayerCharacter::AISNonePlayerCharacter()
 	
 	NPCAsc = CreateDefaultSubobject<UISAbilitySystemComponent>(TEXT("NPCAbilitySystemComponent"));
 	NPCAsc->SetIsReplicated(true);
-	NPCAsc->SetReplicationMode(EGameplayEffectReplicationMode::Minimal); //最小地去复制npc的一些属性
+	NPCAsc->SetReplicationMode(EGameplayEffectReplicationMode::Full); //最小地去复制npc的一些属性
 	NPCTradComponent = CreateDefaultSubobject<UISTradingSystemComponent>(TEXT("TradingSystemComponent"));  //创建可交易允许的组件
+}
+
+void AISNonePlayerCharacter::LoadingTradWindow_Implementation()
+{
+	check(TraderUserWidgetClass);  //检查UI类是否存在
+	TraderUserWidget = CreateWidget<UISMenuUIBase>(GetWorld(), TraderUserWidgetClass);//创建交互的UI
+	TraderUserWidget->SetWidgetOwner(this);  //创建该UI的拥有者为自身
 }
 
 AISNonePlayerCharacter* AISNonePlayerCharacter::GetNPC_Implementation()
 {
 	return this;
-}
-
-void AISNonePlayerCharacter::OnNPCWasInteracted_Implementation(AActor* InteractingActor)
-{
-	IISNPCInterface::OnNPCWasInteracted_Implementation(InteractingActor);
-	APlayerController* SourcePC = Cast<APlayerController>( InteractingActor->GetInstigatorController());
-	if(SourcePC)
-	{
-		TradWindowOpen(SourcePC);  //客户端打开UI
-	}
 }
 
 int32 AISNonePlayerCharacter::GetFavorability_Implementation() const
@@ -47,10 +44,16 @@ FName AISNonePlayerCharacter::GetCharacterName_Implementation() const
 	return CharacterName;
 }
 
+
 void AISNonePlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AISNonePlayerCharacter,Favorability); //标记好感度为可复制
+
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
+	
+	DOREPLIFETIME_WITH_PARAMS_FAST(AISNonePlayerCharacter,TraderUserWidgetActor,SharedParams);
 }
 
 //调用NPC的获取其ASC的方法
@@ -59,11 +62,33 @@ UAbilitySystemComponent* AISNonePlayerCharacter::GetAbilitySystemComponent() con
 	return NPCAsc;
 }
 
-void AISNonePlayerCharacter::TradWindowOpen_Implementation(APlayerController* TargetController)
+void AISNonePlayerCharacter::BeginPlay()
 {
-	check(TraderUserWidget);
+	Super::BeginPlay();
+	LoadingTradWindow();  //游戏开始时加载用户窗口
+}
 
-	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);  //转换成本地PC
+void AISNonePlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	SetOwner(NewController);
+}
+
+void AISNonePlayerCharacter::OnNPCWasInteracted_Implementation(AActor* InteractingActor)
+{
+	IISNPCInterface::OnNPCWasInteracted_Implementation(InteractingActor);
+	if(InteractingActor)
+	{
+		//MARK_PROPERTY_DIRTY_FROM_NAME(AISNonePlayerCharacter, TraderUserWidgetActor, this);
+		//TraderUserWidgetActor = InteractingActor;
+		TradWindowOpen(InteractingActor);
+	}
+}
+
+void AISNonePlayerCharacter::TradWindowOpen_Implementation(AActor* TargetActor)
+{
+	check(TraderUserWidgetClass);
+	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetActor->GetInstigatorController());
 	if(!SourcePC) return;
 	SourcePC->OnOpenInventoryEvent.AddDynamic(this,&AISNonePlayerCharacter::TradWindowClose);
 
@@ -81,6 +106,8 @@ void AISNonePlayerCharacter::TradWindowOpen_Implementation(APlayerController* Ta
 		OnTargetAttributeChange.Broadcast(Data.NewValue);  //广播角色的金币
 	}
 	);
+
+	OnTargetAttributeChange.Broadcast(TargetAS->GetCoins());  //广播角色的金币
 	
 	
 	if(!TraderUserWidget->IsVisible())
@@ -110,4 +137,8 @@ void AISNonePlayerCharacter::TradWindowClose_Implementation(APlayerController* T
 		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMapping,0);
 		SourcePC->OnOpenInventoryEvent.RemoveDynamic(this,&AISNonePlayerCharacter::TradWindowClose);
 	}
+}
+void AISNonePlayerCharacter::OnRep_Actor()
+{
+
 }
