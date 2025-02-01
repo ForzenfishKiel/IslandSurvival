@@ -7,6 +7,7 @@
 #include "ISAbilityTypes.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Character/ISCharacter.h"
+#include "Game/ISAttributeSet.h"
 #include "Game/ISGameInstance.h"
 #include "Game/ISGameplayMode.h"
 #include "Interface/ISNPCInterface.h"
@@ -24,6 +25,7 @@ void UISTradingSystemComponent::BeginPlay()
 //加载商人的交易背包，这是一个游戏开始加载和动态加载的功能，因此只需要执行一次
 void UISTradingSystemComponent::LoadingTradBackPack()
 {
+	if(Cast<AISCharacter>(GetOwner())) return;  //玩家（暂时）不用加载交易背包
 	const AISGameplayMode* ISGameMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(GetOwner()));
 	if(!ISGameMode) return;
 	const UISGameInstance* ISGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetOwner()));  //获取当前关卡的游戏实例
@@ -58,56 +60,59 @@ void UISTradingSystemComponent::LoadingTradBackPack()
 	}
 }
 
-//玩家购买时
-void UISTradingSystemComponent::TradBegin_Implementation(AActor* TargetActor, const FName InTargetID)
+//玩家购买时，传入对方对象
+void UISTradingSystemComponent::TradBegin_Implementation(AActor* TargetActor, const FName InTargetID, const int32 TargetIndex)
 {
 	check(NPCTradInComingCoinEffect);  //断言，交易的对象不能是不可购买的
-	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(TargetActor);  //获取角色
+	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(GetOwner());  //获取角色
 	if(!TargetCharacter) return;  //只有玩家才能交易
 
-	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetPlayerState(TargetActor);
+	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetPlayerState(GetOwner());
 	if(!PlayerState) return;  //检查玩家的状态
 
-	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(PlayerState);
-	if(!TargetASC) return; //检查玩家的ASC
+	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(PlayerState);  //获取自身的ASC
+	if(!SourceASC) return; //检查玩家的ASC
 
-	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());  //获取自身的ASC
-	if(!SourceASC) return;
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);  //获取对方的ASC
+	if(!TargetASC) return;
 
-	FGameplayEffectContextHandle ContextHandle = SourceASC->MakeEffectContext();
+	FGameplayEffectContextHandle ContextHandle = TargetASC->MakeEffectContext();
 
 	FISGameplayEffectContext* ISEffectContext = static_cast<FISGameplayEffectContext*>(ContextHandle.Get());
 	if(!ISEffectContext) return;
 	ISEffectContext->SetTargetSaleID(InTargetID);  //上下文里，导入交易的ID
+	ISEffectContext->SetTargetBackPackIndex(TargetIndex);
 	
-	ContextHandle.AddSourceObject(GetOwner());
-	FGameplayEffectSpecHandle EffectSpecHandle = SourceASC->MakeOutgoingSpec(NPCTradInComingCoinEffect,1.f,ContextHandle);
-	const FActiveGameplayEffectHandle ActivateEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	ContextHandle.AddSourceObject(TargetActor);
+	FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(NPCTradInComingCoinEffect,1.f,ContextHandle);
+	const FActiveGameplayEffectHandle ActivateEffectHandle = SourceASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 }
 
 //角色开始出售
-void UISTradingSystemComponent::SaleBegin_Implementation(AActor* TargetActor, const FName InTargetID)
+void UISTradingSystemComponent::SaleBegin_Implementation(AActor* TargetActor, const FName InTargetID, const int32 TargetIndex)
 {
 	check(NPCTradInRecoverCoinEffect);  //断言，交易的对象不能是不可出售的
-	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(TargetActor);  //获取角色
-	if(!TargetCharacter) return;  //只有玩家才能交易
+	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(TargetActor);  //获取对方角色
+	if(!TargetCharacter) return; 
 
-	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetPlayerState(TargetActor);
+	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetPlayerState(GetOwner());
 	if(!PlayerState) return;  //检查玩家的状态
 
-	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(PlayerState);
-	if(!TargetASC) return; //检查玩家的ASC
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	if(!TargetASC) return; //检查对方的ASC
 
-	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());  //获取自身的ASC
-	if(!SourceASC) return;
+	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(PlayerState);  //获取自身的ASC
+	if(!SourceASC) return;  //检查玩家的ASC
 
-	FGameplayEffectContextHandle ContextHandle = SourceASC->MakeEffectContext();
+	FGameplayEffectContextHandle ContextHandle = TargetASC->MakeEffectContext();
 
 	FISGameplayEffectContext* ISEffectContext = static_cast<FISGameplayEffectContext*>(ContextHandle.Get());
 	if(!ISEffectContext) return;
 	ISEffectContext->SetTargetSaleID(InTargetID);
+	ISEffectContext->SetTargetBackPackIndex(TargetIndex);
 	
-	ContextHandle.AddSourceObject(GetOwner());
-	FGameplayEffectSpecHandle EffectSpecHandle = SourceASC->MakeOutgoingSpec(NPCTradInRecoverCoinEffect,1.f,ContextHandle);
-	const FActiveGameplayEffectHandle ActivateEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	ContextHandle.AddSourceObject(TargetActor); //添加效果来源为对方
+	FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(NPCTradInRecoverCoinEffect,1.f,ContextHandle);
+	const FActiveGameplayEffectHandle ActivateEffectHandle = SourceASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 }
+

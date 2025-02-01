@@ -2,15 +2,14 @@
 
 
 #include "Character/ISCharacter.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
+#include "ISPublicInterface.h"
 #include "ActorComponents/ISGearEquipComponent.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISGameplayMode.h"
-#include "Game/ISGameplayTagsManager.h"
 #include "Game/ISPlayerController.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Game/ISPlayerState.h"
@@ -63,6 +62,8 @@ AISCharacter::AISCharacter()
 	GearEquipComponent = CreateDefaultSubobject<UISGearEquipComponent>(TEXT("GearEquipComponent"));  //创建玩家装备组件
 
 	ISBuildingComponent = CreateDefaultSubobject<UISBuildingComponent>(TEXT("ISBuildingComponent"));
+
+	ISTradingSystemComponent = CreateDefaultSubobject<UISTradingSystemComponent>(TEXT("TradingSystemComponent"));
 
 }
 
@@ -308,8 +309,10 @@ AISHarvestingBase* AISCharacter::ReplaceToActor(const TSubclassOf<AISHarvestingB
 	return HarvestingBaseRef;
 }
 
+
+
 void AISCharacter::MulticastToRemoveStaticMesh_Implementation(UInstancedStaticMeshComponent* TargetComponent,
-	const int32 TargetItemNum)
+                                                              const int32 TargetItemNum)
 {
 	if(!IsValid(TargetComponent) && TargetItemNum <= 0) return;
 	TargetComponent->RemoveInstance(TargetItemNum);
@@ -358,4 +361,46 @@ void AISCharacter::ApplyDamageToTarget_Implementation(AActor* Target)
 AISCharacter* AISCharacter::GetSourceCharacter_Implementation()
 {
 	return this;
+}
+void AISCharacter::TradWindowOpen_Implementation(AActor* TargetActor)
+{
+	MenuUIRef = IISPublicInterface::Execute_GetMenuUI(TargetActor);  //获取对方的UI
+	if(!MenuUIRef) return;
+	
+	AISPlayerController* SourcePC = Cast<AISPlayerController>(GetController());
+	if(!SourcePC) return;
+	SourcePC->OnOpenInventoryEvent.AddDynamic(this,&AISCharacter::TradWindowClose);
+	
+	AISPlayerState* TargetState = GetPlayerState<AISPlayerState>(); //获取角色的状态
+	if(!TargetState) return;
+	
+	if(!MenuUIRef->IsVisible())
+	{
+		SourcePC->bIsOpenStorage = true;
+		MenuUIRef->AddToViewport();
+		SourcePC->bShowMouseCursor = true;
+		SourcePC->SetInputMode(FInputModeGameAndUI());
+		SourcePC->InputSubsystem->RemoveMappingContext(SourcePC->CharacterInputMapping);
+		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMenuMapping,0);
+	}
+	IISPublicInterface::Execute_BindWidgetController(TargetActor,this);
+}
+
+void AISCharacter::TradWindowClose_Implementation(APlayerController* TargetController)
+{
+	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);
+	if(!SourcePC) return;
+
+	
+	if(MenuUIRef->IsVisible())
+	{
+		SourcePC->bIsOpenStorage = false;
+		MenuUIRef->RemoveFromParent();
+		SourcePC->bShowMouseCursor = false;
+		SourcePC->SetInputMode(FInputModeGameOnly());
+		SourcePC->InputSubsystem->RemoveMappingContext(SourcePC->CharacterInputMenuMapping);
+		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMapping,0);
+		SourcePC->OnOpenInventoryEvent.RemoveDynamic(this,&AISCharacter::TradWindowClose);
+		MenuUIRef = nullptr;
+	}
 }

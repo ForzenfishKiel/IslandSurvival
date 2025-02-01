@@ -24,6 +24,9 @@ public:
 	void TickInteractline();
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
 	TObjectPtr<AActor>LastActor = nullptr;
+
+	UPROPERTY(Replicated,BlueprintReadOnly)
+	TObjectPtr<AActor> InteractedActor;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
 	TObjectPtr<UActorComponent> LastComponent = nullptr;
@@ -33,6 +36,9 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<AISBuildingSystemBase> CurrentBuilding = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<AISCharacter> SourceCharacter;
 	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	bool bIsInteractTrace = false;
@@ -40,8 +46,6 @@ public:
 	template<typename T>
 	UFUNCTION(Server,Reliable)
 	void PossessedObjectOnServer(T* Building);
-	UFUNCTION(Client, Reliable)
-	void PossessedObjectOnClient(AActor* TargetActor);
 	UFUNCTION()
 	void ReciveControllerOpenUIEvent(APlayerController* InController);
 protected:

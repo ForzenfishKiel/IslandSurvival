@@ -16,9 +16,9 @@ class ISLANDSURVIVAL_API UISTradingSystemComponent : public UISItemsContainer
 public:
 	virtual void BeginPlay() override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
-	void TradBegin(AActor* TargetActor, FName InTargetID);  //角色开始交易，导入交易对象
+	void TradBegin(AActor* TargetActor, FName InTargetID, int32 TargetIndex);  //角色开始交易，导入交易对象
 	UFUNCTION(BlueprintCallable,Server,Reliable)
-	void SaleBegin(AActor* TargetActor, FName InTargetID);  //角色开始出售，导入出售对象
+	void SaleBegin(AActor* TargetActor, FName InTargetID, int32 TargetIndex);  //角色开始出售，导入出售对象
 protected:
 	void LoadingTradBackPack();
 private:

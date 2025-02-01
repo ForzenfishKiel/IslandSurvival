@@ -111,11 +111,14 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 		{
 			SetCoins(FMath::Clamp(NewCoin,0.f,99999));
 			FISGameplayEffectContext* SourceEffectContext = static_cast<FISGameplayEffectContext*>(Properties.EffectContextHandle.Get());
-			if(FItemInformation* TargetItem = UISAbilitysystemLibary::GetItemInformation(Properties.TargetAvatarActor,SourceEffectContext->GetTargetSaleID()))
+			UISTradingSystemComponent* TargetTradBackPack = Properties.SourceCharacter->GetComponentByClass<UISTradingSystemComponent>();
+			if(!TargetTradBackPack) return;
+			if(FItemInformation* TargetItem = &TargetTradBackPack->InventoryContainer[SourceEffectContext->GetTargetBackPackIndex()])
 			{
 				UISItemsContainer* PlayerBackPack = IISPlayerInterface::Execute_GetSourceCharacter(Properties.TargetAvatarActor)->GetComponentByClass<UISItemsContainer>();
 				if(!PlayerBackPack) return;
-				PlayerBackPack->ToPickUpItemsInBackPack(*TargetItem);
+				PlayerBackPack->ToPickUpItemsInBackPack(*TargetItem, 1); //自身获取一个物品
+				TargetTradBackPack->DiscardItem(SourceEffectContext->GetTargetBackPackIndex(),1);  //对方背包丢弃一个物品
 			}
 		}
 	}

@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "ISPublicInterface.h"
 #include "ActorComponents/ISTradingSystemComponent.h"
 #include "Character/ISCharacterBase.h"
-#include "Game/ISPlayerController.h"
 #include "Interface/ISNPCInterface.h"
 #include "UI/ISMenuUIBase.h"
 #include "ISNonePlayerCharacter.generated.h"
@@ -16,7 +16,8 @@
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTargetAttributeChange,float,NewValue);
 UCLASS()
-class ISLANDSURVIVAL_API AISNonePlayerCharacter : public AISCharacterBase,public IISNPCInterface,public IAbilitySystemInterface
+class ISLANDSURVIVAL_API AISNonePlayerCharacter : public AISCharacterBase,public IISNPCInterface,public IAbilitySystemInterface,public
+IISPublicInterface
 {
 	GENERATED_BODY()
 public:
@@ -32,6 +33,9 @@ public:
 
 	UFUNCTION(Client,Reliable)
 	void LoadingTradWindow();
+	//公共接口PublicInterface
+	virtual UISMenuUIBase* GetMenuUI_Implementation() const override;
+	virtual void BindWidgetController_Implementation(AActor* TargetActor) override;
 	//自身的ISNPCInterface接口
 	virtual AISNonePlayerCharacter* GetNPC_Implementation() override;
 	virtual void OnNPCWasInteracted_Implementation(AActor* InteractingActor) override;  //当NPC被交互时
@@ -44,19 +48,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UISMenuUIBase> TraderUserWidget;
 private:
-	UPROPERTY(ReplicatedUsing = OnRep_Actor)
-	TObjectPtr<AActor>TraderUserWidgetActor;
-	UFUNCTION()
-	void OnRep_Actor();
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UISMenuUIBase> TraderUserWidgetClass;
+	void BindCharacterAttirbuteChange(AActor* TargetActor);
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
-	UFUNCTION(Client,Reliable)
-	void TradWindowOpen(AActor* TargetActor);
-	UFUNCTION(Client,Reliable)
-	void TradWindowClose(APlayerController* TargetController);
-	
 };

@@ -8,7 +8,7 @@
 class UISInventorySystem;
 class UISGearEquipComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWhenItemPickUp,FItemInformation,TargetItemInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWhenItemPickUp,FItemInformation,TargetItemInfo,int32,TargetIndex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemPickUpOnUI,FItemInformation,TargetItemInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemDiscard,int32,TargetIndex,int32,TargetQuantity);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -56,7 +56,7 @@ public:
 	bool CheckGearSlotExchanged(UISItemsContainer*TargetGear,const int32 TargetIndex,const int32 SourceIndex);
 	
 	UFUNCTION(Server,Reliable)
-	void ToPickUpItemsInBackPack(const FItemInformation Information);  //拾取物品函数，在客户端上运行
+	void ToPickUpItemsInBackPack(const FItemInformation Information, int32 TargetQuantity);  //拾取物品函数，在客户端上运行
 	
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void DiscardItem(const int32 TargetIndex,const int32 TargetQuantity);  //丢弃物品

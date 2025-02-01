@@ -51,8 +51,7 @@ void UISInteractionComponent::PrimaryInteract_Implementation()
 		}
 		if(HitActor->Implements<UISItemInterface>())
 		{
-			APawn* MyPawn = Cast<APawn>(GetOwner());
-			AISCharacter*SourceCharacter = Cast<AISCharacter>(GetOwner());
+			SourceCharacter = Cast<AISCharacter>(GetOwner());
 			UISItemsContainer*UIItems = Cast<UISItemsContainer>(SourceCharacter->GetComponentByClass<UISItemsContainer>());
 			UIItems->PickUpItemForActor(SourceCharacter, HitActor);
 		}
@@ -95,29 +94,11 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 			}
 			if(HitActor->Implements<UISNPCInterface>())
 			{
-
-				PossessedObjectOnClient(HitActor);
-			}
-			if(HitActor->Implements<UISBuildInterface>())
-			{
-				CurrentBuilding = IISBuildInterface::Execute_GetBuildingSystemBase(CompOwner);
-				AISPlayerController* SourcePC = Cast<AISPlayerController>(GetOwner()->GetInstigatorController());
-				SourcePC->OnOpenInventoryEvent.AddDynamic(this,&UISInteractionComponent::ReciveControllerOpenUIEvent);
-				PossessedObjectOnServer<AISBuildingSystemBase>(CurrentBuilding);
-				
-				IISBuildInterface::Execute_OnBuildingWasInteract(HitActor, GetOwner(), HitComponent);
-				return;
+				IISNPCInterface::Execute_OnNPCWasInteracted(HitActor,GetOwner());
+				SourceCharacter->TradWindowOpen(HitActor);
 			}
 		}
 	}
-}
-
-
-void UISInteractionComponent::PossessedObjectOnClient_Implementation(AActor* TargetActor)
-{
-	PossessedObjectOnServer<AISNonePlayerCharacter>(IISNPCInterface::Execute_GetNPC(TargetActor));
-	IISNPCInterface::Execute_OnNPCWasInteracted(TargetActor, GetOwner());
-	return;
 }
 
 //控制器事件回调
@@ -194,6 +175,7 @@ void UISInteractionComponent::TickInteractline()
 void UISInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	SourceCharacter = Cast<AISCharacter>(GetOwner());
 }
 void UISInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -206,6 +188,7 @@ void UISInteractionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UISInteractionComponent,LastActor);
 	DOREPLIFETIME(UISInteractionComponent,LastComponent);
+	DOREPLIFETIME(UISInteractionComponent,InteractedActor);
 }
 
 template <typename T>

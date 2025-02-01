@@ -29,6 +29,17 @@ void AISNonePlayerCharacter::LoadingTradWindow_Implementation()
 	TraderUserWidget->SetWidgetOwner(this);  //创建该UI的拥有者为自身
 }
 
+UISMenuUIBase* AISNonePlayerCharacter::GetMenuUI_Implementation() const
+{
+	return TraderUserWidget;
+}
+
+void AISNonePlayerCharacter::BindWidgetController_Implementation(AActor* TargetActor)
+{
+	IISPublicInterface::BindWidgetController_Implementation(TargetActor);
+	BindCharacterAttirbuteChange(TargetActor);
+}
+
 AISNonePlayerCharacter* AISNonePlayerCharacter::GetNPC_Implementation()
 {
 	return this;
@@ -44,16 +55,10 @@ FName AISNonePlayerCharacter::GetCharacterName_Implementation() const
 	return CharacterName;
 }
 
-
 void AISNonePlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AISNonePlayerCharacter,Favorability); //标记好感度为可复制
-
-	FDoRepLifetimeParams SharedParams;
-	SharedParams.bIsPushBased = true;
-	
-	DOREPLIFETIME_WITH_PARAMS_FAST(AISNonePlayerCharacter,TraderUserWidgetActor,SharedParams);
 }
 
 //调用NPC的获取其ASC的方法
@@ -77,68 +82,27 @@ void AISNonePlayerCharacter::PossessedBy(AController* NewController)
 void AISNonePlayerCharacter::OnNPCWasInteracted_Implementation(AActor* InteractingActor)
 {
 	IISNPCInterface::OnNPCWasInteracted_Implementation(InteractingActor);
-	if(InteractingActor)
-	{
-		//MARK_PROPERTY_DIRTY_FROM_NAME(AISNonePlayerCharacter, TraderUserWidgetActor, this);
-		//TraderUserWidgetActor = InteractingActor;
-		TradWindowOpen(InteractingActor);
-	}
 }
 
-void AISNonePlayerCharacter::TradWindowOpen_Implementation(AActor* TargetActor)
+
+void AISNonePlayerCharacter::BindCharacterAttirbuteChange(AActor* TargetActor)
 {
-	check(TraderUserWidgetClass);
-	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetActor->GetInstigatorController());
-	if(!SourcePC) return;
-	SourcePC->OnOpenInventoryEvent.AddDynamic(this,&AISNonePlayerCharacter::TradWindowClose);
+	AISCharacter* SourceCharacter = IISPlayerInterface::Execute_GetSourceCharacter(TargetActor);
+	if(!SourceCharacter) return;
 
-	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(SourcePC->GetPawn());
-	if(!TargetCharacter) return;
-	AISPlayerState* TargetState = TargetCharacter->GetPlayerState<AISPlayerState>(); //获取角色的状态
-	if(!TargetState) return;
+	AISPlayerState* SourcePlayerState = IISPlayerInterface::Execute_GetPlayerState(TargetActor);
+	if(!SourcePlayerState) return;
 
-	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetState);
-	if(!TargetASC) return;
-	UISAttributeSet* TargetAS = Cast<UISAttributeSet>( TargetState->GetAttributeSet() );
-	TargetASC->GetGameplayAttributeValueChangeDelegate(TargetAS->GetCoinsAttribute()).AddLambda([this]
-		(const FOnAttributeChangeData& Data)
+	UAbilitySystemComponent* SourceASC = SourcePlayerState->GetAbilitySystemComponent();
+	if(!SourceASC) return;
+
+	UISAttributeSet* SourceAS = Cast<UISAttributeSet>(SourcePlayerState->GetAttributeSet());
+	if(!SourceAS) return;
+
+	SourceASC->GetGameplayAttributeValueChangeDelegate(SourceAS->GetCoinsAttribute()).AddLambda([this]
+	(const FOnAttributeChangeData& Data)
 	{
-		OnTargetAttributeChange.Broadcast(Data.NewValue);  //广播角色的金币
-	}
-	);
-
-	OnTargetAttributeChange.Broadcast(TargetAS->GetCoins());  //广播角色的金币
-	
-	
-	if(!TraderUserWidget->IsVisible())
-	{
-		SourcePC->bIsOpenStorage = true;
-		TraderUserWidget->AddToViewport();
-		SourcePC->bShowMouseCursor = true;
-		SourcePC->SetInputMode(FInputModeGameAndUI());
-		SourcePC->InputSubsystem->RemoveMappingContext(SourcePC->CharacterInputMapping);
-		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMenuMapping,0);
-	}
-}
-
-void AISNonePlayerCharacter::TradWindowClose_Implementation(APlayerController* TargetController)
-{
-	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);
-	if(!SourcePC) return;
-
-	
-	if(TraderUserWidget->IsVisible())
-	{
-		SourcePC->bIsOpenStorage = false;
-		TraderUserWidget->RemoveFromParent();
-		SourcePC->bShowMouseCursor = false;
-		SourcePC->SetInputMode(FInputModeGameOnly());
-		SourcePC->InputSubsystem->RemoveMappingContext(SourcePC->CharacterInputMenuMapping);
-		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMapping,0);
-		SourcePC->OnOpenInventoryEvent.RemoveDynamic(this,&AISNonePlayerCharacter::TradWindowClose);
-	}
-}
-void AISNonePlayerCharacter::OnRep_Actor()
-{
-
+		OnTargetAttributeChange.Broadcast(Data.NewValue);
+	});
+	OnTargetAttributeChange.Broadcast(SourceAS->GetCoins());
 }

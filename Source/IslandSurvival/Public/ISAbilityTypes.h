@@ -12,6 +12,9 @@ public:
 	FName GetTargetSaleID() const { return TargetSaleID;}
 	void SetTargetSaleID(const FName InNewID) {	TargetSaleID = InNewID; }
 
+	int32 GetTargetBackPackIndex() const {return TargetBackPackIndex;}
+	void SetTargetBackPackIndex(const int32 InNewIndex) {TargetBackPackIndex = InNewIndex;}
+
 	virtual UScriptStruct* GetScriptStruct() const override
 	{
 		return StaticStruct();
@@ -35,6 +38,9 @@ public:
 protected:
 	UPROPERTY()
 	FName TargetSaleID = FName();  //交易的ID
+
+	UPROPERTY()
+	int32 TargetBackPackIndex = -1;  //View层传递过来的数据
 };
 template<>
 struct TStructOpsTypeTraits< FISGameplayEffectContext > : public TStructOpsTypeTraitsBase2< FISGameplayEffectContext >

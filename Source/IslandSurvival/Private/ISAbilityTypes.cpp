@@ -38,9 +38,13 @@ bool FISGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Map
 		{
 			RepBits |= 1 << 7;
 		}
+		if(TargetBackPackIndex != -1)
+		{
+			RepBits |= 1 << 8;
+		}
 	}
 	//使用了多少长度，就将长度设置为多少
-	Ar.SerializeBits(&RepBits, 7);
+	Ar.SerializeBits(&RepBits, 8);
 
 	if (RepBits & (1 << 0))
 	{
@@ -86,6 +90,10 @@ bool FISGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Map
 	if (RepBits & (1 << 7))
 	{
 		Ar << TargetSaleID;
+	}
+	if (RepBits & (1 << 8))
+	{
+		Ar << TargetBackPackIndex;
 	}
 	//初始化ASC的逻辑
 	if (Ar.IsLoading())

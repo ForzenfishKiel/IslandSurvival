@@ -9,10 +9,12 @@
 #include "ActorComponents/ISEquipmentComponent.h"
 #include "ActorComponents/ISHotBarInventory.h"
 #include "ActorComponents/ISInteractionComponent.h"
+#include "ActorComponents/ISTradingSystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Character/ISCharacterBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Interface/ISPlayerInterface.h"
+#include "UI/ISMenuUIBase.h"
 #include "ISCharacter.generated.h"
 
 /**
@@ -55,6 +57,11 @@ public:
 	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
 	void MulticastToRemoveStaticMesh(UInstancedStaticMeshComponent* TargetComponent,const int32 TargetItemNum);
 
+	UFUNCTION(Client,Reliable)
+	void TradWindowOpen(AActor* TargetActor);
+	UFUNCTION(Client,Reliable)
+	void TradWindowClose(APlayerController* TargetController);
+
 	
 	UFUNCTION(BlueprintCallable)
 	bool CheckIsFastRun();
@@ -86,6 +93,11 @@ public:
 	TObjectPtr<UISGearEquipComponent> GearEquipComponent;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UISBuildingComponent>ISBuildingComponent;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UISTradingSystemComponent> ISTradingSystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<UISMenuUIBase> MenuUIRef;
 
 	UPROPERTY(BlueprintReadWrite,Replicated,Category = "Config")
 	float CharacterSpeed = 400.f;
