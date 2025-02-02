@@ -29,9 +29,5 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AISEnemy* GetEnemy();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	EAIState GetAIState() const;
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetAIState(EAIState State);
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SpawnEnemyCorpse();
 };

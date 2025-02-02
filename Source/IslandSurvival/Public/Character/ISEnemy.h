@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "ISPublicInterface.h"
 #include "Character/ISCharacterBase.h"
 #include "Components/WidgetComponent.h"
 #include "Game/ISAIController.h"
@@ -17,7 +18,7 @@
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEnemyHealthChangeSignature,float,NewValue,float,NewMaxValue);  //绑定玩家属性变化
 UCLASS()
-class ISLANDSURVIVAL_API AISEnemy : public AISCharacterBase,public IAbilitySystemInterface,public IISEnemyInterface
+class ISLANDSURVIVAL_API AISEnemy : public AISCharacterBase,public IAbilitySystemInterface,public IISEnemyInterface,public IISPublicInterface
 {
 	GENERATED_BODY()
 	AISEnemy();

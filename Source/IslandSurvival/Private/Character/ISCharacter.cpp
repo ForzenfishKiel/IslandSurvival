@@ -390,7 +390,7 @@ void AISCharacter::TradWindowClose_Implementation(APlayerController* TargetContr
 {
 	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);
 	if(!SourcePC) return;
-
+	UISInteractionComponent* InteractionComp = GetComponentByClass<UISInteractionComponent>();
 	
 	if(MenuUIRef->IsVisible())
 	{
@@ -402,5 +402,9 @@ void AISCharacter::TradWindowClose_Implementation(APlayerController* TargetContr
 		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMapping,0);
 		SourcePC->OnOpenInventoryEvent.RemoveDynamic(this,&AISCharacter::TradWindowClose);
 		MenuUIRef = nullptr;
+	}
+	if(InteractionComp)
+	{
+		InteractionComp->ClearInteractedActor();  //清空当前交互对象
 	}
 }

@@ -2,7 +2,7 @@
 
 
 #include "Game/ISAttributeSet.h"
-
+#include "ActorComponents/ISCharacterInventory.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "ISAbilityTypes.h"
@@ -111,15 +111,46 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 		{
 			SetCoins(FMath::Clamp(NewCoin,0.f,99999));
 			FISGameplayEffectContext* SourceEffectContext = static_cast<FISGameplayEffectContext*>(Properties.EffectContextHandle.Get());
-			UISTradingSystemComponent* TargetTradBackPack = Properties.SourceCharacter->GetComponentByClass<UISTradingSystemComponent>();
-			if(!TargetTradBackPack) return;
-			if(FItemInformation* TargetItem = &TargetTradBackPack->InventoryContainer[SourceEffectContext->GetTargetBackPackIndex()])
+			//获取自身交易的背包
+			UISTradingSystemComponent* SourceTradBackPack = Properties.SourceCharacter->GetComponentByClass<UISTradingSystemComponent>();
+			if(!SourceTradBackPack) return;
+			if(FItemInformation* TargetItem = &SourceTradBackPack->InventoryContainer[SourceEffectContext->GetTargetBackPackIndex()])
 			{
 				UISItemsContainer* PlayerBackPack = IISPlayerInterface::Execute_GetSourceCharacter(Properties.TargetAvatarActor)->GetComponentByClass<UISItemsContainer>();
 				if(!PlayerBackPack) return;
 				PlayerBackPack->ToPickUpItemsInBackPack(*TargetItem, 1); //自身获取一个物品
-				TargetTradBackPack->DiscardItem(SourceEffectContext->GetTargetBackPackIndex(),1);  //对方背包丢弃一个物品
+				SourceTradBackPack->DiscardItem(SourceEffectContext->GetTargetBackPackIndex(),1);  //对方背包丢弃一个物品
 			}
+		}
+	}
+	if(Data.EvaluatedData.Attribute == GetInRecoverCoinsAttribute())
+	{
+		const float LocalValue = GetInRecoverCoins();  //获取金币增长的数
+
+		const float NewCoin = GetCoins() + LocalValue;
+		//若等于0，则说明无法出售，有可能是对方
+
+		FISGameplayEffectContext* SourceEffectContext = static_cast<FISGameplayEffectContext*>(Properties.EffectContextHandle.Get());
+		//获取自身交易的背包
+		UISTradingSystemComponent* SourceTradBackPack = Properties.SourceCharacter->GetComponentByClass<UISTradingSystemComponent>();
+		if(!SourceTradBackPack) return;
+
+		UISCharacterInventory* TargetTradBackPack = Properties.TargetCharacter->GetComponentByClass<UISCharacterInventory>();
+		if(!TargetTradBackPack) return;
+
+		UISTradingSystemComponent* TargetTradBack = Properties.TargetCharacter->GetComponentByClass<UISTradingSystemComponent>();
+		if(!TargetTradBack) return;
+
+		
+		if(FItemInformation* TargetItem = &TargetTradBackPack->InventoryContainer[SourceEffectContext->GetTargetBackPackIndex()])
+		{
+			UISItemsContainer* PlayerBackPack = IISPlayerInterface::Execute_GetSourceCharacter(Properties.TargetAvatarActor)->GetComponentByClass<UISItemsContainer>();
+			if(!PlayerBackPack) return;
+			
+			SetCoins(FMath::Clamp(NewCoin,0.f,99999));
+			TargetTradBack->SetTradTarget(*TargetItem,LocalValue);
+
+			PlayerBackPack->DiscardItem(SourceEffectContext->GetTargetBackPackIndex(),1);  //丢弃背包一个物品
 		}
 	}
 	if(Data.EvaluatedData.Attribute == GetInComingDamageAttribute())

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enums/ISAIEnum.h"
 #include "UI/ISMenuUIBase.h"
 #include "UObject/Interface.h"
 #include "ISPublicInterface.generated.h"
@@ -27,4 +28,8 @@ public:
 	UISMenuUIBase* GetMenuUI() const;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void BindWidgetController(AActor* TargetActor);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	EAIState GetAIState() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetAIState(EAIState State);
 };

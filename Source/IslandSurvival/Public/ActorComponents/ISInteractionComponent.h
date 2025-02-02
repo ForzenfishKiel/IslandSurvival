@@ -27,6 +27,8 @@ public:
 
 	UPROPERTY(Replicated,BlueprintReadOnly)
 	TObjectPtr<AActor> InteractedActor;
+	UFUNCTION(Server,Reliable)
+	void ClearInteractedActor();
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
 	TObjectPtr<UActorComponent> LastComponent = nullptr;

@@ -36,6 +36,8 @@ public:
 	//公共接口PublicInterface
 	virtual UISMenuUIBase* GetMenuUI_Implementation() const override;
 	virtual void BindWidgetController_Implementation(AActor* TargetActor) override;
+	virtual void SetAIState_Implementation(EAIState State) override;
+	virtual EAIState GetAIState_Implementation() const override;
 	//自身的ISNPCInterface接口
 	virtual AISNonePlayerCharacter* GetNPC_Implementation() override;
 	virtual void OnNPCWasInteracted_Implementation(AActor* InteractingActor) override;  //当NPC被交互时
@@ -47,6 +49,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UISMenuUIBase> TraderUserWidget;
+
+	UPROPERTY(EditDefaultsOnly,Replicated,BlueprintReadOnly, Category="Config")
+	TEnumAsByte<EAIState> AIState;
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UISMenuUIBase> TraderUserWidgetClass;

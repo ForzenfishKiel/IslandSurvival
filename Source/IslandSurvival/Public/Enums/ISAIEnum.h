@@ -9,12 +9,15 @@
 /**
  * 
  */
+//AI状态
 UENUM(BlueprintType)
 enum EAIState : uint8
 {
 	Passive = 0 UMETA(DisplayName = "Passive"),  //被动
 	Attacking = 1 UMETA(DisplayName = "Attacking"),  //攻击
 	Escape = 2 UMETA(DisplayName = "Escape"), //逃跑
+	Trading = 3 UMETA(DisplayName = "Trading"), //交易
+	Talking = 4 UMETA(DisplayName = "Talking"), //对话
 };
 UENUM(BlueprintType)
 enum EAISpeed : uint8
@@ -24,6 +27,7 @@ enum EAISpeed : uint8
 	Running = 2 UMETA(DisplayName = "Running"), //跑
 	Sprinting = 3 UMETA(DisplayName = "Sprinting"), //冲刺
 };
+//AI感知
 UENUM(BlueprintType)
 enum EAISense : uint8
 {

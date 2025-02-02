@@ -39,7 +39,7 @@ void AISAIController::SetSpeed(const EAISpeed InSpeed)
 
 void AISAIController::SetAIState(const EAIState InAIState)
 {
-	IISEnemyInterface::Execute_SetAIState(GetPawn(), InAIState);  //设置AI的状态
+	IISPublicInterface::Execute_SetAIState(GetPawn(), InAIState);  //设置AI的状态
 	Blackboard->SetValueAsEnum(FName("State"),InAIState);
 }
 

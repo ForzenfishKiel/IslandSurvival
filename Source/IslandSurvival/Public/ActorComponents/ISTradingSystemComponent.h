@@ -9,16 +9,33 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTradingSucceefully,FItemInformation,TargetItem,int32,TargetNums);
 UCLASS()
 class ISLANDSURVIVAL_API UISTradingSystemComponent : public UISItemsContainer
 {
 	GENERATED_BODY()
 public:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void TradBegin(AActor* TargetActor, FName InTargetID, int32 TargetIndex);  //角色开始交易，导入交易对象
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SaleBegin(AActor* TargetActor, FName InTargetID, int32 TargetIndex);  //角色开始出售，导入出售对象
+	UFUNCTION(BlueprintCallable)
+	bool CheckIsCanBeSale(AActor* TargetActor, FName InTargetID, int32 TargetIndex);  //检查当前物品是否是可以出售的
+
+	
+	UFUNCTION(Server,Reliable)
+	void SetTradTarget(const FItemInformation TargetItem,const int32 TargetNums);
+	UPROPERTY(Replicated)
+	FItemInformation TradTarget;
+	UPROPERTY(ReplicatedUsing = OnRep_TraCoins)
+	int32 TargetCoins;
+	UFUNCTION()
+	void OnRep_TraCoins();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnTradingSucceefully OnTradingSucceeded;
 protected:
 	void LoadingTradBackPack();
 private:

@@ -94,6 +94,7 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 			}
 			if(HitActor->Implements<UISNPCInterface>())
 			{
+				InteractedActor = HitActor;
 				IISNPCInterface::Execute_OnNPCWasInteracted(HitActor,GetOwner());
 				SourceCharacter->TradWindowOpen(HitActor);
 			}
@@ -197,4 +198,12 @@ void UISInteractionComponent::PossessedObjectOnServer(T* InTarget)
 	if(!InTarget) return;
 	AISPlayerController* SourcePC = Cast<AISPlayerController>(UGameplayStatics::GetPlayerController(GetOwner(),0));
 	InTarget->SetOwner(SourcePC);  //给予对方网络权限
+}
+
+void UISInteractionComponent::ClearInteractedActor_Implementation()
+{
+	if(InteractedActor)
+	{
+		InteractedActor = nullptr;  //清空当前交互的对象
+	}
 }

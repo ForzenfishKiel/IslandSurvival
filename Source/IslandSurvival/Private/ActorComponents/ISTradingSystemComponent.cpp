@@ -4,6 +4,7 @@
 #include "ActorComponents/ISTradingSystemComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "GameplayCueNotifyTypes.h"
 #include "ISAbilityTypes.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"
 #include "Character/ISCharacter.h"
@@ -12,6 +13,7 @@
 #include "Game/ISGameplayMode.h"
 #include "Interface/ISNPCInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 void UISTradingSystemComponent::BeginPlay()
 {
@@ -63,10 +65,11 @@ void UISTradingSystemComponent::LoadingTradBackPack()
 //玩家购买时，传入对方对象
 void UISTradingSystemComponent::TradBegin_Implementation(AActor* TargetActor, const FName InTargetID, const int32 TargetIndex)
 {
-	check(NPCTradInComingCoinEffect);  //断言，交易的对象不能是不可购买的
 	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(GetOwner());  //获取角色
 	if(!TargetCharacter) return;  //只有玩家才能交易
-
+	
+	check(NPCTradInComingCoinEffect);  //断言，交易的对象不能是不可购买的
+	
 	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetPlayerState(GetOwner());
 	if(!PlayerState) return;  //检查玩家的状态
 
@@ -91,9 +94,12 @@ void UISTradingSystemComponent::TradBegin_Implementation(AActor* TargetActor, co
 //角色开始出售
 void UISTradingSystemComponent::SaleBegin_Implementation(AActor* TargetActor, const FName InTargetID, const int32 TargetIndex)
 {
+	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(GetOwner());  //获取角色
+	if(!TargetCharacter) return;  //只有玩家才能交易
+	
 	check(NPCTradInRecoverCoinEffect);  //断言，交易的对象不能是不可出售的
-	AISCharacter* TargetCharacter = IISPlayerInterface::Execute_GetSourceCharacter(TargetActor);  //获取对方角色
-	if(!TargetCharacter) return; 
+	
+	if(!CheckIsCanBeSale(TargetActor,InTargetID,TargetIndex)) return;  //如果无法出售（对方不购买自己的物品）则当前无法出售
 
 	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetPlayerState(GetOwner());
 	if(!PlayerState) return;  //检查玩家的状态
@@ -114,5 +120,42 @@ void UISTradingSystemComponent::SaleBegin_Implementation(AActor* TargetActor, co
 	ContextHandle.AddSourceObject(TargetActor); //添加效果来源为对方
 	FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(NPCTradInRecoverCoinEffect,1.f,ContextHandle);
 	const FActiveGameplayEffectHandle ActivateEffectHandle = SourceASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+}
+
+bool UISTradingSystemComponent::CheckIsCanBeSale(AActor* TargetActor, FName InTargetID, int32 TargetIndex)
+{
+	const UISTraderSpecialData* TraderSpecialData = UISAbilitysystemLibary::GetTraderSpecialData(TargetActor);
+	if(!TraderSpecialData) return false;
+
+	const FTraderSalesData TraderSalesData = TraderSpecialData->GetTraderSalesData(IISNPCInterface::Execute_GetCharacterName(TargetActor));
+	const UCurveTable* SalesCT = TraderSalesData.CanTradeCurveTable;
+	if(!SalesCT) return false;  //如果价格表为空直接退回
+	const FRealCurve* SalseRealCT = SalesCT->FindCurve(InTargetID,FString());  //获取对应的可出售的ID
+	if(SalseRealCT) return true;
+	return false;
+}
+
+void UISTradingSystemComponent::SetTradTarget_Implementation(const FItemInformation TargetItem, const int32 TargetNums)
+{
+	TradTarget = TargetItem;
+	TargetCoins = TargetNums;
+	OnTradingSucceeded.Broadcast(TargetItem,TargetNums);  //服务器发送一份
+}
+
+void UISTradingSystemComponent::OnRep_TraCoins()
+{
+	OnTradingSucceeded.Broadcast(TradTarget,TargetCoins);
+}
+
+
+void UISTradingSystemComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
+	
+	DOREPLIFETIME_WITH_PARAMS_FAST(UISTradingSystemComponent,TradTarget,SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UISTradingSystemComponent,TargetCoins,SharedParams);
 }
 

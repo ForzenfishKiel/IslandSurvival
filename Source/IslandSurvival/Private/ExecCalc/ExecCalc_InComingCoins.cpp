@@ -2,7 +2,6 @@
 
 
 #include "ExecCalc/ExecCalc_InComingCoins.h"
-
 #include "AbilitySystemComponent.h"
 #include "ISAbilityTypes.h"
 #include "BlueprintFunctionLibary/ISAbilitysystemLibary.h"

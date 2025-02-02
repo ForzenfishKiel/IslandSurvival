@@ -40,6 +40,8 @@ void AISNonePlayerCharacter::BindWidgetController_Implementation(AActor* TargetA
 	BindCharacterAttirbuteChange(TargetActor);
 }
 
+
+
 AISNonePlayerCharacter* AISNonePlayerCharacter::GetNPC_Implementation()
 {
 	return this;
@@ -59,6 +61,7 @@ void AISNonePlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePr
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AISNonePlayerCharacter,Favorability); //标记好感度为可复制
+	DOREPLIFETIME(AISNonePlayerCharacter,AIState);  //标记AI状态为可复制
 }
 
 //调用NPC的获取其ASC的方法
@@ -82,6 +85,7 @@ void AISNonePlayerCharacter::PossessedBy(AController* NewController)
 void AISNonePlayerCharacter::OnNPCWasInteracted_Implementation(AActor* InteractingActor)
 {
 	IISNPCInterface::OnNPCWasInteracted_Implementation(InteractingActor);
+	Execute_SetAIState(this,Trading);  //设置AI状态为交易
 }
 
 
@@ -105,4 +109,15 @@ void AISNonePlayerCharacter::BindCharacterAttirbuteChange(AActor* TargetActor)
 		OnTargetAttributeChange.Broadcast(Data.NewValue);
 	});
 	OnTargetAttributeChange.Broadcast(SourceAS->GetCoins());
+}
+void AISNonePlayerCharacter::SetAIState_Implementation(EAIState State)
+{
+	IISPublicInterface::SetAIState_Implementation(State);
+	
+	AIState = State;
+}
+
+EAIState AISNonePlayerCharacter::GetAIState_Implementation() const
+{
+	return AIState;
 }
