@@ -38,6 +38,7 @@ public:
 	virtual void BindWidgetController_Implementation(AActor* TargetActor) override;
 	virtual void SetAIState_Implementation(EAIState State) override;
 	virtual EAIState GetAIState_Implementation() const override;
+	virtual UISItemsContainer* GetItemsContainer_Implementation() const override;
 	//自身的ISNPCInterface接口
 	virtual AISNonePlayerCharacter* GetNPC_Implementation() override;
 	virtual void OnNPCWasInteracted_Implementation(AActor* InteractingActor) override;  //当NPC被交互时

@@ -25,12 +25,10 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TSubclassOf<UUserWidget>StorageUserWidgetClass;
-
-	UFUNCTION(Client,Reliable)
-	void StorageUIOpen(APlayerController* TargetController);
-	UFUNCTION(Client,Reliable)
-	void StorageUIClose(APlayerController* TargetController);
 	virtual void InteractOnServer(AController* InPlayerController) override;
 	virtual void OnBuildingWasInteract_Implementation(const AActor* InteractingActor, const UActorComponent* InteractingComponent) override;
 	virtual void InitItemConfig() override;
+	//IISPublicInterface公共接口
+	virtual UISMenuUIBase* GetMenuUI_Implementation() const override;
+	virtual UISItemsContainer* GetItemsContainer_Implementation() const override;
 };

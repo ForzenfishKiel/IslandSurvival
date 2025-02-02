@@ -20,52 +20,11 @@ void AISStorageMaster::InitItemConfig()
 	StorageWidget = CreateWidget<UISMenuUIBase>(GetWorld(),StorageUserWidgetClass);  //创建UI
 	StorageWidget->SetWidgetOwner(this);
 }
+
 void AISStorageMaster::OnBuildingWasInteract_Implementation(const AActor* InteractingActor,
-	const UActorComponent* InteractingComponent)
+                                                            const UActorComponent* InteractingComponent)
 {
-	APlayerController* SourcePC = Cast<APlayerController>( InteractingActor->GetInstigatorController());
-	if(SourcePC)
-	{
-		StorageUIOpen(SourcePC);  //客户端打开UI
-	}
-}
-
-void AISStorageMaster::StorageUIOpen_Implementation(APlayerController* TargetController)
-{
-	check(StorageWidget);
-	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);  //转换成本地PC
-	if(!SourcePC) return;
-	SourcePC->OnOpenInventoryEvent.AddDynamic(this,&AISStorageMaster::StorageUIClose);
 	
-	
-	StorageWidget->InitializeCraftingData(StorageContainer);
-	if(!StorageWidget->IsVisible())
-	{
-		SourcePC->bIsOpenStorage = true;
-		StorageWidget->AddToViewport();
-		SourcePC->bShowMouseCursor = true;
-		SourcePC->SetInputMode(FInputModeGameAndUI());
-		SourcePC->InputSubsystem->RemoveMappingContext(SourcePC->CharacterInputMapping);
-		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMenuMapping,0);
-	}
-}
-
-void AISStorageMaster::StorageUIClose_Implementation(APlayerController* TargetController)
-{
-	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);
-	if(!SourcePC) return;
-
-	
-	if(StorageWidget->IsVisible())
-	{
-		SourcePC->bIsOpenStorage = false;
-		StorageWidget->RemoveFromParent();
-		SourcePC->bShowMouseCursor = false;
-		SourcePC->SetInputMode(FInputModeGameOnly());
-		SourcePC->InputSubsystem->RemoveMappingContext(SourcePC->CharacterInputMenuMapping);
-		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMapping,0);
-		SourcePC->OnOpenInventoryEvent.RemoveDynamic(this,&AISStorageMaster::StorageUIClose);
-	}
 }
 
 void AISStorageMaster::InteractOnServer(AController* InPlayerController)
@@ -78,4 +37,18 @@ void AISStorageMaster::InteractOnServer(AController* InPlayerController)
 	{
 		StorageContainer->RepInventoryPlayer.Add(InPlayerController);
 	}
+}
+
+UISMenuUIBase* AISStorageMaster::GetMenuUI_Implementation() const
+{
+	if(StorageWidget)
+	{
+		return StorageWidget;
+	}
+	return nullptr;
+}
+
+UISItemsContainer* AISStorageMaster::GetItemsContainer_Implementation() const
+{
+	return StorageContainer;
 }

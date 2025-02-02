@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ISPublicInterface.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Interface/ISBuildInterface.h"
@@ -41,7 +42,7 @@ public:
 };
 
 UCLASS()
-class ISLANDSURVIVAL_API AISBuildingSystemBase : public AISItemBase,public IISBuildInterface
+class ISLANDSURVIVAL_API AISBuildingSystemBase : public AISItemBase,public IISBuildInterface,public IISPublicInterface
 {
 	GENERATED_BODY()
 	

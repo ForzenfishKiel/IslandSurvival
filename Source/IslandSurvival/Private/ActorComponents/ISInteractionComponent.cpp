@@ -78,12 +78,12 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 			AActor*CompOwner = HitComponent->GetOwner();
 			if(CompOwner->Implements<UISBuildInterface>())
 			{
+				InteractedActor = HitActor;
 				CurrentBuilding = IISBuildInterface::Execute_GetBuildingSystemBase(CompOwner);
-				AISPlayerController* SourcePC = Cast<AISPlayerController>(GetOwner()->GetInstigatorController());
-				SourcePC->OnOpenInventoryEvent.AddDynamic(this,&UISInteractionComponent::ReciveControllerOpenUIEvent);
 				PossessedObjectOnServer<AISBuildingSystemBase>(CurrentBuilding);
 				
 				IISBuildInterface::Execute_OnBuildingWasInteract(CompOwner, GetOwner(), HitComponent);
+				SourceCharacter->TradWindowOpen(InteractedActor);
 				return;
 			}
 			if(HitActor->Implements<UISEquipableInterface>())
@@ -96,7 +96,7 @@ void UISInteractionComponent::SecondaryInteract_Implementation()
 			{
 				InteractedActor = HitActor;
 				IISNPCInterface::Execute_OnNPCWasInteracted(HitActor,GetOwner());
-				SourceCharacter->TradWindowOpen(HitActor);
+				SourceCharacter->TradWindowOpen(InteractedActor);
 			}
 		}
 	}

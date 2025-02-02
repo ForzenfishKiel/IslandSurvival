@@ -373,6 +373,8 @@ void AISCharacter::TradWindowOpen_Implementation(AActor* TargetActor)
 	
 	AISPlayerState* TargetState = GetPlayerState<AISPlayerState>(); //获取角色的状态
 	if(!TargetState) return;
+
+	MenuUIRef->InitializeCraftingData(IISPublicInterface::Execute_GetItemsContainer(TargetActor));  //获取对方的Container
 	
 	if(!MenuUIRef->IsVisible())
 	{

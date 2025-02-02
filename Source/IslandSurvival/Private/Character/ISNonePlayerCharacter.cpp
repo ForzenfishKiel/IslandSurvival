@@ -121,3 +121,8 @@ EAIState AISNonePlayerCharacter::GetAIState_Implementation() const
 {
 	return AIState;
 }
+
+UISItemsContainer* AISNonePlayerCharacter::GetItemsContainer_Implementation() const
+{
+	return NPCTradComponent;
+}

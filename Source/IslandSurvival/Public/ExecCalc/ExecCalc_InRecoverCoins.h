@@ -14,7 +14,5 @@ class ISLANDSURVIVAL_API UExecCalc_InRecoverCoins : public UGameplayEffectExecut
 {
 	GENERATED_BODY()
 public:
-	UExecCalc_InRecoverCoins();
-
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

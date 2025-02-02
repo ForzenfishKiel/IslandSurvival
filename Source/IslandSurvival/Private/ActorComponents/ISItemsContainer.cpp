@@ -291,7 +291,12 @@ void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInform
 		{
 			if(InventoryContainer[index].ItemID==Information.ItemID)
 			{
-				InventoryContainer[index].ItemQuantity+= TargetQuantity;  //物品数量相加
+				if(TargetQuantity >= 1)
+				{
+					InventoryContainer[index].ItemQuantity += TargetQuantity;
+					return;
+				}
+				InventoryContainer[index].ItemQuantity+= Information.ItemQuantity;  //物品数量相加
 				return;
 			}
 		}
@@ -300,7 +305,12 @@ void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInform
 			if(InventoryContainer[index].ItemID==-1)
 			{
 				InventoryContainer[index] = Information;
-				InventoryContainer[index].ItemQuantity = TargetQuantity;
+				if(TargetQuantity >= 1)
+				{
+					InventoryContainer[index].ItemQuantity = TargetQuantity;
+					return;
+				}
+				InventoryContainer[index].ItemQuantity = Information.ItemQuantity;
 				return;
 			}
 		}
@@ -312,7 +322,12 @@ void UISItemsContainer::ToPickUpItemsInBackPack_Implementation(const FItemInform
 			if(InventoryContainer[index].ItemID==-1)
 			{
 				InventoryContainer[index] = Information;
-				InventoryContainer[index].ItemQuantity = TargetQuantity;
+				if(TargetQuantity >= 1)
+				{
+					InventoryContainer[index].ItemQuantity = TargetQuantity;
+					return;
+				}
+				InventoryContainer[index].ItemQuantity = Information.ItemQuantity;
 				return;
 			}
 		}
@@ -410,7 +425,7 @@ void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName 
 		//物品添加进物品栏
 		if(TargetHotBar->CheckInventoryEmpty(TargetItemInfo))
 		{
-			TargetHotBar->ItemPickup.Broadcast(TargetItemInfo,1);
+			TargetHotBar->ItemPickup.Broadcast(TargetItemInfo,0);
 			ItemPickupOnUI.Broadcast(TargetItemInfo);
 			TargetHotBar->InventoryUpdate.Broadcast();
 			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
@@ -420,7 +435,7 @@ void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName 
 		//物品加进角色背包
 		if(TargetInventory->CheckInventoryEmpty(TargetItemInfo))
 		{
-			TargetInventory->ItemPickup.Broadcast(TargetItemInfo,1);
+			TargetInventory->ItemPickup.Broadcast(TargetItemInfo,0);
 			ItemPickupOnUI.Broadcast(TargetItemInfo);
 			TargetInventory->InventoryUpdate.Broadcast();
 			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());

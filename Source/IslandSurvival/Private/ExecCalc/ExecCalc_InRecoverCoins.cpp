@@ -9,24 +9,6 @@
 #include "Game/ISAttributeSet.h"
 #include "Interface/ISNPCInterface.h"
 
-struct ISRecoverCoinsStatic
-{
-	ISRecoverCoinsStatic()
-	{
-		
-	}
-};
-
-static const ISRecoverCoinsStatic& CoinStatic()
-{
-	static ISRecoverCoinsStatic CoinStatic;
-	return CoinStatic;
-}
-
-UExecCalc_InRecoverCoins::UExecCalc_InRecoverCoins()
-{
-	
-}
 
 void UExecCalc_InRecoverCoins::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                                       FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const

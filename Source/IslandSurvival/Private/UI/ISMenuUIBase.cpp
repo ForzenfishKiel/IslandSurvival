@@ -10,14 +10,16 @@
 
 void UISMenuUIBase::InitializeCraftingData_Implementation(UObject* Target)
 {
-	UISGameInstance*ISGameplayInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	UISGameInstance* ISGameplayInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if(!ISGameplayInstance) return;
-	UISCraftingContainer*CraftingContainer = ISGameplayInstance->ItemContainer;
+	
+	UISCraftingContainer* CraftingContainer = ISGameplayInstance->ItemContainer;
 	if(!CraftingContainer) return;
+	
 	if(Target->Implements<UISContainerInterface>())
 	{
-		IISContainerInterface*Container = Cast<IISContainerInterface>(Target);   //目标是否实现了接口
-		for(auto&ArrayRef: CraftingContainer->GetCraftingInfoMap(Container->GetTargetContainerType()).CraftingInfos)
+		IISContainerInterface* Container = Cast<IISContainerInterface>(Target);   //目标是否实现了接口
+		for(auto& ArrayRef: CraftingContainer->GetCraftingInfoMap(Container->GetTargetContainerType()).CraftingInfos)
 		{
 			if(ArrayRef.TargetName==Container->GetContainerName())
 			{
