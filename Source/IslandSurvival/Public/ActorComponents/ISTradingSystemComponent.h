@@ -29,9 +29,9 @@ public:
 	void SetTradTarget(const FItemInformation TargetItem,const int32 TargetNums);
 	UPROPERTY(Replicated)
 	FItemInformation TradTarget;
-	UPROPERTY(ReplicatedUsing = OnRep_TraCoins)
+	UPROPERTY(Replicated)
 	int32 TargetCoins;
-	UFUNCTION()
+	UFUNCTION(Client,Reliable)
 	void OnRep_TraCoins();
 
 	UPROPERTY(BlueprintAssignable)

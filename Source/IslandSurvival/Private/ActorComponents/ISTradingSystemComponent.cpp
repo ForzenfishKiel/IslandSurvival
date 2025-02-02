@@ -137,12 +137,18 @@ bool UISTradingSystemComponent::CheckIsCanBeSale(AActor* TargetActor, FName InTa
 
 void UISTradingSystemComponent::SetTradTarget_Implementation(const FItemInformation TargetItem, const int32 TargetNums)
 {
+	
+	MARK_PROPERTY_DIRTY_FROM_NAME(UISTradingSystemComponent, TradTarget, this);
 	TradTarget = TargetItem;
+	
 	TargetCoins = TargetNums;
+	
 	OnTradingSucceeded.Broadcast(TargetItem,TargetNums);  //服务器发送一份
+	const FLatentActionInfo LatentInfo(0, FMath::Rand(), TEXT("OnRep_TraCoins"), this);
+	UKismetSystemLibrary::Delay(this,0.1f,LatentInfo);
 }
 
-void UISTradingSystemComponent::OnRep_TraCoins()
+void UISTradingSystemComponent::OnRep_TraCoins_Implementation()
 {
 	OnTradingSucceeded.Broadcast(TradTarget,TargetCoins);
 }
@@ -153,9 +159,11 @@ void UISTradingSystemComponent::GetLifetimeReplicatedProps(TArray<class FLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	FDoRepLifetimeParams SharedParams;
+	SharedParams.Condition = COND_Dynamic;
 	SharedParams.bIsPushBased = true;
+	SharedParams.RepNotifyCondition = REPNOTIFY_Always;
 	
 	DOREPLIFETIME_WITH_PARAMS_FAST(UISTradingSystemComponent,TradTarget,SharedParams);
-	DOREPLIFETIME_WITH_PARAMS_FAST(UISTradingSystemComponent,TargetCoins,SharedParams);
+	DOREPLIFETIME_CONDITION_NOTIFY(UISTradingSystemComponent, TargetCoins, COND_Dynamic, REPNOTIFY_Always);
 }
 

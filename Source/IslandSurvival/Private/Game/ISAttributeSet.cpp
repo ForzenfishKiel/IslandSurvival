@@ -149,7 +149,6 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 			
 			SetCoins(FMath::Clamp(NewCoin,0.f,99999));
 			TargetTradBack->SetTradTarget(*TargetItem,LocalValue);
-
 			PlayerBackPack->DiscardItem(SourceEffectContext->GetTargetBackPackIndex(),1);  //丢弃背包一个物品
 		}
 	}

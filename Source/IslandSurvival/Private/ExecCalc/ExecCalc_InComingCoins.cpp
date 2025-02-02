@@ -9,17 +9,17 @@
 #include "Game/ISAttributeSet.h"
 #include "Interface/ISNPCInterface.h"
 
-struct ISCoinsStatic
+struct ISRecoverCoinsStatic
 {
-	ISCoinsStatic()
+	ISRecoverCoinsStatic()
 	{
 		
 	}
 };
 
-static const ISCoinsStatic& CoinStatic()
+static const ISRecoverCoinsStatic& CoinStatic()
 {
-	static ISCoinsStatic CoinStatic;
+	static ISRecoverCoinsStatic CoinStatic;
 	return CoinStatic;
 }
 
