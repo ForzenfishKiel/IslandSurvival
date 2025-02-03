@@ -58,8 +58,7 @@ public:
 	void TraceToMoveBuildPreview();
 	void SetPreviewBuildingColor();
 	bool CheckForOverlap();  //检查预览建筑物是否发生了碰撞
-	UFUNCTION(Server,Reliable)
-	void CheckBuildFloating();//检查预览建筑物是否在地面
+	bool CheckBuildFloating();//检查预览建筑物是否在地面
 	bool CheckBuildOnFoundation(); //检查建筑物是否只能被放置于地基
 	UFUNCTION(Server,Reliable)
 	void SpawnBuildOnServer(TSubclassOf<AISItemBase>BuildingSystemBaseClass,FTransform Transform,bool bBuildingWasCreated);
@@ -67,12 +66,12 @@ public:
 	void DestoryBuildPreviewOnClient();
 	UFUNCTION(Server,Reliable)
 	void OneClickToDemoBuilding(AActor* TargetActor);
-	bool GetSnappingPoint(const AActor* TargetActor,UActorComponent*TargetComp);
+	void GetSnappingPoint(const AActor* TargetActor,UActorComponent*TargetComp);
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildingWasDestory OnBuildingWasDestory;
 	UPROPERTY(BlueprintAssignable)
 	FOnCallSetMaterial OnCallSetMaterial;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AISBuildingSystemBase>ISBuildingRef;  //建筑单例的引用
 	FTransform ISBuildingTransformRef = FTransform();
 	FVector ISBuildCenter = FVector();
@@ -80,9 +79,16 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool bCanBeBuild = false;
 	int32 SaveHotBarIndex = -1;
+
+	UFUNCTION(BlueprintCallable)
+	bool FloatingCheck();
+
+	
 private:
 	UPROPERTY(Replicated)
 	bool Isfloating = false;
+	UPROPERTY(Replicated)
+	bool IsAttaching = false;
 
 	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };

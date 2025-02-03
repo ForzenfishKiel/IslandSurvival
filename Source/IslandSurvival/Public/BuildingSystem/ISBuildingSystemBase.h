@@ -39,6 +39,8 @@ public:
 	bool CanPlaceOnFoundation = false;  //锻造的物体是否可以被放置，既可以放在地基上也可以放在物体上，类似营火
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool DoCeilingCheck = false;  //是否可以放置在天花板
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bIsNeedToCheckOverlap = false;  //是否需要检查碰撞
 };
 
 UCLASS()

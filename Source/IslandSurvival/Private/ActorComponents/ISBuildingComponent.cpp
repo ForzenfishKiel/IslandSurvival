@@ -91,6 +91,7 @@ void UISBuildingComponent::TraceToMoveBuildPreview_Implementation()
 					GetSnappingPoint(ActorRef,ComponentRef);
 				}
 				SetPreviewBuildingColor();
+				
 				ISBuildingRef->RootSceneComponent->SetWorldTransform(ISBuildingTransformRef);  //改变预览建筑物的位置
 			}
 		}
@@ -123,48 +124,33 @@ void UISBuildingComponent::OneClickToDemoBuilding_Implementation(AActor* TargetA
 	IISBuildInterface::Execute_DestoryBuilding(TargetActor,GetOwner());
 }
 
-bool UISBuildingComponent::GetSnappingPoint(const AActor* TargetActor, UActorComponent* TargetComp)
+void UISBuildingComponent::GetSnappingPoint(const AActor* TargetActor, UActorComponent* TargetComp)
 {
 	//循环遍历预览命中的建筑物的判定框
 	for(auto BoxesRef:IISBuildInterface::Execute_GetBuildingBoxComponent(TargetActor))
 	{
 		if(BoxesRef==TargetComp)  //如果判定框等于击中的判定框，也就是同样的判定框，则返回该判定框的位置
 		{
+			/*若此时命中的组件（这个组件是建筑物中可衔接放置的命中框）在该建筑物中存在
+			 * 则判定为可衔接放置建筑物
+			 */
 			ISBuildingTransformRef = BoxesRef->GetComponentTransform();
-			return true;
+			IsAttaching = true;
+			return;
 		}
+		IsAttaching = false;
 	}
-	return false;
+	return;
 }
 
 void UISBuildingComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UISBuildingComponent, Isfloating);
+	DOREPLIFETIME(UISBuildingComponent,IsAttaching);
 }
 
-//设置预览建筑物的颜色
-void UISBuildingComponent::SetPreviewBuildingColor()
-{
-	if(!ISBuildingRef) return;
-	
-	for(auto CompRef:ISBuildingRef->GetComponents())
-	{
-		//尝试遍历该预览建筑的静态网格体的所有材质
-		UStaticMeshComponent* BuildingStaticMesh = Cast<UStaticMeshComponent>(CompRef);
-		if(BuildingStaticMesh)
-		{
-			//检查是否需要进行浮空检测
-			//需要进行浮空检测的，添加浮空检测判定语句
-			for(int32 i = 0;i<BuildingStaticMesh->GetNumMaterials();i++)
-			{
-				FISBuildBooleanCheck BuildBooleanCheck(BuildingStaticMesh,i,ISBuildingRef->BuildingConfig.DoFloatCheck,CheckForOverlap(),Isfloating,
-					ISBuildingRef->BuildingConfig.CanPlaceOnFoundation,CheckBuildOnFoundation());
-				OnCallSetMaterial.Broadcast(BuildBooleanCheck);
-			}
-		}
-	}
-}
+
 
 //删除建筑预览在客户端
 void UISBuildingComponent::DestoryBuildPreviewOnClient_Implementation()
@@ -182,7 +168,7 @@ void UISBuildingComponent::SpawnBuildOnServer_Implementation(TSubclassOf<AISItem
 		OnBuildingWasDestory.Broadcast();
 	}
 }
-
+//检查是否碰撞
 bool UISBuildingComponent::CheckForOverlap()
 {
 	//查看建筑是否使用自定义重叠
@@ -193,7 +179,7 @@ bool UISBuildingComponent::CheckForOverlap()
 	FVector BoxExtent = ISBuildingRef->BoxCollisionComponent->Bounds.BoxExtent;
 	float HalfSizeFloat = 1.2f;
 	FRotator RootSceneRotation =  ISBuildingRef->RootSceneComponent->GetComponentRotation();
-	RootSceneRotation.Yaw +=90;
+	RootSceneRotation.Yaw += 90;
 	TArray<AActor*>IgnoreActor;
 	IgnoreActor.Add(GetOwner());
 	IgnoreActor.Add(ISBuildingRef);
@@ -212,17 +198,33 @@ bool UISBuildingComponent::CheckForOverlap()
 	}
 }
 
-void UISBuildingComponent::CheckBuildFloating_Implementation()
+
+bool UISBuildingComponent::CheckBuildFloating()
 {
-	if(!ISBuildingRef) return;
-	FVector EndLocation = ISBuildingTransformRef.GetLocation();
-	EndLocation-=FVector(0,0,50);
+	if(!ISBuildingRef) return false;
+	FVector StaticOrigin = ISBuildingRef->ItemsStaticMesh->Bounds.Origin;
+	FVector StaticExtent = ISBuildingRef->ItemsStaticMesh->Bounds.BoxExtent;
+
+	float HalfSizeFloat = 1.2f;
+	FRotator RootSceneRotation =  ISBuildingRef->RootSceneComponent->GetComponentRotation();
+	RootSceneRotation.Yaw += 90;
+	
 	TArray<AActor*>IgnoreActor;
 	IgnoreActor.Add(GetOwner());
 	IgnoreActor.Add(ISBuildingRef);
-	FHitResult Hit;
-	Isfloating = GetWorld()->LineTraceSingleByChannel(Hit,ISBuildingTransformRef.GetLocation(),EndLocation,ECC_GameTraceChannel12);
+	TArray<FHitResult>  Hits;
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> BuildingObjectTypes;
+	BuildingObjectTypes.Add(EObjectTypeQuery::ObjectTypeQuery1);
+
+	FVector HalfSize = StaticExtent/HalfSizeFloat;
+
+	return ( UKismetSystemLibrary::BoxTraceMultiForObjects(GetOwner(),StaticOrigin,StaticOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),
+		BuildingObjectTypes,false,IgnoreActor,EDrawDebugTrace::ForDuration,Hits,true,FLinearColor::Red,FLinearColor::Green,1.f));
 }
+
+
+
 bool UISBuildingComponent::CheckBuildOnFoundation()
 {
 	if(!ISBuildingRef) return false;
@@ -237,6 +239,68 @@ bool UISBuildingComponent::CheckBuildOnFoundation()
 	{
 		if(!Hit.GetActor()->Implements<UISBuildInterface>()) return false;
 		if(IISBuildInterface::Execute_GetBuildingSystemBase(Hit.GetActor())->BuildingConfig.BuildingType==Foundation) return true;
+	}
+	return false;
+}
+//设置预览建筑物的颜色
+void UISBuildingComponent::SetPreviewBuildingColor()
+{
+	if(!ISBuildingRef) return;
+	
+	FISBuildBooleanCheck BuildBooleanCheck(ISBuildingRef->ItemsStaticMesh,0,ISBuildingRef->BuildingConfig.DoFloatCheck,CheckForOverlap(),CheckBuildFloating(),
+		ISBuildingRef->BuildingConfig.CanPlaceOnFoundation,CheckBuildOnFoundation());
+	OnCallSetMaterial.Broadcast(BuildBooleanCheck);
+}
+
+
+bool UISBuildingComponent::FloatingCheck()
+{
+	if(!ISBuildingRef) return false;
+	if(ISBuildingRef->BuildingConfig.DoFloatCheck)
+	{
+		if(CheckBuildFloating() && CheckForOverlap())
+		{
+			return false;
+		}
+		if (CheckBuildFloating() && !CheckForOverlap())
+		{
+			return true;
+		}
+	}
+	else
+	{
+		if(!CheckBuildFloating())
+		{
+			if(IsAttaching)
+			{
+				if(!ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap)
+				{
+					return true;
+				}
+				if(CheckForOverlap())
+				{
+					return false;
+				}
+			}
+			if(CheckForOverlap())
+			{
+				return false;
+			}
+		}
+		else
+		{
+			if(IsAttaching)
+			{
+				if(!ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap)
+				{
+					return true;
+				}
+				if(CheckForOverlap())
+				{
+					return false;
+				}
+			}
+		}
 	}
 	return false;
 }
