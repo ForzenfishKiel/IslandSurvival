@@ -47,10 +47,15 @@ public:
 	ECharacterEquipState CharacterEquipState = ECharacterEquipState::None;
 
 	
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_EquipableChanged)
-	TObjectPtr<AISEquipable> Equipable = nullptr;//用于储存角色可装备的物品
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Equipable)
+	TObjectPtr<AISEquipable> Equipable = nullptr; //角色第一人称装备
 	UFUNCTION()
-	void OnRep_EquipableChanged();
+	void OnRep_Equipable();
+ 
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_EquipableTP)
+	TObjectPtr<AISEquipable> EquipableTP = nullptr; //角色第三人称装备
+	UFUNCTION()
+	void OnRep_EquipableTP();
 
 	UPROPERTY()
 	TObjectPtr<AISConsumable> ISConsumable = nullptr;
@@ -84,11 +89,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void UnEquip();
-
 	
-	UFUNCTION(BlueprintCallable,Client, Reliable)
-	void UnEquipOnClient();
-
 	
 	UFUNCTION(Server, Reliable)
 	void UseConsumable(TSubclassOf<AISItemBase>ItemClass);

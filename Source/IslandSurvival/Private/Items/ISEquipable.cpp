@@ -36,6 +36,7 @@ USceneComponent* AISEquipable::GetAttachThirdPersonParent(APawn* TargetPawn) con
 void AISEquipable::SetEquipableCollision()
 {
 	PickUpCheckSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ItemsStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ItemsStaticMesh->SetCollisionResponseToChannel(ECC_GameTraceChannel1,ECR_Ignore);
 }
 
