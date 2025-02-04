@@ -253,22 +253,37 @@ void UISBuildingComponent::SetPreviewBuildingColor()
 }
 
 
-bool UISBuildingComponent::FloatingCheck()
+bool UISBuildingComponent::CanBuildCheck()
 {
 	if(!ISBuildingRef) return false;
+	//如果建筑物需要做浮空检查
 	if(ISBuildingRef->BuildingConfig.DoFloatCheck)
 	{
-		if(CheckBuildFloating() && CheckForOverlap())
+		if(CheckBuildFloating())
 		{
-			return false;
-		}
-		if (CheckBuildFloating() && !CheckForOverlap())
-		{
-			return true;
+			if(IsAttaching)
+			{
+				if(!ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap)
+				{
+					return true;
+				}
+				if(ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap && !CheckForOverlap())
+				{
+					return true;
+				}
+			}
+			else
+			{
+				if(ISBuildingRef->BuildingConfig.BuildingType==Foundation)
+				{
+					return true;
+				}
+			}
 		}
 	}
 	else
 	{
+		//如果处于浮空状态
 		if(!CheckBuildFloating())
 		{
 			if(IsAttaching)
@@ -277,16 +292,21 @@ bool UISBuildingComponent::FloatingCheck()
 				{
 					return true;
 				}
-				if(CheckForOverlap())
+				if(ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap && ! CheckForOverlap())
 				{
-					return false;
+					return true;
 				}
 			}
-			if(CheckForOverlap())
+			else
 			{
-				return false;
+				if(CheckBuildOnFoundation())
+				{
+					return true;
+				}
 			}
 		}
+		
+		//如果未处于浮空状态
 		else
 		{
 			if(IsAttaching)
@@ -295,11 +315,12 @@ bool UISBuildingComponent::FloatingCheck()
 				{
 					return true;
 				}
-				if(CheckForOverlap())
+				if(ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap && ! CheckForOverlap())
 				{
-					return false;
+					return true;
 				}
 			}
+
 		}
 	}
 	return false;

@@ -81,7 +81,7 @@ public:
 	int32 SaveHotBarIndex = -1;
 
 	UFUNCTION(BlueprintCallable)
-	bool FloatingCheck();
+	bool CanBuildCheck();
 
 	
 private:
