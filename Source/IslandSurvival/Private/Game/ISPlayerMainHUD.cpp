@@ -39,10 +39,20 @@ void AISPlayerMainHUD::InitUserWidget(const FCharacterParams& CharacterParams)
 	
 	ISMenuUI = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),ISMenuClass); //创建人物的背包界面UI
 	
+	ISDieHUD = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),ISDieHUDClass);
+	
 	IsMainUI->SetWidgetController(MainUIWidgetController);
 	ISMenuUI->SetWidgetController(MenuWidgetController);
 	MainUIWidgetController->BroadcastInitialValues();  //广播初始化属性
 	MenuWidgetController->BroadcastInitialValues();  //广播初始化属性
 	IsMainUI->AddToViewport();
+}
+
+void AISPlayerMainHUD::ClearMainUI() const
+{
+	if(IsMainUI->IsVisible())
+	{
+		IsMainUI->RemoveFromParent();
+	}
 }
 

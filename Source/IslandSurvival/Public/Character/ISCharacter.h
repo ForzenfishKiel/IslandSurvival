@@ -21,7 +21,7 @@
  * 
  */
 UCLASS()
-class ISLANDSURVIVAL_API AISCharacter : public AISCharacterBase,public IISPlayerInterface
+class ISLANDSURVIVAL_API AISCharacter : public AISCharacterBase,public IISPlayerInterface,public IISPublicInterface
 {
 	GENERATED_BODY()
 public:
@@ -44,6 +44,9 @@ public:
 	virtual void BindAttributeSet() const override;
 	virtual void ApplyDamageToTarget_Implementation(AActor* Target) override;
 	virtual AISCharacter* GetSourceCharacter_Implementation() override;
+	virtual void Die() override;
+	virtual void MulticastHandleDeath() override;
+	virtual UISMenuUIBase* GetMenuUI_Implementation() const override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
 	UFUNCTION(Server,Reliable)
@@ -60,11 +63,16 @@ public:
 	UFUNCTION(Client,Reliable)
 	void TradWindowOpen(AActor* TargetActor);
 	UFUNCTION(Client,Reliable)
+	void MenuWindowOpen(AActor* TargetActor);
+	UFUNCTION(Client,Reliable)
 	void TradWindowClose(APlayerController* TargetController);
 
 	
 	UFUNCTION(BlueprintCallable)
 	bool CheckIsFastRun();
+
+	UPROPERTY(BlueprintReadOnly,Replicated)
+	bool bIsDead = false;
 
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TSubclassOf<UGameplayEffect>PlayerDefaultAttribute;
@@ -102,6 +110,7 @@ public:
 	UPROPERTY(BlueprintReadWrite,Replicated,Category = "Config")
 	float CharacterSpeed = 400.f;
 private:
+
 	virtual void InitAbilityActorInfo() override;
 	
 	virtual void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass) override;
@@ -112,6 +121,8 @@ private:
 	
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void AddAttributeLevel(const FGameplayAttribute TargetPointType);
+	UFUNCTION(Client,Reliable)
+	void ClearPlayerMainHUD();
 	
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;

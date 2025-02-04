@@ -167,11 +167,8 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 					,LocalValue,Properties.SourceCharacter->GetActorLocation(),Properties.SourceCharacter->GetActorLocation());
 				//播放人物或者AI的受到攻击的状态
 			}
-			else if(Properties.TargetCharacter->Implements<UISEnemyInterface>())
+			else if(IISCombatInterface* CombatInterface = Cast<IISCombatInterface>(Properties.TargetCharacter))
 			{
-				//对象必须是敌人类且敌人类必须实现战斗接口
-				IISCombatInterface* CombatInterface = Cast<IISCombatInterface>(Properties.TargetCharacter);
-				if(!CombatInterface) return;
 				
 				CombatInterface->Die();
 				SendGameplayXP(Properties);  //死亡后发送经验值
@@ -209,7 +206,7 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 
 void UISAttributeSet::SendGameplayXP(const FEffectProperties& Props)
 {
-	if(IISCombatInterface* CombatInterface = Cast<IISCombatInterface>(Props.TargetCharacter))
+	if(IISEnemyInterface* CombatInterface = Cast<IISEnemyInterface>(Props.TargetCharacter))
 	{
 		const int32 TargetLevel = IISCombatInterface::Execute_GetLevel(Props.TargetCharacter);
 		const FName TargetName = IISCombatInterface::Execute_GetCharacterName(Props.TargetCharacter);

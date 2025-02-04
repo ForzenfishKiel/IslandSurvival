@@ -20,6 +20,7 @@ class ISLANDSURVIVAL_API AISPlayerMainHUD : public AHUD
 	GENERATED_BODY()
 public:
 	void InitUserWidget(const FCharacterParams&CharacterParams);
+	void ClearMainUI() const;
 	UISMainUIWidgetController* GetMainUIWidgetController(const FCharacterParams&CharacterParams);
 	UISMenuWidgetController* GetMenuWidgetController(const FCharacterParams&CharacterParams);
 public:
@@ -31,6 +32,10 @@ public:
 	TSubclassOf<UUserWidget> ISMainUIClass;
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UISMainUIBase> IsMainUI;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UISMenuUIBase> ISDieHUDClass;
+	UPROPERTY()
+	TObjectPtr<UISMenuUIBase> ISDieHUD; //角色死亡窗口
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UISMainUIWidgetController>ISMainUIWidgetControllerClass;

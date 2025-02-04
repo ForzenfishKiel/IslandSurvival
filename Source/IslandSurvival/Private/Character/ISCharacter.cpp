@@ -76,6 +76,7 @@ void AISCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& O
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AISCharacter,CharacterSpeed);
+	DOREPLIFETIME(AISCharacter,bIsDead);
 }
 
 void AISCharacter::Tick(float DeltaSeconds)
@@ -362,6 +363,47 @@ AISCharacter* AISCharacter::GetSourceCharacter_Implementation()
 {
 	return this;
 }
+
+void AISCharacter::Die()
+{
+	Super::Die();
+	
+	
+	CameraComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);  //接触摄像机
+
+	ClearPlayerMainHUD();  //删除玩家的主UI
+
+	MenuWindowOpen(this);  //打开死亡菜单
+
+	MulticastHandleDeath();  //多播死亡画面
+
+	bIsDead = true;
+
+	SetLifeSpan(10.f);
+}
+
+void AISCharacter::MulticastHandleDeath()
+{
+	Super::MulticastHandleDeath();
+
+	GetMesh()->SetSimulatePhysics(true);  //开启模拟物理效果
+	GetMesh()->SetEnableGravity(true); //开启重力效果
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);  //开启物理碰撞效果
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+UISMenuUIBase* AISCharacter::GetMenuUI_Implementation() const
+{
+	AISPlayerController* SourcePC = Cast<AISPlayerController>(GetController());  //获取本地控制器
+	if(!SourcePC) return nullptr;
+	AISPlayerMainHUD* SourceMainHUD = Cast<AISPlayerMainHUD>(SourcePC->GetHUD());
+	if(!SourceMainHUD) return nullptr;
+	return SourceMainHUD->ISDieHUD;
+}
+
+//用户打开库存界面
 void AISCharacter::TradWindowOpen_Implementation(AActor* TargetActor)
 {
 	MenuUIRef = IISPublicInterface::Execute_GetMenuUI(TargetActor);  //获取对方的UI
@@ -388,6 +430,31 @@ void AISCharacter::TradWindowOpen_Implementation(AActor* TargetActor)
 	IISPublicInterface::Execute_BindWidgetController(TargetActor,this);
 }
 
+//打开用户菜单UI
+void AISCharacter::MenuWindowOpen_Implementation(AActor* TargetActor)
+{
+	MenuUIRef = IISPublicInterface::Execute_GetMenuUI(TargetActor);  //获取对方的UI
+	if(!MenuUIRef) return;
+	
+	AISPlayerController* SourcePC = Cast<AISPlayerController>(GetController());
+	if(!SourcePC) return;
+	SourcePC->OnOpenInventoryEvent.AddDynamic(this,&AISCharacter::TradWindowClose);
+	
+	AISPlayerState* TargetState = GetPlayerState<AISPlayerState>(); //获取角色的状态
+	if(!TargetState) return;
+	
+	if(!MenuUIRef->IsVisible())
+	{
+		SourcePC->bIsOpenStorage = true;
+		MenuUIRef->AddToViewport();
+		SourcePC->bShowMouseCursor = true;
+		SourcePC->SetInputMode(FInputModeGameAndUI());
+		SourcePC->InputSubsystem->RemoveMappingContext(SourcePC->CharacterInputMapping);
+		SourcePC->InputSubsystem->AddMappingContext(SourcePC->CharacterInputMenuMapping,0);
+	}
+}
+
+//用户关闭界面
 void AISCharacter::TradWindowClose_Implementation(APlayerController* TargetController)
 {
 	AISPlayerController* SourcePC = Cast<AISPlayerController>(TargetController);
@@ -409,4 +476,14 @@ void AISCharacter::TradWindowClose_Implementation(APlayerController* TargetContr
 	{
 		InteractionComp->ClearInteractedActor();  //清空当前交互对象
 	}
+}
+
+void AISCharacter::ClearPlayerMainHUD_Implementation()
+{
+	AISPlayerController* SourcePC = Cast<AISPlayerController>(GetController());  //获取本地控制器
+	if(!SourcePC) return;
+	AISPlayerMainHUD* SourceMainHUD = Cast<AISPlayerMainHUD>(SourcePC->GetHUD());
+	if(!SourceMainHUD) return;
+
+	SourceMainHUD->ClearMainUI(); //清除HUD的主UI
 }
