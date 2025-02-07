@@ -14,11 +14,4 @@ UCLASS()
 class ISLANDSURVIVAL_API AISMainMenuHUD : public AHUD
 {
 	GENERATED_BODY()
-private:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> MainMenuWidgetClass;
-
-	UPROPERTY()
-	TObjectPtr<UISMainMenuWidget> MainMenuWidgetRef;
-	virtual void BeginPlay() override;
 };
