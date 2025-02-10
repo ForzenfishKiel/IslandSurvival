@@ -20,15 +20,19 @@ public:
 	
 	//当前进入加载存档界面时，此存档应该显示的用户控件界面。
 	void SetSlotName(const FString& InSlotName);
+	UFUNCTION(BlueprintCallable)
 	FString GetSlotName() const { return SlotName; };
 
 	void SetPlayerName(const FString& InPlayerName);
+	UFUNCTION(BlueprintCallable)
 	FString GetPlayerName() const { return PlayerName; };
 
 	void SetPlayerLevel(const int32 InPlayerLevel);
+	UFUNCTION(BlueprintCallable)
 	int32 GetPlayerLevel() const { return PlayerLevel; };
 
 	void SetMapName(const FString& InMapName);
+	UFUNCTION(BlueprintCallable)
 	FString GetMapName() const { return MapName; };
 private:
 	

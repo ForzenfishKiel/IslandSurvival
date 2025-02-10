@@ -30,10 +30,10 @@ void UISGameSaveWidgetController::WhenGameStartButtonWasPressed()
 	GameSaveSlot->SetPlayerName(StartingConfig.PlayerName);
 	GameSaveSlot->SetPlayerLevel(1);  //设定玩家的等级
 	GameSaveSlot->SetMapName(FString("IsLand")); //设置地图名称
-	GameSaveSlot->SetSlotName(FString("SaveData"));
+	GameSaveSlot->SetSlotName(StartingConfig.PlayerName);
 	GameSaveSlot->SlotIndex = LoadSlots.Num();  //索引等于存储长度，也就是未开辟的一位
 	GameplayMode->SaveSlotData(GameSaveSlot,GameSaveSlot->SlotIndex);  //保存新的存档
-	LoadSlots.Add(LoadSlots.Num(),GameSaveSlot);
+	LoadGameSaveSlot();  //存档插槽加载存档
 }
 
 //当角色输入名称时
