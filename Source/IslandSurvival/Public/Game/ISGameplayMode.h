@@ -10,6 +10,8 @@
 #include "DataAsset/ISTraderSpecialData.h"
 #include "DataAsset/ISWeaponDataAsset.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameSave/ISLocalPlayerSaveGame.h"
+#include "WidgetController/ISGameSaveSlotWC.h"
 #include "ISGameplayMode.generated.h"
 
 /**
@@ -38,5 +40,12 @@ public:
 	UPROPERTY()
 	TSet<TWeakObjectPtr<APlayerController>> LoginPlayerList;
 
-	APlayerController* FindPlayerControllerFromLocalPlayer(ULocalPlayer* InLocalPlayer);
+	APlayerController* FindPlayerControllerFromLocalPlayer(ULocalPlayer* InLocalPlayer) const;
+
+	void SaveSlotData(const UISGameSaveSlotWC* LoadSlot,int32 SlotIndex) const;
+
+	UISLocalPlayerSaveGame* GetSaveSlotData(const FString& InSlotName , int32 SlotIndex) const;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
 };

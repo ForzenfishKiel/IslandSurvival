@@ -3,3 +3,8 @@
 
 #include "MainMenu/Widget/ISMainMenuWidget.h"
 
+void UISMainMenuWidget::WidgetControllerSet(UISGameSaveWidgetController* InWidgetController)
+{
+	GameSaveWidgetController = InWidgetController;
+	OnWidgetControllerSet();
+}
