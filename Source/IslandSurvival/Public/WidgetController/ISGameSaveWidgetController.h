@@ -25,6 +25,7 @@ class ISLANDSURVIVAL_API UISGameSaveWidgetController : public UObject
 {
 	GENERATED_BODY()
 public:
+	UFUNCTION(BlueprintCallable)
 	void LoadGameSaveSlot() const;
 	UPROPERTY(BlueprintAssignable)
 	FOnSlotWasLoaded OnSlotWasLoaded;
@@ -32,6 +33,10 @@ public:
 	FStartingConfig StartingConfig;
 	UFUNCTION(BlueprintCallable)
 	void WhenGameStartButtonWasPressed();  //当进入游戏的按钮被点击时
+	UFUNCTION(BlueprintCallable)
+	void LoadGameButtonWasPressed(const int32 InIndex);
+	UFUNCTION(BlueprintCallable)
+	void WhenLoadGameSlotDeleteButtonWasPressed(const int32 InIndex); //当删除存档的按钮被点击时
 	UFUNCTION(BlueprintCallable)
 	void OnPlayerNameWasInput(const FString InPlayerName);
 private:

@@ -23,6 +23,9 @@ void AISPlayerController::BeginPlay()
 	{
 		InputSubsystem->AddMappingContext(CharacterInputMapping,0);  //添加增强输入到子系统
 	}
+	//初始化控制器的游戏模式
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
 }
 
 void AISPlayerController::SetupInputComponent()
