@@ -19,4 +19,13 @@ public:
 	TObjectPtr<UDataTable>ItemDataTable;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DataTable")
 	TObjectPtr<UISCraftingContainer>ItemContainer;
+
+	UPROPERTY()
+	FName PlayerStartTag = FName();
+
+	UPROPERTY()
+	FString LoadSlotName = FString();  //保存存档使用的名称
+
+	UPROPERTY()
+	int32 SlotIndex = -1;  //保存存档使用的索引
 };

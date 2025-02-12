@@ -487,3 +487,35 @@ void AISCharacter::ClearPlayerMainHUD_Implementation()
 
 	SourceMainHUD->ClearMainUI(); //清除HUD的主UI
 }
+
+void AISCharacter::SaveProgress_Implementation()
+{
+	IISPlayerInterface::SaveProgress_Implementation();
+
+	if(const AISGameplayMode* GamePlayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this)))
+	{
+		UISLocalPlayerSaveGame* SaveGameData = GamePlayMode->RetrieveInGameSaveData();
+		if(SaveGameData == nullptr) return;
+
+		SaveGameData->PlayerTransform = GetTransform();  //获取玩家自身的位置
+		const AISPlayerState* ISPlayerState = GetPlayerState<AISPlayerState>();
+
+		if(ISPlayerState)
+		{
+			SaveGameData->AttributePoints = ISPlayerState->GetAttributePoint();  //保存玩家的属性点
+			SaveGameData->PlayerLevel = ISPlayerState->GetPlayerLevel(); //保存玩家的等级
+			SaveGameData->XP = ISPlayerState->GetXP();  //保存玩家的经验值
+		}
+
+		//保存玩家生命值
+		SaveGameData->Health = UISAttributeSet::GetHealthAttribute().GetNumericValue(ISPlayerState->GetAttributeSet());
+		//保存玩家饥饿值
+		SaveGameData->Hungry = UISAttributeSet::GetHungerAttribute().GetNumericValue(ISPlayerState->GetAttributeSet());
+		//保存玩家口渴值
+		SaveGameData->Thirsty = UISAttributeSet:: GetThirstAttribute().GetNumericValue(ISPlayerState->GetAttributeSet());
+		//保存玩家体力值
+		SaveGameData->Vigor = UISAttributeSet::GetVigorAttribute().GetNumericValue(ISPlayerState->GetAttributeSet());
+
+		GamePlayMode->SaveInGameProgressData(SaveGameData);
+	}
+}

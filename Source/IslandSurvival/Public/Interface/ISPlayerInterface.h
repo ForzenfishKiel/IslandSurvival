@@ -58,4 +58,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	AISCharacter* GetSourceCharacter();
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void SaveProgress();  //保存玩家状态
 };

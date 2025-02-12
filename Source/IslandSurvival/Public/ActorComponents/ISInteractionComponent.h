@@ -17,7 +17,7 @@ class ISLANDSURVIVAL_API UISInteractionComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UISInteractionComponent();
-	UFUNCTION(BlueprintCallable,Client, Reliable)
+	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void PrimaryInteract();
 	UFUNCTION(BlueprintCallable,Server, Reliable)
 	void SecondaryInteract();

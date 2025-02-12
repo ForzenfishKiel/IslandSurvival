@@ -45,7 +45,9 @@ public:
 	APlayerController* FindPlayerControllerFromLocalPlayer(ULocalPlayer* InLocalPlayer) const;
 
 	void SaveSlotData(const UISGameSaveSlotWC* LoadSlot,int32 SlotIndex) const;
+	void SaveInGameProgressData(UISLocalPlayerSaveGame* SaveObject) const;
 	void TravelToMap(UISGameSaveSlotWC* LoadSlot);  //将玩家传送到对应的地图
+	UISLocalPlayerSaveGame* RetrieveInGameSaveData() const;
 	static void DeleteSlotData(const FString& InSlotName , int32 InSlotIndex);
 
 	UISLocalPlayerSaveGame* GetSaveSlotData(const FString& InSlotName , int32 SlotIndex) const;

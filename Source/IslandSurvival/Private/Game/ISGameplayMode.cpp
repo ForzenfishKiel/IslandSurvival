@@ -4,6 +4,7 @@
 #include "Game/ISGameplayMode.h"
 
 #include "CookOnTheSide/CookOnTheFlyServer.h"
+#include "Game/ISGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 void AISGameplayMode::PostLogin(APlayerController* NewPlayer)
@@ -39,6 +40,8 @@ void AISGameplayMode::SaveSlotData(const UISGameSaveSlotWC* LoadSlot, int32 Slot
 
 	UGameplayStatics::SaveGameToSlot(LocalPlayerSaveGame,LoadSlot->GetSlotName(),SlotIndex);  //保存一个新的存档
 }
+
+
 
 void AISGameplayMode::TravelToMap(UISGameSaveSlotWC* LoadSlot)
 {
@@ -81,4 +84,27 @@ void AISGameplayMode::BeginPlay()
 	Super::BeginPlay();
 
 	LoadingMap.Emplace(DefaultMapName,DefaultMap);
+}
+
+//保存当前游戏实例的游戏进度
+void AISGameplayMode::SaveInGameProgressData(UISLocalPlayerSaveGame* SaveObject) const
+{
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(GetGameInstance());
+
+	//从游戏实例获取到存档名称和索引
+	const FString InGameLoadSlotName = ISGameInstance->LoadSlotName;
+	const int32 InGameLoadSlotIndex = ISGameInstance->SlotIndex;
+
+	//保存存档
+	UGameplayStatics::SaveGameToSlot(SaveObject, InGameLoadSlotName, InGameLoadSlotIndex);
+}
+//获取当前使用的存档
+UISLocalPlayerSaveGame* AISGameplayMode::RetrieveInGameSaveData() const
+{
+	const UISGameInstance* ISGameInstance = Cast<UISGameInstance>(GetGameInstance());
+
+	const FString InGameLoadSlotName = ISGameInstance->LoadSlotName;
+	const int32 InGameSlotIndex = ISGameInstance->SlotIndex;
+
+	return GetSaveSlotData(InGameLoadSlotName,InGameSlotIndex);
 }

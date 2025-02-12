@@ -47,6 +47,7 @@ public:
 	virtual void Die() override;
 	virtual void MulticastHandleDeath() override;
 	virtual UISMenuUIBase* GetMenuUI_Implementation() const override;
+	virtual void SaveProgress_Implementation() override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
 	UFUNCTION(Server,Reliable)
