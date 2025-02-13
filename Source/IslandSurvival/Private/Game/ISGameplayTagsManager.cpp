@@ -20,6 +20,10 @@ void FGameplayTagsManager::InitializeNativeGameplayTags()
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Primary.Vigor"),FString("体力标签"));
 	GameplayTags.Attribute_Primary_BaseAttack =
 	UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Primary.BaseAttack"),FString("基础攻击力标签"));
+	GameplayTags.Attribute_Primary_Hungry =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Primary.Hungry"),FString("饥饿值标签"));
+	GameplayTags.Attribute_Primary_Thirsty =
+		UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Primary.Thirsty"),FString("口渴值标签"));
 
 	
 	GameplayTags.Attribute_Secondary_Armor =

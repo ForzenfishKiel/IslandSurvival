@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
+#include "Game/ISGameInstance.h"
 #include "Game/ISGameplayMode.h"
 #include "Game/ISPlayerController.h"
 #include "Game/ISPlayerMainHUD.h"
@@ -93,8 +94,10 @@ void AISCharacter::PossessedBy(AController* NewController)
 		InitAbilityActorInfo();  //服务器调用初始化操作
 	}
 	SetOwner(NewController);
-	AddCharacterActivateAbility(CharacterActivateAbilities);
-	AddCharacterPassiveAbility(CharacterPassiveAbilities);
+
+	LoadProgress(); //尝试读取角色的进度
+	//AddCharacterActivateAbility(CharacterActivateAbilities);
+	//AddCharacterPassiveAbility(CharacterPassiveAbilities);
 }
 
 void AISCharacter::OnRep_PlayerState()
@@ -215,8 +218,8 @@ void AISCharacter::InitAbilityActorInfo()
 	}
 	CharacterEquipment->InitializeEquipmentComponent(SourceASC);
 	BindAttributeSet();  //绑定一些部分的值
-	InitializePlayerAttribute(SourceASC,PlayerDefaultAttribute);
-	InitializePlayerAttribute(SourceASC,PlayerSecondaryAttribute);
+	//InitializePlayerAttribute(SourceASC,PlayerDefaultAttribute);
+	//InitializePlayerAttribute(SourceASC,PlayerSecondaryAttribute);
 }
 
 void AISCharacter::InitializePlayerAttribute(UAbilitySystemComponent* ASC, TSubclassOf<UGameplayEffect> AttributeClass)
@@ -517,5 +520,55 @@ void AISCharacter::SaveProgress_Implementation()
 		SaveGameData->Vigor = UISAttributeSet::GetVigorAttribute().GetNumericValue(ISPlayerState->GetAttributeSet());
 
 		GamePlayMode->SaveInGameProgressData(SaveGameData);
+	}
+}
+
+TSubclassOf<UGameplayEffect> AISCharacter::GetSecondaryAttributes_Implementation()
+{
+	return IISPlayerInterface::GetSecondaryAttributes_Implementation();
+}
+
+TSubclassOf<UGameplayEffect> AISCharacter::GetPrimaryAttributes_Implementation()
+{
+	return IISPlayerInterface::GetPrimaryAttributes_Implementation();
+}
+
+void AISCharacter::LoadProgress()
+{
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(GetGameInstance());
+
+	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this));
+	
+
+	if(!ISGameInstance && !ISGameplayMode) return;
+
+	//获取当前游玩的存档
+	UISLocalPlayerSaveGame* LocalPlayerSaveGame = ISGameplayMode->RetrieveInGameSaveData();
+	if(! LocalPlayerSaveGame) return;
+	//如果玩家是第一次进入游戏
+	if(AISPlayerState* SourceAS = Cast<AISPlayerState>(GetPlayerState<AISPlayerState>()))
+	{
+		SourceAS->SetLevel(LocalPlayerSaveGame->PlayerLevel);  //设置玩家保存的等级
+		SourceAS->SetXP(LocalPlayerSaveGame->XP);  //设置玩家保存的经验
+		SourceAS->SetAttributePoint(LocalPlayerSaveGame->AttributePoints); //设置玩家保存的属性点
+	}
+	if(ISGameInstance->bFirstTimeStartGame)
+	{
+		//初始化玩家属性
+		InitializePlayerAttribute(SourceASC,PlayerDefaultAttribute);
+		InitializePlayerAttribute(SourceASC,PlayerSecondaryAttribute);
+		
+		//初始化玩家技能和被动技能
+		AddCharacterActivateAbility(CharacterActivateAbilities);
+		AddCharacterPassiveAbility(CharacterPassiveAbilities);
+	}
+	else
+	{
+		//转为加载玩家保存的属性
+		UISAbilitysystemLibary::InitializeDefaultAttributesFromSaveData(this,SourceASC,LocalPlayerSaveGame);
+
+		//继续加载玩家的技能
+		AddCharacterActivateAbility(CharacterActivateAbilities);
+		AddCharacterPassiveAbility(CharacterPassiveAbilities);
 	}
 }

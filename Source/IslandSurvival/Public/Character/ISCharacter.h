@@ -48,6 +48,8 @@ public:
 	virtual void MulticastHandleDeath() override;
 	virtual UISMenuUIBase* GetMenuUI_Implementation() const override;
 	virtual void SaveProgress_Implementation() override;
+	virtual TSubclassOf<UGameplayEffect> GetSecondaryAttributes_Implementation() override;
+	virtual TSubclassOf<UGameplayEffect> GetPrimaryAttributes_Implementation() override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
 	UFUNCTION(Server,Reliable)
@@ -124,6 +126,7 @@ private:
 	void AddAttributeLevel(const FGameplayAttribute TargetPointType);
 	UFUNCTION(Client,Reliable)
 	void ClearPlayerMainHUD();
+	void LoadProgress(); //加载进度
 	
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;

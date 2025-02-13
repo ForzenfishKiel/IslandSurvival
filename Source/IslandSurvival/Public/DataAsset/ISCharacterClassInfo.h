@@ -38,5 +38,9 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "CharacterConfig")
 	TSubclassOf<UGameplayEffect> SecondaryAttribute;
 
+	//主要属性，玩家的基础属性，通过SetByCaller设置
+	UPROPERTY(EditDefaultsOnly, Category="Common Class Defaults")
+	TSubclassOf<UGameplayEffect> PrimaryAttributes_SetByCaller;
+
 	FCharacterClassDefaultInfo GetCharacterClassData(const FName InTargetName);
 };

@@ -2,6 +2,8 @@
 
 
 #include "WidgetController/ISGameSaveWidgetController.h"
+
+#include "Game/ISGameInstance.h"
 #include "WidgetController/ISGameSaveSlotWC.h"
 #include "Game/ISGameplayMode.h"
 #include "Kismet/GameplayStatics.h"
@@ -26,6 +28,9 @@ void UISGameSaveWidgetController::LoadGameSaveSlot() const
 void UISGameSaveWidgetController::WhenGameStartButtonWasPressed()
 {
 	AISGameplayMode* GameplayMode = Cast<AISGameplayMode>( UGameplayStatics::GetGameMode(this));
+	
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(this));
+	
 	UISGameSaveSlotWC* GameSaveSlot = NewObject<UISGameSaveSlotWC>(this,GameSaveSlotClass);
 	GameSaveSlot->SetPlayerName(StartingConfig.PlayerName);
 	GameSaveSlot->SetPlayerLevel(1);  //设定玩家的等级
@@ -33,9 +38,14 @@ void UISGameSaveWidgetController::WhenGameStartButtonWasPressed()
 	GameSaveSlot->SetSlotName(StartingConfig.PlayerName);
 	GameSaveSlot->SlotIndex = LoadSlots.Num();  //索引等于存储长度，也就是未开辟的一位
 	GameplayMode->SaveSlotData(GameSaveSlot,GameSaveSlot->SlotIndex);  //保存新的存档
+
+	ISGameInstance->SlotIndex = GameSaveSlot->SlotIndex;
+	ISGameInstance->LoadSlotName = GameSaveSlot->GetSlotName();  //全局游戏保存当前游玩的存档
+	ISGameInstance->bFirstTimeStartGame = true;  //确认为第一次进入游戏
 	
-	LoadSlots.Emplace(LoadSlots.Num(),GameSaveSlot);
+	LoadSlots.Emplace(LoadSlots.Num(),GameSaveSlot);  //存档插槽中添加存档
 	LoadGameSaveSlot();  //存档插槽加载存档
+
 
 	GameplayMode->TravelToMap(GameSaveSlot);
 }

@@ -18,6 +18,8 @@ public:
 	FGameplayTag Attribute_Primary_Vigor;
 	FGameplayTag Attribute_Primary_Resilience;
 	FGameplayTag Attribute_Primary_Speed;
+	FGameplayTag Attribute_Primary_Hungry;
+	FGameplayTag Attribute_Primary_Thirsty;
 	/*主要属性创建结束*/
 
 	

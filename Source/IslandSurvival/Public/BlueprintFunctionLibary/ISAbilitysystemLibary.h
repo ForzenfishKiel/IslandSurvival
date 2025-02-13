@@ -10,6 +10,7 @@
 #include "DataAsset/ISHarvestDataAsset.h"
 #include "DataAsset/ISTraderSpecialData.h"
 #include "DataAsset/ISWeaponDataAsset.h"
+#include "GameSave/ISLocalPlayerSaveGame.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ISAbilitysystemLibary.generated.h"
 
@@ -31,4 +32,5 @@ public:
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject,FName EnemyName,int32 CharacterLevel);
 	static UISTraderSpecialData* GetTraderSpecialData(const UObject* WorldContextObject);
 	static FItemInformation* GetItemInformation(const UObject* WorldContextObject,const FName ItemTargetID);
+	static void InitializeDefaultAttributesFromSaveData(const UObject* WorldContextObject,UAbilitySystemComponent* ASC,UISLocalPlayerSaveGame* SaveGame);
 };

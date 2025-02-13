@@ -28,4 +28,7 @@ public:
 
 	UPROPERTY()
 	int32 SlotIndex = -1;  //保存存档使用的索引
+
+	//是否为第一次进入游戏
+	bool bFirstTimeStartGame = false;
 };

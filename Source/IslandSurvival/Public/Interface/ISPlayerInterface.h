@@ -61,4 +61,13 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void SaveProgress();  //保存玩家状态
+
+	//获取角色使用的次级属性GameplayEffect
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	TSubclassOf<UGameplayEffect> GetSecondaryAttributes();
+
+	//获取角色使用的额外属性GameplayEffect
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	TSubclassOf<UGameplayEffect> GetPrimaryAttributes();
+
 };
