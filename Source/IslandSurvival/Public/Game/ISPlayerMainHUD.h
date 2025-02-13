@@ -21,6 +21,7 @@ class ISLANDSURVIVAL_API AISPlayerMainHUD : public AHUD
 public:
 	void InitUserWidget(const FCharacterParams&CharacterParams);
 	void ClearMainUI() const;
+	void PauseGameUIOpen();
 	UISMainUIWidgetController* GetMainUIWidgetController(const FCharacterParams&CharacterParams);
 	UISMenuWidgetController* GetMenuWidgetController(const FCharacterParams&CharacterParams);
 public:
@@ -36,6 +37,7 @@ public:
 	TSubclassOf<UISMenuUIBase> ISDieHUDClass;
 	UPROPERTY()
 	TObjectPtr<UISMenuUIBase> ISDieHUD; //角色死亡窗口
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UISMainUIWidgetController>ISMainUIWidgetControllerClass;
@@ -45,4 +47,8 @@ private:
 	TSubclassOf<UISMenuWidgetController> ISMenuWidgetControllerClass;
 	UPROPERTY()
 	TObjectPtr<UISMenuWidgetController> IsMenuWidgetController;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UISMenuUIBase> ISPauseGameUIClass;
+	UPROPERTY()
+	TObjectPtr<UISMenuUIBase> ISPauseGameUIRef;
 };

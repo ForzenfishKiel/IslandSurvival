@@ -7,6 +7,7 @@
 #include "Character/ISCharacter.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISEnhancedInputComponent.h"
+#include "Game/ISGameplayMode.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Game/ISPlayerState.h"
 
@@ -42,6 +43,8 @@ void AISPlayerController::SetupInputComponent()
 		,&AISPlayerController::InputHeldAbility,&AISPlayerController::InputReleasedAbility);
 	ISEnhanceInputComponent->BindAction(IA_SecInteract,ETriggerEvent::Started,this,&AISPlayerController::SecondaryInteract);
 	ISEnhanceInputComponent->BindAction(IA_DemoBuilding,ETriggerEvent::Triggered,this,&AISPlayerController::OneClickToDemoBuilding);
+	IA_PauseGame->bTriggerWhenPaused = true;
+	ISEnhanceInputComponent->BindAction(IA_PauseGame,ETriggerEvent::Started,this,&AISPlayerController::PauseGame);
 }
 
 void AISPlayerController::Move(const struct FInputActionValue& InputActionValue)
@@ -189,7 +192,22 @@ void AISPlayerController::OneClickToDemoBuilding()
 	if(!InteractionComponent->LastBuildingActor) return;
 	BuildingComponent->OneClickToDemoBuilding(InteractionComponent->LastBuildingActor);
 }
+
+void AISPlayerController::PauseGame()
+{
+	AISPlayerMainHUD* PlayerMainHUD = Cast<AISPlayerMainHUD>(GetHUD());
+	PlayerMainHUD->PauseGameUIOpen();  //暂停游戏
+}
+
+//返回主菜单选项
+void AISPlayerController::QuitGameEvent_Implementation()
+{
+	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this));  //获取游戏模式
+	ISGameplayMode->ReturnToMainMenu();
+}
+
 AISCharacter* AISPlayerController::GetCharacterLocal() const
 {
 	return Cast<AISCharacter>(GetPawn());
 }
+

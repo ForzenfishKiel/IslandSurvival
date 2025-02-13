@@ -57,6 +57,8 @@ private:
 	TObjectPtr<UInputAction>IA_SecInteract;
 	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction>IA_DemoBuilding;
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputAction>IA_PauseGame;
 	void Move(const struct FInputActionValue&InputActionValue);
 	void LookUp(const struct FInputActionValue&InputActionValue);
 	void PrimaryInteract();
@@ -68,6 +70,9 @@ private:
 	void InputReleasedAbility(const FGameplayTag InputTag);
 	void SecondaryInteract();
 	void OneClickToDemoBuilding();
+	void PauseGame();
+	UFUNCTION(BlueprintCallable,Server,Reliable)
+	void QuitGameEvent();
 	UFUNCTION(BlueprintCallable)
 	AISCharacter*GetCharacterLocal() const;
 

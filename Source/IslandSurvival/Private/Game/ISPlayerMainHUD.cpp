@@ -3,6 +3,7 @@
 
 #include "Game/ISPlayerMainHUD.h"
 
+#include "Kismet/GameplayStatics.h"
 
 
 //MainUI WidgetController Setter and Getter
@@ -40,6 +41,8 @@ void AISPlayerMainHUD::InitUserWidget(const FCharacterParams& CharacterParams)
 	ISMenuUI = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),ISMenuClass); //创建人物的背包界面UI
 	
 	ISDieHUD = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),ISDieHUDClass);
+
+	ISPauseGameUIRef = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),ISPauseGameUIClass);
 	
 	IsMainUI->SetWidgetController(MainUIWidgetController);
 	ISMenuUI->SetWidgetController(MenuWidgetController);
@@ -53,6 +56,31 @@ void AISPlayerMainHUD::ClearMainUI() const
 	if(IsMainUI->IsVisible())
 	{
 		IsMainUI->RemoveFromParent();
+	}
+}
+
+void AISPlayerMainHUD::PauseGameUIOpen()
+{
+	if(ISPauseGameUIRef->IsVisible())
+	{
+		UGameplayStatics::SetGamePaused(GetOwningPlayerController(), false);
+		AISPlayerController* PC = Cast<AISPlayerController>(GetOwningPlayerController());
+		FInputModeGameOnly InputMode;
+		PC->SetInputMode(InputMode);
+		PC->SetShowMouseCursor(false);
+		ISPauseGameUIRef->RemoveFromParent();
+	}
+	else
+	{
+		UGameplayStatics::SetGamePaused(GetOwningPlayerController(),true);
+		AISPlayerController* PC = Cast<AISPlayerController>(GetOwningPlayerController());
+		FInputModeGameAndUI InputMode;
+		InputMode.SetWidgetToFocus(ISPauseGameUIRef->TakeWidget());
+
+		PC->SetInputMode(InputMode);
+		PC->SetShowMouseCursor(true);
+		
+		ISPauseGameUIRef->AddToViewport();
 	}
 }
 

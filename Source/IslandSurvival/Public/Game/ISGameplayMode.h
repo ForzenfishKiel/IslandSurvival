@@ -47,6 +47,7 @@ public:
 	void SaveSlotData(const UISGameSaveSlotWC* LoadSlot,int32 SlotIndex) const;
 	void SaveInGameProgressData(UISLocalPlayerSaveGame* SaveObject) const;
 	void TravelToMap(UISGameSaveSlotWC* LoadSlot);  //将玩家传送到对应的地图
+	void ReturnToMainMenu() const; //将玩家返回到主界面
 	UISLocalPlayerSaveGame* RetrieveInGameSaveData() const;
 	static void DeleteSlotData(const FString& InSlotName , int32 InSlotIndex);
 
@@ -60,6 +61,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "LoadingGameConfig")
 	TSoftObjectPtr<UWorld> DefaultMap; //默认地图资源
+	UPROPERTY(EditDefaultsOnly, Category = "LoadingGameConfig")
+	TSoftObjectPtr<UWorld> MainUIMap; //主界面Level
 
 	UPROPERTY(EditDefaultsOnly, Category = "LoadingGameConfig")
 	FName DefaultPlayerStartTag; //玩家默认出生Tag

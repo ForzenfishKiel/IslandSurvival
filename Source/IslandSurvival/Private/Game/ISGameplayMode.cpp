@@ -53,6 +53,11 @@ void AISGameplayMode::TravelToMap(UISGameSaveSlotWC* LoadSlot)
 	
 }
 
+void AISGameplayMode::ReturnToMainMenu() const
+{
+	UGameplayStatics::OpenLevelBySoftObjectPtr(this, MainUIMap);
+}
+
 void AISGameplayMode::DeleteSlotData(const FString& InSlotName, int32 InSlotIndex)
 {
 	//检查是否有对应名称的存档
