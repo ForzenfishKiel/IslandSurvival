@@ -105,7 +105,7 @@ void AISBuildingSystemBase::InteractOnServer_Implementation(AController* InPlaye
 }
 bool AISBuildingSystemBase::ShouldLoadTransform_Implementation()
 {
-	return IISSaveInterface::ShouldLoadTransform_Implementation();
+	return true;
 }
 
 void AISBuildingSystemBase::LoadActor_Implementation()

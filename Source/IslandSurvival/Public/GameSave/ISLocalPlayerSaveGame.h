@@ -41,6 +41,7 @@ inline bool operator == (const FSaveAbility& Left, const FSaveAbility& Right)
 {
 	return Left.AbilityTag.MatchesTagExact(Right.AbilityTag);
 }
+//在当前地图保存的Actor 状态
 USTRUCT()
 struct FSavedActor
 {
@@ -127,7 +128,7 @@ public:
 	/************************** 其他数据 **************************/
 
 	UPROPERTY()
-	TArray<FItemInformation> Items;  //玩家背包
+	TArray<FItemInformation> PlayerBackPack;  //玩家背包
 	UPROPERTY()
 	TArray<FItemInformation> HotBarItems; //玩家物品栏
 	UPROPERTY()

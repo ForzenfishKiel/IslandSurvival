@@ -502,7 +502,8 @@ void AISCharacter::SaveProgress_Implementation()
 		UISLocalPlayerSaveGame* SaveGameData = GamePlayMode->RetrieveInGameSaveData();
 		if(SaveGameData == nullptr) return;
 
-		SaveGameData->PlayerTransform = GetTransform();  //获取当前玩家自身的位置
+		SaveGameData->PlayerTransform = GetTransform();  //获取并保存当前玩家自身的位置
+		
 		const AISPlayerState* ISPlayerState = GetPlayerState<AISPlayerState>();
 
 		if(ISPlayerState)
@@ -540,7 +541,18 @@ void AISCharacter::SaveProgress_Implementation()
 			SaveGameData->SaveAbilities.AddUnique(SavedAbility);  //查找是否相同再添加
 		});
 
+		const UISCharacterInventory* CharacterBackPack = GetComponentByClass<UISCharacterInventory>(); //获取玩家背包
+		const UISHotBarInventory* CharacterHotBar = GetComponentByClass<UISHotBarInventory>(); //获取玩家物品栏
+
+		
+		SaveGameData->PlayerBackPack.Empty(); //清空保存的背包数据
+		SaveGameData->HotBarItems.Empty(); //清空保存的物品栏数据
+		
+		SaveGameData->PlayerBackPack = CharacterBackPack->InventoryContainer;  //存储玩家的背包
+		SaveGameData->HotBarItems = CharacterHotBar->InventoryContainer; //存储玩家的物品栏数据
+
 		GamePlayMode->SaveInGameProgressData(SaveGameData);
+		GamePlayMode->SaveWorldState(GetWorld());  //保存世界状态
 	}
 }
 
@@ -564,7 +576,7 @@ void AISCharacter::LoadProgress()
 		SourceAS->SetXP(LocalPlayerSaveGame->XP);  //设置玩家保存的经验
 		SourceAS->SetAttributePoint(LocalPlayerSaveGame->AttributePoints); //设置玩家保存的属性点
 	}
-	
+	//玩家是否是第一次进入游戏
 	if(ISGameInstance->bFirstTimeStartGame)
 	{
 		//初始化玩家属性
@@ -584,19 +596,25 @@ void AISCharacter::LoadProgress()
 		AddCharacterActivateAbility(CharacterActivateAbilities);
 		AddCharacterPassiveAbility(CharacterPassiveAbilities);
 
-		ISGameplayMode->LoadWorldState(GetWorld());  //加载世界状态
+		UISCharacterInventory* PlayerBackPack = GetComponentByClass<UISCharacterInventory>(); //获取玩家的背包
+		UISHotBarInventory* HotBarItems = GetComponentByClass<UISHotBarInventory>(); //获取玩家物品栏
+
+		PlayerBackPack->InventoryContainer = LocalPlayerSaveGame->PlayerBackPack; //导入玩家的背包
+		HotBarItems->InventoryContainer = LocalPlayerSaveGame->HotBarItems;  //导入玩家的物品栏
 		
+
+		ISGameplayMode->LoadWorldState(GetWorld());  //加载世界状态
 		SetActorTransform(LocalPlayerSaveGame->PlayerTransform);  //将玩家传送到当前保存的位置
 	}
 }
 
 TSubclassOf<UGameplayEffect> AISCharacter::GetSecondaryAttributes_Implementation()
 {
-	return IISPlayerInterface::GetSecondaryAttributes_Implementation();
+	return PlayerSecondaryAttribute;
 }
 
 TSubclassOf<UGameplayEffect> AISCharacter::GetPrimaryAttributes_Implementation()
 {
-	return IISPlayerInterface::GetPrimaryAttributes_Implementation();
+	return PlayerDefaultAttribute;
 }
 

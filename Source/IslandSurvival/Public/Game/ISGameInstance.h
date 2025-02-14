@@ -18,6 +18,8 @@ struct FISSaveGames
 	FString SlotName;
 	UPROPERTY(BlueprintReadOnly)
 	int32 SlotIndex;
+	UPROPERTY()
+	FString PlayerName;  //加载玩家数据
 
 	bool operator==(const FISSaveGames& Other) const
 	{

@@ -45,13 +45,11 @@ void AISGameplayMode::SaveSlotData(const UISGameSaveSlotWC* LoadSlot, int32 Slot
 
 
 
-void AISGameplayMode::TravelToMap(UISGameSaveSlotWC* LoadSlot)
+void AISGameplayMode::TravelToMap(const FString LoadSlotName)
 {
-	const FString SlotName = LoadSlot->GetSlotName();
-	const int32 SlotIndex = LoadSlot->SlotIndex;
 	
 	//打开地图
-	UGameplayStatics::OpenLevelBySoftObjectPtr(LoadSlot, LoadingMap.FindChecked(LoadSlot->GetMapName()));
+	UGameplayStatics::OpenLevelBySoftObjectPtr(this, LoadingMap.FindChecked(LoadSlotName));
 	
 }
 
@@ -194,7 +192,7 @@ void AISGameplayMode::LoadWorldState(UWorld* World) const
 		UISLocalPlayerSaveGame* SaveGame = Cast<UISLocalPlayerSaveGame>(UGameplayStatics::LoadGameFromSlot(ISGameInstance->LoadSlotName, ISGameInstance->SlotIndex));
 		if(SaveGame == nullptr)
 		{
-			
+			//存档损坏
 		}
 
 		//判断存档是否含有对应关卡的数据

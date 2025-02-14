@@ -31,10 +31,10 @@ void UISGameSaveWidgetController::WhenGameStartButtonWasPressed()
 	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(this));
 	
 	UISGameSaveSlotWC* GameSaveSlot = NewObject<UISGameSaveSlotWC>(this,GameSaveSlotClass);
-	GameSaveSlot->SetPlayerName(StartingConfig.PlayerName);
+	GameSaveSlot->SetPlayerName(PlayerNameSave);
 	GameSaveSlot->SetPlayerLevel(1);  //设定玩家的等级
 	GameSaveSlot->SetMapName(GameplayMode->DefaultMapName); //设置地图名称
-	GameSaveSlot->SetSlotName(StartingConfig.PlayerName);
+	GameSaveSlot->SetSlotName(GameplayMode->DefaultMapName);
 	GameSaveSlot->SlotIndex = LoadSlots.Num();  //索引等于存储长度，也就是未开辟的一位
 	GameplayMode->SaveSlotData(GameSaveSlot,GameSaveSlot->SlotIndex);  //保存新的存档
 
@@ -44,28 +44,39 @@ void UISGameSaveWidgetController::WhenGameStartButtonWasPressed()
 	FISSaveGames SaveGame;
 	SaveGame.SlotIndex = GameSaveSlot->SlotIndex;
 	SaveGame.SlotName = GameSaveSlot->GetSlotName();
+	SaveGame.PlayerName = PlayerNameSave;
 	ISGameInstance->SaveGames.Emplace(SaveGame);
 	
 	ISGameInstance->bFirstTimeStartGame = true;  //确认为第一次进入游戏
 	
-	GameplayMode->TravelToMap(GameSaveSlot);
+	GameplayMode->TravelToMap(GameplayMode->DefaultMapName);
 }
 
 //加载存档的按钮被点击的时候
-void UISGameSaveWidgetController::LoadGameButtonWasPressed(const int32 InIndex)
+void UISGameSaveWidgetController::LoadGameButtonWasPressed(const int32 InIndex , const FString InSlotName)
 {
 	AISGameplayMode* GameplayMode = Cast<AISGameplayMode>( UGameplayStatics::GetGameMode(this));
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(this));
+
 	
-	if(LoadSlots.Contains(InIndex))
+	FISSaveGames SlotSaveGame;
+	SlotSaveGame.SlotIndex = InIndex;
+	SlotSaveGame.SlotName = InSlotName;
+
+	if(ISGameInstance->SaveGames.Contains(SlotSaveGame) && GameplayMode->GetSaveSlotData(InSlotName,InIndex))
 	{
-		GameplayMode->TravelToMap(LoadSlots[InIndex]);
+		ISGameInstance->LoadSlotName = InSlotName;
+		ISGameInstance->SlotIndex = InIndex;
+		ISGameInstance->bFirstTimeStartGame = false;  //不是第一次进入游戏
+		
+		GameplayMode->TravelToMap(InSlotName);  //打开地图
 	}
 }
 
 //当角色输入名称时
 void UISGameSaveWidgetController::OnPlayerNameWasInput(const FString InPlayerName)
 {
-	StartingConfig.PlayerName = InPlayerName;
+	PlayerNameSave = InPlayerName;
 }
 
 //删除存档插槽的按钮被点击的时候
@@ -84,5 +95,4 @@ void UISGameSaveWidgetController::WhenLoadGameSlotDeleteButtonWasPressed(const i
 			ISGameInstance->SaveGames.Remove(Iter);
 		}
 	}
-
 }

@@ -145,8 +145,26 @@ void UISAbilitysystemLibary::InitializeDefaultAttributesFromSaveData(const UObje
 
 	//创建GE的上下文句柄
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(AvatarActor);
+	EffectContextHandle.AddSourceObject(AvatarActor);  //效果来源为对方
 
+
+
+	if(AvatarActor->Implements<UISPlayerInterface>())
+	{
+		//*********************************设置主要属性*********************************
+
+		FGameplayEffectContextHandle PimaryContextHandle = ASC->MakeEffectContext();
+		PimaryContextHandle.AddSourceObject(AvatarActor);
+		const FGameplayEffectSpecHandle VitalSpecHandle = ASC->MakeOutgoingSpec(IISPlayerInterface::Execute_GetPrimaryAttributes(AvatarActor), 1.0f, PimaryContextHandle);
+		ASC->ApplyGameplayEffectSpecToSelf(*VitalSpecHandle.Data.Get());
+		//*********************************设置次级属性*********************************
+	
+		FGameplayEffectContextHandle SecondaryContextHandle = ASC->MakeEffectContext();
+		SecondaryContextHandle.AddSourceObject(AvatarActor);
+		const FGameplayEffectSpecHandle SecondarySpecHandle = ASC->MakeOutgoingSpec(IISPlayerInterface::Execute_GetSecondaryAttributes(AvatarActor), 1.0f, SecondaryContextHandle);
+		ASC->ApplyGameplayEffectSpecToSelf(*SecondarySpecHandle.Data.Get());
+
+	}
 	//根据句柄和类创建GE实例，并可以通过句柄找到GE实例
 	const FGameplayEffectSpecHandle PrimaryContextHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->PrimaryAttributes_SetByCaller, 1.0f, EffectContextHandle);
 
@@ -158,21 +176,4 @@ void UISAbilitysystemLibary::InitializeDefaultAttributesFromSaveData(const UObje
 
 	//应用GE
 	ASC->ApplyGameplayEffectSpecToSelf(*PrimaryContextHandle.Data.Get());
-
-	if(AvatarActor->Implements<UISPlayerInterface>())
-	{
-		//*********************************设置次级属性*********************************
-	
-		FGameplayEffectContextHandle SecondaryContextHandle = ASC->MakeEffectContext();
-		SecondaryContextHandle.AddSourceObject(AvatarActor);
-		const FGameplayEffectSpecHandle SecondarySpecHandle = ASC->MakeOutgoingSpec(IISPlayerInterface::Execute_GetSecondaryAttributes(AvatarActor), 1.0f, SecondaryContextHandle);
-		ASC->ApplyGameplayEffectSpecToSelf(*SecondarySpecHandle.Data.Get());
-
-		//*********************************填充血量和蓝量*********************************
-
-		FGameplayEffectContextHandle PimaryContextHandle = ASC->MakeEffectContext();
-		PimaryContextHandle.AddSourceObject(AvatarActor);
-		const FGameplayEffectSpecHandle VitalSpecHandle = ASC->MakeOutgoingSpec(IISPlayerInterface::Execute_GetPrimaryAttributes(AvatarActor), 1.0f, PimaryContextHandle);
-		ASC->ApplyGameplayEffectSpecToSelf(*VitalSpecHandle.Data.Get());
-	}
 }

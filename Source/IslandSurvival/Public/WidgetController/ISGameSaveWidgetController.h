@@ -10,16 +10,6 @@
  * 
  */
 //保存场景中的Actor结构体
-
-//创建玩家在主界面的配置
-USTRUCT(BlueprintType)
-struct FStartingConfig
-{
-	GENERATED_BODY()
-	UPROPERTY()
-	FString PlayerName;  //加载玩家数据
-	
-};
 class UISGameSaveSlotWC;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSlotWasLoaded,FISSaveGames, Slots);
 
@@ -32,12 +22,10 @@ public:
 	void LoadGameSaveSlot() const;
 	UPROPERTY(BlueprintAssignable)
 	FOnSlotWasLoaded OnSlotWasLoaded;
-	UPROPERTY(BlueprintReadOnly)
-	FStartingConfig StartingConfig;
 	UFUNCTION(BlueprintCallable)
 	void WhenGameStartButtonWasPressed();  //当进入游戏的按钮被点击时
 	UFUNCTION(BlueprintCallable)
-	void LoadGameButtonWasPressed(const int32 InIndex);
+	void LoadGameButtonWasPressed(const int32 InIndex,const FString InSlotName);
 	UFUNCTION(BlueprintCallable)
 	void WhenLoadGameSlotDeleteButtonWasPressed(const int32 InIndex); //当删除存档的按钮被点击时
 	UFUNCTION(BlueprintCallable)
@@ -48,4 +36,6 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UISGameSaveSlotWC> GameSaveSlotClass;
+	UPROPERTY()
+	FString PlayerNameSave;
 };
