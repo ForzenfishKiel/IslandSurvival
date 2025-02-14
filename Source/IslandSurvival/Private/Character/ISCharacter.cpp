@@ -601,6 +601,8 @@ void AISCharacter::LoadProgress()
 
 		PlayerBackPack->InventoryContainer = LocalPlayerSaveGame->PlayerBackPack; //导入玩家的背包
 		HotBarItems->InventoryContainer = LocalPlayerSaveGame->HotBarItems;  //导入玩家的物品栏
+		PlayerBackPack->InventoryUpdate.Broadcast();
+		HotBarItems->InventoryUpdate.Broadcast();
 		
 
 		ISGameplayMode->LoadWorldState(GetWorld());  //加载世界状态

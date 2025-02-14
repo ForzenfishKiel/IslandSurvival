@@ -123,6 +123,8 @@ void UISItemsContainer::WhenItemExchanged_Implementation(UISItemsContainer* Targ
 		InventoryContainer[SourceIndex] = TargetItemsContainer->InventoryContainer[TargetIndex];
 		TargetItemsContainer->InventoryContainer[TargetIndex] = TempItemInfor;
 	}
+	InventoryUpdate.Broadcast();
+	TargetItemsContainer->InventoryUpdate.Broadcast();
 }
 
 bool UISItemsContainer::CheckGearSlotExchanged(UISItemsContainer* TargetGear, const int32 TargetIndex,const int32 SourceIndex)

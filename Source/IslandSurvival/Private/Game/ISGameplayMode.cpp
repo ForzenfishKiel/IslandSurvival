@@ -53,6 +53,7 @@ void AISGameplayMode::TravelToMap(const FString LoadSlotName)
 	
 }
 
+//返回到主界面
 void AISGameplayMode::ReturnToMainMenu() const
 {
 	UGameplayStatics::OpenLevelBySoftObjectPtr(this, MainUIMap);
@@ -68,6 +69,7 @@ void AISGameplayMode::DeleteSlotData(const FString& InSlotName, int32 InSlotInde
 	}
 }
 
+//获取存档数据
 UISLocalPlayerSaveGame* AISGameplayMode::GetSaveSlotData(const FString& InSlotName, int32 SlotIndex) const
 {
 	USaveGame* SaveGameObject;
