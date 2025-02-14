@@ -139,6 +139,59 @@ void UISAbilitySystemComponent::RemoveCharacterAttribute(const TSubclassOf<UGame
 	RemoveActiveGameplayEffectBySourceEffect(AbilityToRemoveEffect,this,1);  //移除一个单位的属性
 }
 
+void UISAbilitySystemComponent::ForEachAbilities(const FForEachAbility& ForEachAbilityDelegate)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this); //使用域锁将此作用域this的内容锁定（无法修改），在遍历结束时解锁，保证线程安全
+	for(const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if(!ForEachAbilityDelegate.ExecuteIfBound(AbilitySpec)) //运行绑定在技能实例上的委托，如果失败返回false
+		{
+			
+		}
+	}
+}
+
+FGameplayTag UISAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if(AbilitySpec.Ability)
+	{
+		for(FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags) //获取设置的所有的技能标签并遍历
+		{
+			if(Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities")))) //判断当前标签是否包含"Abilities"名称
+			{
+				return Tag;
+			}
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayTag UISAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	for(FGameplayTag Tag : AbilitySpec.DynamicAbilityTags) //从技能实例的动态标签容器中遍历所有标签
+	{
+		if(Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("InputTag")))) //查找标签中是否设置以输入标签开头的标签
+		{
+			return Tag;
+		}
+	}
+
+	return FGameplayTag();
+}
+
+FGameplayTag UISAbilitySystemComponent::GetStatusTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	for(FGameplayTag Tag : AbilitySpec.DynamicAbilityTags) //从技能实例的动态标签容器中遍历所有标签
+	{
+		if(Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status")))) //查找标签中是否设置以输入标签开头的标签
+		{
+			return Tag;
+		}
+	}
+
+	return FGameplayTag();
+}
+
 void UISAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();

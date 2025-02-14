@@ -2,7 +2,6 @@
 
 
 #include "WidgetController/ISGameSaveWidgetController.h"
-
 #include "Game/ISGameInstance.h"
 #include "WidgetController/ISGameSaveSlotWC.h"
 #include "Game/ISGameplayMode.h"
@@ -12,16 +11,16 @@
 void UISGameSaveWidgetController::LoadGameSaveSlot() const
 {
 	AISGameplayMode* GameMode = Cast<AISGameplayMode>( UGameplayStatics::GetGameMode(this));
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>( UGameplayStatics::GetGameInstance(this));
 
-	for(auto Iter = LoadSlots.CreateConstIterator();Iter; ++Iter)
+	for(auto Iter : ISGameInstance->SaveGames)
 	{
-		const UISLocalPlayerSaveGame* SaveGame = GameMode->GetSaveSlotData(Iter.Value()->GetSlotName(),Iter.Key());
+		const UISLocalPlayerSaveGame* SaveGame = GameMode->GetSaveSlotData(Iter.SlotName,Iter.SlotIndex);
 		if(SaveGame)
 		{
-			OnSlotWasLoaded.Broadcast(Iter.Value()); //将值传递出去
+			OnSlotWasLoaded.Broadcast(Iter); //将值传递出去
 		}
 	}
-	
 }
 
 //当玩家开始进入游戏
@@ -41,22 +40,24 @@ void UISGameSaveWidgetController::WhenGameStartButtonWasPressed()
 
 	ISGameInstance->SlotIndex = GameSaveSlot->SlotIndex;
 	ISGameInstance->LoadSlotName = GameSaveSlot->GetSlotName();  //全局游戏保存当前游玩的存档
+	
+	FISSaveGames SaveGame;
+	SaveGame.SlotIndex = GameSaveSlot->SlotIndex;
+	SaveGame.SlotName = GameSaveSlot->GetSlotName();
+	ISGameInstance->SaveGames.Emplace(SaveGame);
+	
 	ISGameInstance->bFirstTimeStartGame = true;  //确认为第一次进入游戏
 	
-	LoadSlots.Emplace(LoadSlots.Num(),GameSaveSlot);  //存档插槽中添加存档
-	LoadGameSaveSlot();  //存档插槽加载存档
-
-
 	GameplayMode->TravelToMap(GameSaveSlot);
 }
 
 //加载存档的按钮被点击的时候
 void UISGameSaveWidgetController::LoadGameButtonWasPressed(const int32 InIndex)
 {
+	AISGameplayMode* GameplayMode = Cast<AISGameplayMode>( UGameplayStatics::GetGameMode(this));
+	
 	if(LoadSlots.Contains(InIndex))
 	{
-		AISGameplayMode* GameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this));
-
 		GameplayMode->TravelToMap(LoadSlots[InIndex]);
 	}
 }
@@ -71,8 +72,17 @@ void UISGameSaveWidgetController::OnPlayerNameWasInput(const FString InPlayerNam
 void UISGameSaveWidgetController::WhenLoadGameSlotDeleteButtonWasPressed(const int32 InIndex)
 {
 	AISGameplayMode* GameplayMode = Cast<AISGameplayMode>( UGameplayStatics::GetGameMode(this));// 获取游戏模式
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>( UGameplayStatics::GetGameInstance(this));
 
-	GameplayMode->DeleteSlotData(LoadSlots[InIndex]->GetSlotName(),InIndex);
+	
 
-	LoadSlots.Remove(InIndex);  //删除对应索引的存档插槽
+	for(auto Iter : ISGameInstance->SaveGames)
+	{
+		if(Iter.SlotIndex == InIndex)
+		{
+			GameplayMode->DeleteSlotData(Iter.SlotName,Iter.SlotIndex);
+			ISGameInstance->SaveGames.Remove(Iter);
+		}
+	}
+
 }

@@ -69,4 +69,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "LoadingGameConfig")
 	TMap<FString,TSoftObjectPtr<UWorld>> LoadingMap; //加载地图名称和对应的映射
+
 }; 

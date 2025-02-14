@@ -10,11 +10,43 @@
 /**
  * 
  */
+USTRUCT(BlueprintType)
+struct FSaveAbility
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "ClassDefaults")
+	TSubclassOf<UGameplayAbility> ISGameplayAbilityClass;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite,Category = "ClassDefaults")
+	int32 AbilityLevel = 0;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
+	FGameplayTag AbilityTag = FGameplayTag();
+
+	//当前技能的状态标签
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FGameplayTag AbilityStatus = FGameplayTag();
+
+	//当前技能装配到的插槽，如果技能未装配则为空
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FGameplayTag AbilityInputTag = FGameplayTag();
+
+	//当前技能的类型（主动技能还是被动技能）
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FGameplayTag AbilityType = FGameplayTag();
+};
+//自定义运算符==，如果左右都是FSavedAbility类型的值，将通过函数内的值判断是否相等。
+inline bool operator == (const FSaveAbility& Left, const FSaveAbility& Right)
+{
+	return Left.AbilityTag.MatchesTagExact(Right.AbilityTag);
+}
 UCLASS()
 class ISLANDSURVIVAL_API UISLocalPlayerSaveGame : public ULocalPlayerSaveGame
 {
 	GENERATED_BODY()
 public:
+	
 
 	//存档名称
 	UPROPERTY()
@@ -64,4 +96,6 @@ public:
 	TArray<FItemInformation> Items;  //玩家背包
 	UPROPERTY()
 	TArray<FItemInformation> HotBarItems; //玩家物品栏
+	UPROPERTY()
+	TArray<FSaveAbility> SaveAbilities;  //保存的技能配置序列
 };

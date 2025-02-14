@@ -95,7 +95,7 @@ void AISCharacter::PossessedBy(AController* NewController)
 	}
 	SetOwner(NewController);
 
-	LoadProgress(); //尝试读取角色的进度
+	LoadProgress(); //尝试加载角色的进度
 	//AddCharacterActivateAbility(CharacterActivateAbilities);
 	//AddCharacterPassiveAbility(CharacterPassiveAbilities);
 }
@@ -491,16 +491,18 @@ void AISCharacter::ClearPlayerMainHUD_Implementation()
 	SourceMainHUD->ClearMainUI(); //清除HUD的主UI
 }
 
+//保存玩家进度
 void AISCharacter::SaveProgress_Implementation()
 {
 	IISPlayerInterface::SaveProgress_Implementation();
 
 	if(const AISGameplayMode* GamePlayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this)))
 	{
+		//获取当前存档
 		UISLocalPlayerSaveGame* SaveGameData = GamePlayMode->RetrieveInGameSaveData();
 		if(SaveGameData == nullptr) return;
 
-		SaveGameData->PlayerTransform = GetTransform();  //获取玩家自身的位置
+		SaveGameData->PlayerTransform = GetTransform();  //获取当前玩家自身的位置
 		const AISPlayerState* ISPlayerState = GetPlayerState<AISPlayerState>();
 
 		if(ISPlayerState)
@@ -519,20 +521,30 @@ void AISCharacter::SaveProgress_Implementation()
 		//保存玩家体力值
 		SaveGameData->Vigor = UISAttributeSet::GetVigorAttribute().GetNumericValue(ISPlayerState->GetAttributeSet());
 
+
+
+		UISAbilitySystemComponent* ISSourceASC = Cast<UISAbilitySystemComponent>(SourceASC);
+		SaveGameData->SaveAbilities.Empty();  //清空当前存档的数组
+		//使用ASC里创建的ForEach函数循环获取角色的技能，并生成技能结构体保存
+		FForEachAbility SaveAbilityDelegate;
+		SaveAbilityDelegate.BindLambda([this, ISSourceASC, SaveGameData](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			//获取技能标签和
+			const FGameplayTag AbilityTag = UISAbilitySystemComponent::GetAbilityTagFromSpec(AbilitySpec);
+
+			//创建技能结构体
+			FSaveAbility SavedAbility;
+			SavedAbility.AbilityLevel = AbilitySpec.Level;
+			SavedAbility.AbilityTag = AbilityTag;
+
+			SaveGameData->SaveAbilities.AddUnique(SavedAbility);  //查找是否相同再添加
+		});
+
 		GamePlayMode->SaveInGameProgressData(SaveGameData);
 	}
 }
 
-TSubclassOf<UGameplayEffect> AISCharacter::GetSecondaryAttributes_Implementation()
-{
-	return IISPlayerInterface::GetSecondaryAttributes_Implementation();
-}
-
-TSubclassOf<UGameplayEffect> AISCharacter::GetPrimaryAttributes_Implementation()
-{
-	return IISPlayerInterface::GetPrimaryAttributes_Implementation();
-}
-
+//加载玩家进度
 void AISCharacter::LoadProgress()
 {
 	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(GetGameInstance());
@@ -552,6 +564,7 @@ void AISCharacter::LoadProgress()
 		SourceAS->SetXP(LocalPlayerSaveGame->XP);  //设置玩家保存的经验
 		SourceAS->SetAttributePoint(LocalPlayerSaveGame->AttributePoints); //设置玩家保存的属性点
 	}
+	
 	if(ISGameInstance->bFirstTimeStartGame)
 	{
 		//初始化玩家属性
@@ -570,5 +583,18 @@ void AISCharacter::LoadProgress()
 		//继续加载玩家的技能
 		AddCharacterActivateAbility(CharacterActivateAbilities);
 		AddCharacterPassiveAbility(CharacterPassiveAbilities);
+		
+		SetActorTransform(LocalPlayerSaveGame->PlayerTransform);  //将玩家传送到当前保存的位置
 	}
 }
+
+TSubclassOf<UGameplayEffect> AISCharacter::GetSecondaryAttributes_Implementation()
+{
+	return IISPlayerInterface::GetSecondaryAttributes_Implementation();
+}
+
+TSubclassOf<UGameplayEffect> AISCharacter::GetPrimaryAttributes_Implementation()
+{
+	return IISPlayerInterface::GetPrimaryAttributes_Implementation();
+}
+

@@ -8,10 +8,15 @@
 void AISMainMenuHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	GameSaveWidgetControllerRef = NewObject<UISGameSaveWidgetController>(this,GameSaveWidgetControllerClass);
+
 	
 	MainMenuWidgetRef = CreateWidget<UISMainMenuWidget>(GetWorld(), MainMenuWidgetClass);
-	MainMenuWidgetRef->WidgetControllerSet(GameSaveWidgetControllerRef);  //加载WidgetController配置
+	if(GameSaveWidgetControllerRef ==  nullptr)
+	{
+		GameSaveWidgetControllerRef = NewObject<UISGameSaveWidgetController>(this,GameSaveWidgetControllerClass);
+		MainMenuWidgetRef->WidgetControllerSet(GameSaveWidgetControllerRef);  //加载WidgetController配置
+	}
+
 	MainMenuWidgetRef->AddToViewport();
 
 	APlayerController* PC = GetOwningPlayerController();

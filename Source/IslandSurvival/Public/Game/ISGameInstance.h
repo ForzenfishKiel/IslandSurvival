@@ -10,6 +10,21 @@
 /**
  * 
  */
+USTRUCT(BlueprintType)
+struct FISSaveGames
+{
+	GENERATED_BODY()
+	UPROPERTY(BlueprintReadOnly)
+	FString SlotName;
+	UPROPERTY(BlueprintReadOnly)
+	int32 SlotIndex;
+
+	bool operator==(const FISSaveGames& Other) const
+	{
+		// 根据实际需要比较关键字段
+		return SlotName == Other.SlotName && SlotIndex == Other.SlotIndex;
+	}
+};
 UCLASS()
 class ISLANDSURVIVAL_API UISGameInstance : public UGameInstance
 {
@@ -31,4 +46,7 @@ public:
 
 	//是否为第一次进入游戏
 	bool bFirstTimeStartGame = false;
+
+	UPROPERTY()
+	TArray<FISSaveGames> SaveGames;
 };
