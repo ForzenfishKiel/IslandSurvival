@@ -90,7 +90,7 @@ void AISBuildingSystemBase::OnBuildBroking_Implementation(AActor* TargetActor)
 void AISBuildingSystemBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AISBuildingSystemBase,BuildHP)
+	DOREPLIFETIME(AISBuildingSystemBase,BuildHP);
 	DOREPLIFETIME(AISBuildingSystemBase,BuildMaxHP);
 }
 
@@ -102,4 +102,13 @@ void AISBuildingSystemBase::DestoryBuilding_Implementation(AActor*TargetActor)
 void AISBuildingSystemBase::InteractOnServer_Implementation(AController* InPlayerController)
 {
 	
+}
+bool AISBuildingSystemBase::ShouldLoadTransform_Implementation()
+{
+	return IISSaveInterface::ShouldLoadTransform_Implementation();
+}
+
+void AISBuildingSystemBase::LoadActor_Implementation()
+{
+	IISSaveInterface::LoadActor_Implementation();
 }

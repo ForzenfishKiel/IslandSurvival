@@ -41,6 +41,40 @@ inline bool operator == (const FSaveAbility& Left, const FSaveAbility& Right)
 {
 	return Left.AbilityTag.MatchesTagExact(Right.AbilityTag);
 }
+USTRUCT()
+struct FSavedActor
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName ActorName = FName();
+
+	UPROPERTY()
+	FTransform Transform = FTransform();
+
+	//Actor身上序列号的数据，必须通过UPROPERTY定义过，只在保存存档时使用。
+	UPROPERTY()
+	TArray<uint8> Bytes;
+};
+
+//自定义运算符==，如果结构体内的ActorName相同，这代表这两个结构体为相同结构体
+inline bool operator==(const FSavedActor& Left, const FSavedActor& Right)
+{
+	return Left.ActorName == Right.ActorName;
+}
+
+//地图相关数据保存
+USTRUCT()
+struct FSavedMap
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString MapAssetName = FString();  //当前地图的资产名字
+
+	UPROPERTY()
+	TArray<FSavedActor> SavedActors;  //当前世界中保存的Actors
+};
 UCLASS()
 class ISLANDSURVIVAL_API UISLocalPlayerSaveGame : public ULocalPlayerSaveGame
 {
@@ -98,4 +132,15 @@ public:
 	TArray<FItemInformation> HotBarItems; //玩家物品栏
 	UPROPERTY()
 	TArray<FSaveAbility> SaveAbilities;  //保存的技能配置序列
+
+	/************************保存地图相关*****************************/
+	UPROPERTY()
+	TArray<FSavedMap> SavedMaps;
+
+	//通过地图名称获取地图数据
+	FSavedMap GetSavedMapWithMapName(const FString& InMapName);
+
+	//判断存档是否含有对于地图数据
+	bool HasMap(const FString& InMapName);
+
 };

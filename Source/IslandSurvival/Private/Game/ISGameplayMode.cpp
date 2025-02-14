@@ -2,10 +2,12 @@
 
 
 #include "Game/ISGameplayMode.h"
+#include "EngineUtils.h"
 
-#include "CookOnTheSide/CookOnTheFlyServer.h"
 #include "Game/ISGameInstance.h"
+#include "Interface/ISSaveInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 void AISGameplayMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -84,6 +86,8 @@ UISLocalPlayerSaveGame* AISGameplayMode::GetSaveSlotData(const FString& InSlotNa
 	return LocalPlayerSaveGame;
 }
 
+
+
 void AISGameplayMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -112,4 +116,122 @@ UISLocalPlayerSaveGame* AISGameplayMode::RetrieveInGameSaveData() const
 	const int32 InGameSlotIndex = ISGameInstance->SlotIndex;
 
 	return GetSaveSlotData(InGameLoadSlotName,InGameSlotIndex);
+}
+//保存地图状态
+void AISGameplayMode::SaveWorldState(UWorld* World) const
+{
+	FString WorldName = World->GetMapName();  //获取地图名称
+	WorldName.RemoveFromStart(World->StreamingLevelsPrefix);
+
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(GetGameInstance());
+	check(ISGameInstance);  //断言游戏实例，也就是禁止玩家关闭游戏
+
+	//从当前游戏实例获取当前游戏存档
+	if(UISLocalPlayerSaveGame* SaveGame = GetSaveSlotData(ISGameInstance->LoadSlotName,ISGameInstance->SlotIndex))
+	{
+		//如果保存的游戏对象里没有储存着对应的地图名称
+		if(!SaveGame->HasMap(WorldName))
+		{
+			//如果存档不包含对应关卡内容，将创建一个对应的数据结构体存储
+			FSavedMap NewSaveMap;
+			NewSaveMap.MapAssetName = WorldName;
+			SaveGame->SavedMaps.Emplace(NewSaveMap);
+		}
+
+		FSavedMap SavedMap = SaveGame->GetSavedMapWithMapName(WorldName);
+		SavedMap.SavedActors.Empty();  //清空存储的所有Actors;
+
+		//使用迭代器，遍历场景里的每一个Actor，将需要保存Actor数据保存到结构体内
+		for(FActorIterator It(World); It; ++It)
+		{
+			AActor* Actor = *It;
+
+			if(!IsValid(Actor) || !Actor->Implements<UISSaveInterface>()) continue;
+
+			FSavedActor SavedActor;  // 创建以保存场景Actor的结构体对象
+			SavedActor.ActorName = Actor->GetFName();
+			SavedActor.Transform = Actor->GetTransform();
+
+			//创建一个 FMemoryWriter，用于将数据写入SavedActor.Bytes
+			FMemoryWriter MemoryWriter(SavedActor.Bytes);
+
+			//创建一个序列化器，将对象的成员以名称和值的形式保存到 MemoryWriter。
+			FObjectAndNameAsStringProxyArchive Archive(MemoryWriter,true);
+			Archive.ArIsSaveGame = true;
+			
+			Actor->Serialize(Archive);
+
+			SavedMap.SavedActors.AddUnique(SavedActor);
+		}
+
+		for(FSavedMap& MapToReplace : SaveGame->SavedMaps)
+		{
+			if(MapToReplace.MapAssetName == WorldName)
+			{
+				MapToReplace = SavedMap;
+			}
+		}
+
+		//保存存档
+		UGameplayStatics::SaveGameToSlot(SaveGame,ISGameInstance->LoadSlotName,ISGameInstance->SlotIndex);
+	}
+}
+
+//加载地图状态
+void AISGameplayMode::LoadWorldState(UWorld* World) const
+{
+	FString WorldName = World->GetMapName();
+	WorldName.RemoveFromStart(World->StreamingLevelsPrefix); //从关卡名称这里移除指定前缀，当前为移除通常用于标识流式加载的关卡文件前缀
+	
+	//获取到游戏实例
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(GetGameInstance());
+	check(ISGameInstance);
+
+	//判断获取的存档是否存在
+	if(UGameplayStatics::DoesSaveGameExist(ISGameInstance->LoadSlotName, ISGameInstance->SlotIndex))
+	{
+		//获取存档
+		UISLocalPlayerSaveGame* SaveGame = Cast<UISLocalPlayerSaveGame>(UGameplayStatics::LoadGameFromSlot(ISGameInstance->LoadSlotName, ISGameInstance->SlotIndex));
+		if(SaveGame == nullptr)
+		{
+			
+		}
+
+		//判断存档是否含有对应关卡的数据
+		if(SaveGame->HasMap(WorldName))
+		{
+			//遍历场景内的所有Actor，寻找存档内对应的数据并应用到场景
+			for(FActorIterator It(World); It; ++It)
+			{
+				AActor* Actor = *It;
+
+				if(!Actor->Implements<UISSaveInterface>()) continue;
+
+				//遍历存档里对应关卡的所有actor数据
+				for(FSavedActor SavedActor : SaveGame->GetSavedMapWithMapName(WorldName).SavedActors)
+				{
+					//查找到对应的actor的存档数据
+					if(SavedActor.ActorName == Actor->GetFName())
+					{
+						//判断当前Actor是否需要设置位置变换
+						if(IISSaveInterface::Execute_ShouldLoadTransform(Actor))
+						{
+							Actor->SetActorTransform(SavedActor.Transform);
+						}
+
+						//反序列化，创建一个FMemoryReader实例用于从二进制数据中读取内容
+						FMemoryReader MemoryReader(SavedActor.Bytes);
+
+						//FObjectAndNameAsStringProxyArchive 代理类，用于序列化和反序列化对象的属性 true：表示允许使用字符串形式的对象和属性名称（便于调试和可读性）。
+						FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
+						Archive.ArIsSaveGame = true; //指定反序列化是用于加载存档数据。
+						Actor->Serialize(Archive); //执行反序列化，将二进制数据设置到actor属性上
+
+						//修改Actor上的属性后，调用函数更新Actor的显示
+						IISSaveInterface::Execute_LoadActor(Actor);
+					}
+				}
+			}			
+		}
+	}
 }

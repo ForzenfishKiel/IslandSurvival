@@ -583,6 +583,8 @@ void AISCharacter::LoadProgress()
 		//继续加载玩家的技能
 		AddCharacterActivateAbility(CharacterActivateAbilities);
 		AddCharacterPassiveAbility(CharacterPassiveAbilities);
+
+		ISGameplayMode->LoadWorldState(GetWorld());  //加载世界状态
 		
 		SetActorTransform(LocalPlayerSaveGame->PlayerTransform);  //将玩家传送到当前保存的位置
 	}

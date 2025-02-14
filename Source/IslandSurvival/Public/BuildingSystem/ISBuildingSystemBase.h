@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Interface/ISBuildInterface.h"
+#include "Interface/ISSaveInterface.h"
 #include "Items/ISItemBase.h"
 #include "ISBuildingSystemBase.generated.h"
 
@@ -44,7 +45,7 @@ public:
 };
 
 UCLASS()
-class ISLANDSURVIVAL_API AISBuildingSystemBase : public AISItemBase,public IISBuildInterface,public IISPublicInterface
+class ISLANDSURVIVAL_API AISBuildingSystemBase : public AISItemBase,public IISBuildInterface,public IISPublicInterface,public IISSaveInterface
 {
 	GENERATED_BODY()
 	
@@ -93,4 +94,8 @@ public:
 	
 	UFUNCTION(Server,Reliable)
 	virtual void InteractOnServer(AController* InPlayerController);
+
+	//SaveInterface接口
+	virtual bool ShouldLoadTransform_Implementation() override;
+	virtual void LoadActor_Implementation() override;
 };
