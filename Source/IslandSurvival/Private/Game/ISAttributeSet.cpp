@@ -20,6 +20,7 @@
 UISAttributeSet::UISAttributeSet()
 {
 	InitMaxHealthLevel(1.f);
+	InitPlayerLevel(1.f);
 }
 
 void UISAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -199,6 +200,8 @@ void UISAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 				IISPlayerInterface::Execute_LevelUp(Properties.SourceCharacter);  //升级
 			}
 			IISPlayerInterface::Execute_AddToXP(Properties.SourceCharacter, LocalInComingXP); //添加加上的经验值
+			
+			SetPlayerLevel(NewLevelUp); //设置玩家的作为属性的等级
 		}
 	}
 }

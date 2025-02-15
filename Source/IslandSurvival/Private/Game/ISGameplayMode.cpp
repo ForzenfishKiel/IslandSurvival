@@ -143,22 +143,28 @@ void AISGameplayMode::SaveWorldState(UWorld* World) const
 		{
 			AActor* Actor = *It;
 
-			if(!IsValid(Actor) || !Actor->Implements<UISSaveInterface>()) continue;
+			//if(!IsValid(Actor) || !Actor->Implements<UISSaveInterface>()) continue;
+			if(IsValid(Actor) && Actor->Implements<UISSaveInterface>())
+			{
+				
+				FSavedActor SavedActor;  // 创建以保存场景Actor的结构体对象
+				SavedActor.ActorName = Actor->GetFName();
+				SavedActor.Transform = Actor->GetTransform();
 
-			FSavedActor SavedActor;  // 创建以保存场景Actor的结构体对象
-			SavedActor.ActorName = Actor->GetFName();
-			SavedActor.Transform = Actor->GetTransform();
 
-			//创建一个 FMemoryWriter，用于将数据写入SavedActor.Bytes
-			FMemoryWriter MemoryWriter(SavedActor.Bytes);
+				//创建一个 FMemoryWriter，用于将数据写入SavedActor.Bytes
+				FMemoryWriter MemoryWriter(SavedActor.Bytes);
 
-			//创建一个序列化器，将对象的成员以名称和值的形式保存到 MemoryWriter。
-			FObjectAndNameAsStringProxyArchive Archive(MemoryWriter,true);
-			Archive.ArIsSaveGame = true;
+				//创建一个序列化器，将对象的成员以名称和值的形式保存到 MemoryWriter。
+				FObjectAndNameAsStringProxyArchive Archive(MemoryWriter,true);
+				Archive.ArIsSaveGame = false;//1是保存SaveGame为true的属性，0是全部保存
 			
-			Actor->Serialize(Archive);
+				Actor->Serialize(Archive);  //序列化Actor的数据
 
-			SavedMap.SavedActors.AddUnique(SavedActor);
+				SavedActor.SaveActorClass = Actor->GetClass();  //存入对象的类模板
+
+				SavedMap.SavedActors.AddUnique(SavedActor);
+			}
 		}
 
 		for(FSavedMap& MapToReplace : SaveGame->SavedMaps)
@@ -197,38 +203,30 @@ void AISGameplayMode::LoadWorldState(UWorld* World) const
 		//判断存档是否含有对应关卡的数据
 		if(SaveGame->HasMap(WorldName))
 		{
-			//遍历场景内的所有Actor，寻找存档内对应的数据并应用到场景
-			for(FActorIterator It(World); It; ++It)
+			FSavedMap SavedMap = SaveGame->GetSavedMapWithMapName(WorldName);
+			for(auto& SaveActors: SavedMap.SavedActors)
 			{
-				AActor* Actor = *It;
-
-				if(!Actor->Implements<UISSaveInterface>()) continue;
-
-				//遍历存档里对应关卡的所有actor数据
-				for(FSavedActor SavedActor : SaveGame->GetSavedMapWithMapName(WorldName).SavedActors)
+				AActor* TargetSpawnActor =  World->SpawnActor<AActor>(SaveActors.SaveActorClass);  //场景中生成Actor
+				if(TargetSpawnActor->Implements<UISSaveInterface>())
 				{
-					//查找到对应的actor的存档数据
-					if(SavedActor.ActorName == Actor->GetFName())
+					//判断当前Actor是否需要设置位置变换
+					if(IISSaveInterface::Execute_ShouldLoadTransform(TargetSpawnActor))
 					{
-						//判断当前Actor是否需要设置位置变换
-						if(IISSaveInterface::Execute_ShouldLoadTransform(Actor))
-						{
-							Actor->SetActorTransform(SavedActor.Transform);
-						}
-
-						//反序列化，创建一个FMemoryReader实例用于从二进制数据中读取内容
-						FMemoryReader MemoryReader(SavedActor.Bytes);
-
-						//FObjectAndNameAsStringProxyArchive 代理类，用于序列化和反序列化对象的属性 true：表示允许使用字符串形式的对象和属性名称（便于调试和可读性）。
-						FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
-						Archive.ArIsSaveGame = true; //指定反序列化是用于加载存档数据。
-						Actor->Serialize(Archive); //执行反序列化，将二进制数据设置到actor属性上
-
-						//修改Actor上的属性后，调用函数更新Actor的显示
-						IISSaveInterface::Execute_LoadActor(Actor);
+						TargetSpawnActor->SetActorTransform(SaveActors.Transform);
 					}
+					
+					//反序列化，创建一个FMemoryReader实例用于从二进制数据中读取内容
+					FMemoryReader MemoryReader(SaveActors.Bytes);
+
+					//FObjectAndNameAsStringProxyArchive 代理类，用于序列化和反序列化对象的属性 true：表示允许使用字符串形式的对象和属性名称（便于调试和可读性）。
+					FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
+					Archive.ArIsSaveGame = false; //指定反序列化是用于加载存档数据。1是加载SaveGame为true的属性，0是全部加载
+					TargetSpawnActor->Serialize(Archive); //执行反序列化，将二进制数据设置到actor属性上
+
+					//修改Actor上的属性后，调用函数更新Actor的显示
+					IISSaveInterface::Execute_LoadActor(TargetSpawnActor);
 				}
-			}			
+			}
 		}
 	}
 }

@@ -48,6 +48,9 @@ struct FSavedActor
 	GENERATED_BODY()
 
 	UPROPERTY()
+	TSubclassOf<AActor> SaveActorClass;
+
+	UPROPERTY()
 	FName ActorName = FName();
 
 	UPROPERTY()
