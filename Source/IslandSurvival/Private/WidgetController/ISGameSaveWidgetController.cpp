@@ -90,7 +90,7 @@ void UISGameSaveWidgetController::WhenLoadGameSlotDeleteButtonWasPressed(const i
 	{
 		if(Iter.SlotIndex == InIndex)
 		{
-			GameplayMode->DeleteSlotData(Iter.SlotName,Iter.SlotIndex);
+			GameplayMode->DeleteSlotData(Iter.PlayerName,Iter.SlotIndex);
 			ISGameInstance->SaveGames.Remove(Iter);
 		}
 	}

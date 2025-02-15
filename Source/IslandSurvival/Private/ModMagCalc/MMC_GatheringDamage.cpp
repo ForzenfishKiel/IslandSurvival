@@ -28,5 +28,5 @@ float UMMC_GatheringDamage::CalculateBaseMagnitude_Implementation(const FGamepla
 	GetCapturedAttributeMagnitude(PlayerWeaponAttack,Spec,EvaluateParameters,WeaponAttack); //尝试从GE应用的Spec中捕捉到对应的角色属性
 	WeaponAttack = FMath::Max<float>(WeaponAttack,0.f);
 	
-	return 8 + WeaponAttack;
+	return 5 + WeaponAttack;
 }
