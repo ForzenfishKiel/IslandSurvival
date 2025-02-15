@@ -114,6 +114,7 @@ bool UISCraftingComponent::IsCanBeCrafting(const UDataTable* TargetDT, const int
 	return false;
 }
 
+//开始制作按钮
 void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 TargetID)
 {
 	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetOwner());
@@ -158,7 +159,7 @@ void UISCraftingComponent::CraftingAction(const UDataTable*TargetDT,const int32 
 	}
 	return;
 }
-
+//添加到角色的背包
 void UISCraftingComponent::AddToCharacterBackPack_Implementation(const UDataTable* TargetDT, const int32 TargetID)
 {
 	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetOwner());

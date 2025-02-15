@@ -18,8 +18,10 @@ struct FISSaveGames
 	FString SlotName;
 	UPROPERTY(BlueprintReadOnly)
 	int32 SlotIndex;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FString PlayerName;  //加载玩家数据
+	UPROPERTY(BlueprintReadOnly)
+	int32 PlayerLevel = -1;
 
 	bool operator==(const FISSaveGames& Other) const
 	{
@@ -42,6 +44,9 @@ public:
 
 	UPROPERTY()
 	FString LoadSlotName = FString();  //保存存档使用的名称
+
+	UPROPERTY()
+	FString LoadMapName = FString();
 
 	UPROPERTY()
 	int32 SlotIndex = -1;  //保存存档使用的索引

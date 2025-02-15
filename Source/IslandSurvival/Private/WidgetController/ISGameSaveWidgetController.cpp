@@ -13,9 +13,9 @@ void UISGameSaveWidgetController::LoadGameSaveSlot() const
 	AISGameplayMode* GameMode = Cast<AISGameplayMode>( UGameplayStatics::GetGameMode(this));
 	UISGameInstance* ISGameInstance = Cast<UISGameInstance>( UGameplayStatics::GetGameInstance(this));
 
-	for(auto Iter : ISGameInstance->SaveGames)
+	for(auto& Iter : ISGameInstance->SaveGames)
 	{
-		const UISLocalPlayerSaveGame* SaveGame = GameMode->GetSaveSlotData(Iter.SlotName,Iter.SlotIndex);
+		const UISLocalPlayerSaveGame* SaveGame = GameMode->GetSaveSlotData(Iter.PlayerName,Iter.SlotIndex);
 		if(SaveGame)
 		{
 			OnSlotWasLoaded.Broadcast(Iter); //将值传递出去
@@ -35,18 +35,21 @@ void UISGameSaveWidgetController::WhenGameStartButtonWasPressed()
 	GameSaveSlot->SetPlayerLevel(1);  //设定玩家的等级
 	GameSaveSlot->SetMapName(GameplayMode->DefaultMapName); //设置地图名称
 	GameSaveSlot->SetSlotName(GameplayMode->DefaultMapName);
-	GameSaveSlot->SlotIndex = LoadSlots.Num();  //索引等于存储长度，也就是未开辟的一位
+	
 	
 	GameplayMode->SaveSlotData(GameSaveSlot,GameSaveSlot->SlotIndex);  //保存新的存档
 
-	ISGameInstance->SlotIndex = GameSaveSlot->SlotIndex;
-	ISGameInstance->LoadSlotName = GameSaveSlot->GetSlotName();  //全局游戏保存当前游玩的存档
+	GameSaveSlot->SlotIndex = ISGameInstance->SaveGames.Num();  //索引等于存储长度，也就是未开辟的一位
+	
+	ISGameInstance->LoadSlotName = GameSaveSlot->GetPlayerName();  //全局游戏保存当前游玩的存档
+	ISGameInstance->LoadMapName = GameSaveSlot->GetMapName();
 	
 	FISSaveGames SaveGame;
 	SaveGame.SlotIndex = GameSaveSlot->SlotIndex;
 	SaveGame.SlotName = GameSaveSlot->GetSlotName();
 	SaveGame.PlayerName = PlayerNameSave;
-	ISGameInstance->SaveGames.Emplace(SaveGame);
+	SaveGame.PlayerLevel = GameSaveSlot->GetPlayerLevel();
+	ISGameInstance->SaveGames.AddUnique(SaveGame);
 	
 	ISGameInstance->bFirstTimeStartGame = true;  //确认为第一次进入游戏
 	
@@ -59,18 +62,13 @@ void UISGameSaveWidgetController::LoadGameButtonWasPressed(const int32 InIndex ,
 	AISGameplayMode* GameplayMode = Cast<AISGameplayMode>( UGameplayStatics::GetGameMode(this));
 	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(this));
 
-	
-	FISSaveGames SlotSaveGame;
-	SlotSaveGame.SlotIndex = InIndex;
-	SlotSaveGame.SlotName = InSlotName;
-
-	if(ISGameInstance->SaveGames.Contains(SlotSaveGame) && GameplayMode->GetSaveSlotData(InSlotName,InIndex))
+	if(GameplayMode->GetSaveSlotData(InSlotName,InIndex))
 	{
 		ISGameInstance->LoadSlotName = InSlotName;
 		ISGameInstance->SlotIndex = InIndex;
 		ISGameInstance->bFirstTimeStartGame = false;  //不是第一次进入游戏
 		
-		GameplayMode->TravelToMap(InSlotName);  //打开地图
+		GameplayMode->TravelToMap(ISGameInstance->LoadMapName);  //打开地图
 	}
 }
 

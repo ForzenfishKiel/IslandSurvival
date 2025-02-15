@@ -40,7 +40,7 @@ void AISGameplayMode::SaveSlotData(const UISGameSaveSlotWC* LoadSlot, int32 Slot
 	LocalPlayerSaveGame->SlotName = LoadSlot->GetSlotName();
 	LocalPlayerSaveGame->SlotIndex = SlotIndex;
 
-	UGameplayStatics::SaveGameToSlot(LocalPlayerSaveGame,LoadSlot->GetSlotName(),SlotIndex);  //保存一个新的存档
+	UGameplayStatics::SaveGameToSlot(LocalPlayerSaveGame,LoadSlot->GetPlayerName(),SlotIndex);  //保存一个新的存档
 }
 
 
@@ -76,14 +76,11 @@ UISLocalPlayerSaveGame* AISGameplayMode::GetSaveSlotData(const FString& InSlotNa
 	if(UGameplayStatics::DoesSaveGameExist(InSlotName,SlotIndex))
 	{
 		SaveGameObject = UGameplayStatics::LoadGameFromSlot(InSlotName,SlotIndex);
-	}
-	else
-	{
-		SaveGameObject = UGameplayStatics::CreateSaveGameObject(LoadScreenSaveGameClass);  //创建一个新的存档
-	}
-	UISLocalPlayerSaveGame* LocalPlayerSaveGame = Cast<UISLocalPlayerSaveGame>(SaveGameObject);
+		UISLocalPlayerSaveGame* LocalPlayerSaveGame = Cast<UISLocalPlayerSaveGame>(SaveGameObject);
 	
-	return LocalPlayerSaveGame;
+		return LocalPlayerSaveGame;
+	}
+	return nullptr;
 }
 
 

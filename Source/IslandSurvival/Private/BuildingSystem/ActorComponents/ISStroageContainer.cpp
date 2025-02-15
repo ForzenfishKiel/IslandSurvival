@@ -103,6 +103,7 @@ void UISStroageContainer::CraftAction(UISCraftingComponent* TargetCraftingCompon
 	}
 }
 
+//检查库存是否还有空位
 bool UISStroageContainer::CheckStorageEmptySlots()
 {
 	for(int32 Index = 0; Index < InventoryContainer.Num(); Index++)
@@ -114,7 +115,7 @@ bool UISStroageContainer::CheckStorageEmptySlots()
 	}
 	return false;
 }
-
+//做好的保存在库存里
 void UISStroageContainer::SaveToStorageContainer_Implementation(const int32 TargetID)
 {
 	UISGameInstance* SourceGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetOwner()));
@@ -131,12 +132,14 @@ void UISStroageContainer::SaveToStorageContainer_Implementation(const int32 Targ
 			if(ContainerRef.CanStack)
 			{
 				ContainerRef.ItemQuantity += GetItemInfo->ItemQuantity;
+				InventoryUpdate.Broadcast();
 				return;
 			}
 		}
 		if(ContainerRef.ItemID == -1)
 		{
 			ContainerRef = *GetItemInfo;   //直接改变数组
+			InventoryUpdate.Broadcast();
 			return;
 		}
 	}
