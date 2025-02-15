@@ -36,6 +36,7 @@ void UISGameSaveWidgetController::WhenGameStartButtonWasPressed()
 	GameSaveSlot->SetMapName(GameplayMode->DefaultMapName); //设置地图名称
 	GameSaveSlot->SetSlotName(GameplayMode->DefaultMapName);
 	GameSaveSlot->SlotIndex = LoadSlots.Num();  //索引等于存储长度，也就是未开辟的一位
+	
 	GameplayMode->SaveSlotData(GameSaveSlot,GameSaveSlot->SlotIndex);  //保存新的存档
 
 	ISGameInstance->SlotIndex = GameSaveSlot->SlotIndex;

@@ -36,7 +36,7 @@ void AISGameplayMode::SaveSlotData(const UISGameSaveSlotWC* LoadSlot, int32 Slot
 	USaveGame* SaveGameObject = UGameplayStatics::CreateSaveGameObject(LoadScreenSaveGameClass);  //创建一个新的存档对象
 	UISLocalPlayerSaveGame* LocalPlayerSaveGame = Cast<UISLocalPlayerSaveGame>(SaveGameObject);
 
-	LocalPlayerSaveGame->PlayerName = LoadSlot->GetSlotName();
+	LocalPlayerSaveGame->PlayerName = LoadSlot->GetPlayerName();
 	LocalPlayerSaveGame->SlotName = LoadSlot->GetSlotName();
 	LocalPlayerSaveGame->SlotIndex = SlotIndex;
 

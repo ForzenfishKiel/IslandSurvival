@@ -50,16 +50,19 @@ public:
 	void AddToAttributePoint(int32 InAttributePoint);
 	void SetAttributePoint(int32 InAttributePoint);
 
+	void SetSourcePlayerName(const FString& InSourcePlayerName);
+
 	void AddTargetAttributeLevel(const FGameplayAttribute TargetPointType);
+
+	FORCEINLINE FString GetSourcePlayerName() const {return PlayerName;}
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAbilitySystemComponent> ISAbilitySystemComponent;
 	UPROPERTY()
 	TObjectPtr<UAttributeSet>ISAttributeSet;
-
-
 private:
-
+	FString PlayerName = FString();
 	/*特定属性点统计结束*/
 	UPROPERTY(VisibleAnywhere,ReplicatedUsing = OnRep_XP)
 	int32 CurrentXP = 0;

@@ -69,7 +69,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "LoadingGameConfig")
 	TMap<FString,TSoftObjectPtr<UWorld>> LoadingMap; //加载地图名称和对应的映射
-
+	
 	//保存关卡中的状态到当前存档中
 	void SaveWorldState(UWorld* World) const;
 	//从存档中加载当前关卡的状态

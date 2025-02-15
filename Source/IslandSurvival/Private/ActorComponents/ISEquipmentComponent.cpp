@@ -47,11 +47,11 @@ void UISEquipmentComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 
 	FDoRepLifetimeParams SharedParams;
 	SharedParams.bIsPushBased = true;
-	SharedParams.Condition = ELifetimeCondition::COND_AutonomousOnly;
+	//SharedParams.Condition = ELifetimeCondition::COND_AutonomousOnly;
 
 	FDoRepLifetimeParams SharedParams2;
 	SharedParams2.bIsPushBased = true;
-	SharedParams2.Condition = ELifetimeCondition::COND_SkipOwner;
+	//SharedParams2.Condition = ELifetimeCondition::COND_SkipOwner;
 	
 	DOREPLIFETIME(UISEquipmentComponent,CharacterEquipState);
 	DOREPLIFETIME(UISEquipmentComponent,ISHelmet);
@@ -90,6 +90,7 @@ void UISEquipmentComponent::Equip_Implementation(const FItemInformation TargetIn
 	
 	Equipable->InitializeEquipableConfig(TargetInformation);  //初始化其配置
 	CharacterEquipState = Equipable->EquipState;
+	OnRep_Equipable();
 
 	USceneComponent* AttachThirdPerson = EquipableTP->GetAttachThirdPersonParent(Cast<APawn>(Equipable->GetOwner()));  //获取第三人称装备套接字
 	
@@ -128,6 +129,7 @@ void UISEquipmentComponent::OnRep_EquipableTP()
 //客户端调用武器装备
 void UISEquipmentComponent::SpawnEquipOnClient_Implementation()
 {
+	if(!Equipable) return;
 	USceneComponent*AttachFirstPerson = Equipable->GetAttachTarget(Cast<APawn>(Equipable->GetOwner()));
 	Equipable->SetActorRelativeTransform(FTransform::Identity);
 	Equipable->SetEquipableCollision();

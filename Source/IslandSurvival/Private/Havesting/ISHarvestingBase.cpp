@@ -103,6 +103,7 @@ void AISHarvestingBase::ApplyDamageToTarget_Implementation(AActor* TargetActor)
 	if(CollectibleHP==0)  //采集物血量为0的时候停止采集，并执行一些功能
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("采集完毕"));
+		HarvestStaticMesh->SetCollisionObjectType(ECC_WorldDynamic);
 		EnableHarvestionBreak(TargetActor);
 	}
 }

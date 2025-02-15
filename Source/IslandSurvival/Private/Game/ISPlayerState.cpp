@@ -64,6 +64,12 @@ void AISPlayerState::SetAttributePoint(int32 InAttributePoint)
 	
 }
 
+//设置玩家的姓名
+void AISPlayerState::SetSourcePlayerName(const FString& InSourcePlayerName)
+{
+	PlayerName = InSourcePlayerName;
+}
+
 //向作为属性一部分的对应属性加点的值进行添加
 void AISPlayerState::AddTargetAttributeLevel(const FGameplayAttribute TargetPointType)
 {

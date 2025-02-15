@@ -291,6 +291,7 @@ void AISCharacter::SetSingleOwnerWhenCharacterControlActor_Implementation(const 
 		}
 	}
 }
+
 TSubclassOf<AISHarvestingBase> AISCharacter::CheckHarvestDataAsset(const FString& InName)
 {
 	AISGameplayMode* SourceGamemomde = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(GetOwner()));
@@ -569,6 +570,9 @@ void AISCharacter::LoadProgress()
 	//获取当前游玩的存档
 	UISLocalPlayerSaveGame* LocalPlayerSaveGame = ISGameplayMode->RetrieveInGameSaveData();
 	if(! LocalPlayerSaveGame) return;
+	
+	SetPlayerName(LocalPlayerSaveGame->PlayerName);
+	
 	//如果玩家是第一次进入游戏
 	if(AISPlayerState* SourceAS = Cast<AISPlayerState>(GetPlayerState<AISPlayerState>()))
 	{
@@ -618,5 +622,19 @@ TSubclassOf<UGameplayEffect> AISCharacter::GetSecondaryAttributes_Implementation
 TSubclassOf<UGameplayEffect> AISCharacter::GetPrimaryAttributes_Implementation()
 {
 	return PlayerDefaultAttribute;
+}
+
+
+//设置玩家的姓名
+void AISCharacter::SetPlayerName(const FString& InPlayerName)
+{
+	AISPlayerState* SourceAS = GetPlayerState<AISPlayerState>();
+	SourceAS->SetSourcePlayerName(InPlayerName);
+}
+
+FString AISCharacter::GetPlayerName_Implementation() const
+{
+	AISPlayerState* SourceAS = GetPlayerState<AISPlayerState>();
+	return SourceAS->GetSourcePlayerName();
 }
 

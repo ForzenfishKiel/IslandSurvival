@@ -70,4 +70,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	TSubclassOf<UGameplayEffect> GetPrimaryAttributes();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FString GetPlayerName() const;
 };

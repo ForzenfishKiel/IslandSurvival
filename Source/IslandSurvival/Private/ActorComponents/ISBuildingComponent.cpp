@@ -198,7 +198,7 @@ bool UISBuildingComponent::CheckForOverlap()
 	}
 }
 
-
+//检查建筑物是否浮空
 bool UISBuildingComponent::CheckBuildFloating()
 {
 	if(!ISBuildingRef) return false;
@@ -219,12 +219,10 @@ bool UISBuildingComponent::CheckBuildFloating()
 
 	FVector HalfSize = StaticExtent/HalfSizeFloat;
 
-	return ( UKismetSystemLibrary::BoxTraceMultiForObjects(GetOwner(),StaticOrigin,StaticOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),
-		BuildingObjectTypes,false,IgnoreActor,EDrawDebugTrace::ForDuration,Hits,true,FLinearColor::Red,FLinearColor::Green,1.f));
+	return ( UKismetSystemLibrary::BoxTraceMulti(GetOwner(),StaticOrigin,StaticOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),
+		TraceTypeQuery18,false,IgnoreActor,EDrawDebugTrace::ForDuration,Hits,true,FLinearColor::Red,FLinearColor::Green,1.f));
 }
-
-
-
+//检查建筑物是否放置在地基上
 bool UISBuildingComponent::CheckBuildOnFoundation()
 {
 	if(!ISBuildingRef) return false;
@@ -238,7 +236,7 @@ bool UISBuildingComponent::CheckBuildOnFoundation()
 	,EDrawDebugTrace::ForDuration,Hit,true,FLinearColor::Red,FLinearColor::Green,1.f))
 	{
 		if(!Hit.GetActor()->Implements<UISBuildInterface>()) return false;
-		if(IISBuildInterface::Execute_GetBuildingSystemBase(Hit.GetActor())->BuildingConfig.BuildingType==Foundation) return true;
+		return true;
 	}
 	return false;
 }
@@ -259,8 +257,10 @@ bool UISBuildingComponent::CanBuildCheck()
 	//如果建筑物需要做浮空检查
 	if(ISBuildingRef->BuildingConfig.DoFloatCheck)
 	{
+		//如果放置在地面
 		if(CheckBuildFloating())
 		{
+			//如果连接
 			if(IsAttaching)
 			{
 				if(!ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap)
@@ -272,41 +272,24 @@ bool UISBuildingComponent::CanBuildCheck()
 					return true;
 				}
 			}
+			//如果没有连接
 			else
 			{
-				if(ISBuildingRef->BuildingConfig.BuildingType==Foundation)
+				if(ISBuildingRef->BuildingConfig.BuildingType == Foundation)
 				{
-					return true;
+					return false;
 				}
-			}
-		}
-	}
-	else
-	{
-		//如果处于浮空状态
-		if(!CheckBuildFloating())
-		{
-			if(IsAttaching)
-			{
 				if(!ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap)
 				{
 					return true;
 				}
-				if(ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap && ! CheckForOverlap())
-				{
-					return true;
-				}
-			}
-			else
-			{
-				if(CheckBuildOnFoundation())
+				if(ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap && !CheckForOverlap())
 				{
 					return true;
 				}
 			}
 		}
-		
-		//如果未处于浮空状态
+		//如果浮空
 		else
 		{
 			if(IsAttaching)
@@ -320,7 +303,28 @@ bool UISBuildingComponent::CanBuildCheck()
 					return true;
 				}
 			}
-
+			else
+			{
+				if(ISBuildingRef->BuildingConfig.BuildingType==Foundation && CheckBuildOnFoundation())
+				{
+					return true;
+				}
+			}
+		}
+	}
+	//如果不需要做浮空检查
+	else
+	{
+		if(IsAttaching)
+		{
+			if(!ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap)
+			{
+				return true;
+			}
+			if(ISBuildingRef->BuildingConfig.bIsNeedToCheckOverlap && ! CheckForOverlap())
+			{
+				return true;
+			}
 		}
 	}
 	return false;

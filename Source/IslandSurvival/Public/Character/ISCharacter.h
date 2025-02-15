@@ -50,10 +50,12 @@ public:
 	virtual void SaveProgress_Implementation() override;
 	virtual TSubclassOf<UGameplayEffect> GetSecondaryAttributes_Implementation() override;
 	virtual TSubclassOf<UGameplayEffect> GetPrimaryAttributes_Implementation() override;
+	virtual FString GetPlayerName_Implementation() const override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
 	UFUNCTION(Server,Reliable)
 	void SetSingleOwnerWhenCharacterControlActor(const UISItemsContainer* InItemsContainer,APlayerController* InController);
+	void SetPlayerName(const FString& InPlayerName);
 
 	UFUNCTION(BlueprintCallable)
 	TSubclassOf<AISHarvestingBase> CheckHarvestDataAsset(const FString& InName);
@@ -113,7 +115,7 @@ public:
 	UPROPERTY(BlueprintReadWrite,Replicated,Category = "Config")
 	float CharacterSpeed = 400.f;
 private:
-
+	
 	virtual void InitAbilityActorInfo() override;
 	
 	virtual void InitializePlayerAttribute(UAbilitySystemComponent* ASC,TSubclassOf<UGameplayEffect>AttributeClass) override;

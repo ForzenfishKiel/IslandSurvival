@@ -19,6 +19,7 @@ USceneComponent* AISEquipable::GetAttachTarget(APawn* TargetPawn) const
 	if(AISCharacter*TargetCharacter = Cast<AISCharacter>(TargetPawn))
 	{
 		AttachTarget = TargetCharacter->ArmMesh;
+		
 	}
 	return AttachTarget;
 }

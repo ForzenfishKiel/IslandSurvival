@@ -151,6 +151,9 @@ bool UISItemsContainer::CheckGearSlotExchanged(UISItemsContainer* TargetGear, co
 			GearEquipComponent->InventoryContainer[TargetIndex] = InventoryContainer[SourceIndex]; //装备栏装备交换的物品信息
 			
 			InventoryContainer[SourceIndex] = Information;//放置位置进行交换
+
+			TargetGear->InventoryUpdate.Broadcast();
+			InventoryUpdate.Broadcast();
 			
 			return true;
 		}
@@ -167,6 +170,9 @@ bool UISItemsContainer::CheckGearSlotExchanged(UISItemsContainer* TargetGear, co
 			EquipmentComponent->OnUnEquipGear.Broadcast(TargetGearSlot);  //广播脱下装备
 			
 			GearEquipComponent->InventoryContainer[TargetIndex] = NewItemInfo;
+			
+			TargetGear->InventoryUpdate.Broadcast();
+			InventoryUpdate.Broadcast();
 
 			return true;  //跳过当前执行
 		}
@@ -191,6 +197,9 @@ bool UISItemsContainer::CheckGearSlotExchanged(UISItemsContainer* TargetGear, co
 			InventoryContainer[SourceIndex] = TargetGear->InventoryContainer[TargetIndex];
 			
 			TargetGear->InventoryContainer[TargetIndex] = Information;  //目标位置等于被替换的装备位置
+
+			TargetGear->InventoryUpdate.Broadcast();
+			InventoryUpdate.Broadcast();
 			
 			
 			return true;
@@ -206,6 +215,9 @@ bool UISItemsContainer::CheckGearSlotExchanged(UISItemsContainer* TargetGear, co
 			InventoryContainer[SourceIndex] = TargetGearSlot;
 
 			TargetGear->InventoryContainer[TargetIndex] = ItemInfo;
+
+			TargetGear->InventoryUpdate.Broadcast();
+			InventoryUpdate.Broadcast();
 
 			return true;
 		}
