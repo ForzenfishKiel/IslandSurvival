@@ -153,11 +153,13 @@ void AISGameplayMode::SaveWorldState(UWorld* World) const
 
 
 				//创建一个 FMemoryWriter，用于将数据写入SavedActor.Bytes
-				FMemoryWriter MemoryWriter(SavedActor.Bytes);
+				//若 bIsPersistent = true，表示写入的内存数据不会被引擎的垃圾回收（GC）自动释放,反之
+				FMemoryWriter MemoryWriter(SavedActor.Bytes,true);
 
 				//创建一个序列化器，将对象的成员以名称和值的形式保存到 MemoryWriter。
 				FObjectAndNameAsStringProxyArchive Archive(MemoryWriter,true);
-				Archive.ArIsSaveGame = false;//1是保存SaveGame为true的属性，0是全部保存
+				Archive.ArIsSaveGame = true;//1是保存SaveGame为true的属性，0是全部保存
+				Archive.ArNoDelta = true;
 			
 				Actor->Serialize(Archive);  //序列化Actor的数据
 
@@ -204,6 +206,7 @@ void AISGameplayMode::LoadWorldState(UWorld* World) const
 		if(SaveGame->HasMap(WorldName))
 		{
 			FSavedMap SavedMap = SaveGame->GetSavedMapWithMapName(WorldName);
+
 			for(auto& SaveActors: SavedMap.SavedActors)
 			{
 				AActor* TargetSpawnActor =  World->SpawnActor<AActor>(SaveActors.SaveActorClass);  //场景中生成Actor
@@ -213,18 +216,29 @@ void AISGameplayMode::LoadWorldState(UWorld* World) const
 					if(IISSaveInterface::Execute_ShouldLoadTransform(TargetSpawnActor))
 					{
 						TargetSpawnActor->SetActorTransform(SaveActors.Transform);
+						SaveActors.ActorRef = TargetSpawnActor;
 					}
+				}
+			}
+			for(auto SaveActors: SavedMap.SavedActors)
+			{
+				for(FActorIterator It(World); It; ++It)
+				{
+					AActor* SpawnActor = *It;
+					if(SpawnActor == SaveActors.ActorRef)
+					{
+						//反序列化，创建一个FMemoryReader实例用于从二进制数据中读取内容
+						FMemoryReader MemoryReader(SaveActors.Bytes,true);
+
+						//FObjectAndNameAsStringProxyArchive 代理类，用于序列化和反序列化对象的属性 true：表示允许使用字符串形式的对象和属性名称（便于调试和可读性）。
+						FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
+						Archive.ArIsSaveGame = true; //指定反序列化是用于加载存档数据。1是加载SaveGame为true的属性，0是全部加载
+						Archive.ArNoDelta = true;
+						SpawnActor->Serialize(Archive); //执行反序列化，将二进制数据设置到actor属性上
 					
-					//反序列化，创建一个FMemoryReader实例用于从二进制数据中读取内容
-					FMemoryReader MemoryReader(SaveActors.Bytes);
-
-					//FObjectAndNameAsStringProxyArchive 代理类，用于序列化和反序列化对象的属性 true：表示允许使用字符串形式的对象和属性名称（便于调试和可读性）。
-					FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
-					Archive.ArIsSaveGame = false; //指定反序列化是用于加载存档数据。1是加载SaveGame为true的属性，0是全部加载
-					TargetSpawnActor->Serialize(Archive); //执行反序列化，将二进制数据设置到actor属性上
-
-					//修改Actor上的属性后，调用函数更新Actor的显示
-					IISSaveInterface::Execute_LoadActor(TargetSpawnActor);
+						//修改Actor上的属性后，调用函数更新Actor的显示
+						IISSaveInterface::Execute_LoadActor(SpawnActor);
+					}
 				}
 			}
 		}

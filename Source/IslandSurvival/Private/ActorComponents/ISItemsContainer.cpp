@@ -26,6 +26,7 @@ UISItemsContainer::UISItemsContainer()
 void UISItemsContainer::InitializeComponent()
 {
 	Super::InitializeComponent();
+	UISGameInstance* ISGameplayInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if(GetOwner()->HasAuthority())
 	{
 		if(bReplicated)

@@ -43,6 +43,23 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInformation")
 	TSubclassOf<AISItemBase> ItemClassRef;  //物品类型引用
 };
+// 序列化运算符实现
+inline FArchive& operator<<(FArchive& Ar, FItemInformation& ItemInfo) {
+	Ar << ItemInfo.ItemID;
+	Ar << ItemInfo.ItemQuantity;
+	Ar << ItemInfo.ItemIcon;
+	Ar << ItemInfo.ItemName;
+	Ar << ItemInfo.ItemDesc;
+	Ar << ItemInfo.ItemCurHP;
+	Ar << ItemInfo.ItemCurMaxHP;
+	Ar << ItemInfo.CanStack;
+	Ar << ItemInfo.MaxStack;
+	Ar << ItemInfo.TargetItemRarity;
+	Ar << ItemInfo.ItemType;
+	Ar << ItemInfo.ArmorType;
+	Ar << ItemInfo.ItemClassRef;
+	return Ar;
+}
 UCLASS()
 class ISLANDSURVIVAL_API UISPlayerItemDataTable : public UObject
 {

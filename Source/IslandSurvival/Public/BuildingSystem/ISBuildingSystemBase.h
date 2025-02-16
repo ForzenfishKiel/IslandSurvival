@@ -53,9 +53,9 @@ public:
 	// Sets default values for this actor's properties
 	AISBuildingSystemBase();
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Replicated)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Replicated,SaveGame)
 	int32 BuildHP = 0;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Replicated)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Replicated,SaveGame)
 	int32 BuildMaxHP = 100;  //建筑物最大血量
 
 	UFUNCTION(BlueprintImplementableEvent)

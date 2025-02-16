@@ -52,3 +52,16 @@ UISItemsContainer* AISStorageMaster::GetItemsContainer_Implementation() const
 {
 	return StorageContainer;
 }
+
+void AISStorageMaster::Serialize(FArchive& Ar)
+{
+	Super::Serialize(Ar);
+	if(Ar.ArIsSaveGame)
+	{
+		if(StorageContainer)
+		{
+			Ar << StorageContainer->InventoryContainer;  //反序列化库存组件数组
+		}
+	}
+}
+

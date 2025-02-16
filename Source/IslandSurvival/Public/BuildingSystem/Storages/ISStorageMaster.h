@@ -31,4 +31,5 @@ public:
 	//IISPublicInterface公共接口
 	virtual UISMenuUIBase* GetMenuUI_Implementation() const override;
 	virtual UISItemsContainer* GetItemsContainer_Implementation() const override;
+	virtual void Serialize(FArchive& Ar) override;
 };

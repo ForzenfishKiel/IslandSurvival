@@ -59,6 +59,9 @@ struct FSavedActor
 	//Actor身上序列号的数据，必须通过UPROPERTY定义过，只在保存存档时使用。
 	UPROPERTY()
 	TArray<uint8> Bytes;
+
+	UPROPERTY()
+	TObjectPtr<AActor> ActorRef;
 };
 
 //自定义运算符==，如果结构体内的ActorName相同，这代表这两个结构体为相同结构体

@@ -69,7 +69,7 @@ public:
 	
 	bool CheckInventoryEmpty(const FItemInformation Information);
 	
-	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_ContainerChange)
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_ContainerChange,SaveGame)
 	TArray<FItemInformation>InventoryContainer;//背包
 
 	UFUNCTION()
