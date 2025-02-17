@@ -3,7 +3,7 @@
 
 #include "Game/ISGameplayMode.h"
 #include "EngineUtils.h"
-
+#include "GameFramework/PlayerStart.h"
 #include "Game/ISGameInstance.h"
 #include "Interface/ISSaveInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -243,4 +243,28 @@ void AISGameplayMode::LoadWorldState(UWorld* World) const
 			}
 		}
 	}
+}
+
+AActor* AISGameplayMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	const UISGameInstance* ISGameInstance = Cast<UISGameInstance>(GetGameInstance());
+	
+	//获取关卡里的所有PlayerStart实例
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), Actors);
+	
+	if(Actors.Num() > 0)
+	{
+		//获取到第一个实例对象
+		AActor* SelectedActor = Actors[0];
+		for(AActor* Actor : Actors)
+		{
+			if(APlayerStart* PlayerStart = Cast<APlayerStart>(Actor))
+			{
+				return PlayerStart;  //返回角色默认的游戏开始
+			}
+		}
+		return SelectedActor;
+	}
+	return nullptr;
 }

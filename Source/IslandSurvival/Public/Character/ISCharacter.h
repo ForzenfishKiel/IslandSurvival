@@ -51,6 +51,7 @@ public:
 	virtual TSubclassOf<UGameplayEffect> GetSecondaryAttributes_Implementation() override;
 	virtual TSubclassOf<UGameplayEffect> GetPrimaryAttributes_Implementation() override;
 	virtual FString GetPlayerName_Implementation() const override;
+	virtual void SetPlayerRespawnLocation_Implementation(const FVector& InLocation) override;
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void SetOwnerWhenCharacterControlActor(const TArray<UISItemsContainer*>&InItemsContainer, APlayerController* InController);
 	UFUNCTION(Server,Reliable)
@@ -75,6 +76,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool CheckIsFastRun();
+
 
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	bool bIsDead = false;
@@ -129,6 +131,8 @@ private:
 	UFUNCTION(Client,Reliable)
 	void ClearPlayerMainHUD();
 	void LoadProgress(); //加载进度
+	
+	FVector GetPlayerRespawnLocation() const;
 	
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterActivateAbilities;

@@ -106,6 +106,8 @@ void AISPlayerState::AddTargetAttributeLevel(const FGameplayAttribute TargetPoin
 	}
 }
 
+
+
 void AISPlayerState::OnRep_Level(int32 OldLevel) const
 {
 	OnPlayerLevelChanged.Broadcast(CurrentLevel);   //服务器的属性更改后，复制到客户端时，调用该委托，将复制的值同步到客户端
@@ -119,4 +121,13 @@ void AISPlayerState::OnRep_XP(int32 OldXP) const
 void AISPlayerState::OnRep_AttributePoints(int32 OldAttributePoints) const
 {
 	OnPlayerAttributePointChange.Broadcast(AttributePoint);
+}
+FVector AISPlayerState::GetPlayerRespawnLocation() const
+{
+	return FVector();  //返回角色重生的位置
+}
+
+void AISPlayerState::SetPlayerRespawnLocation(const FVector& InPlayerRespawnLocation)
+{
+	/*设置角色重生的位置*/
 }

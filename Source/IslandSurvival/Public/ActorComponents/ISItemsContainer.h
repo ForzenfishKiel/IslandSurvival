@@ -29,8 +29,6 @@ public:
 	int32 CurrentChooseIndex = -1;
 	
 	FItemInformation ItemInfo;
-
-
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	EContainerType ContainerType = EContainerType::None;

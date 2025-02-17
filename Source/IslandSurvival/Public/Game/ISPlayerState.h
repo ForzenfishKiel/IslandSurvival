@@ -56,6 +56,9 @@ public:
 
 	FORCEINLINE FString GetSourcePlayerName() const {return PlayerName;}
 
+	FVector GetPlayerRespawnLocation() const;
+	void SetPlayerRespawnLocation(const FVector& InPlayerRespawnLocation);
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAbilitySystemComponent> ISAbilitySystemComponent;
@@ -70,6 +73,8 @@ private:
 	int32 CurrentLevel = 1;
 	UPROPERTY(VisibleAnywhere,ReplicatedUsing = OnRep_AttributePoints)
 	int32 AttributePoint = 0;
+	UPROPERTY()
+	FVector PlayerRespawnLocation = FVector();  //角色保存的出生位置
 
 	//服务器出现更改自动同步到本地函数 等级
 	UFUNCTION()

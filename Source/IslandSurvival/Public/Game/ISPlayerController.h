@@ -73,7 +73,11 @@ private:
 	void PauseGame();
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void QuitGameEvent();
+	UFUNCTION(BlueprintCallable,Server,Reliable)
+	void RespawnPlayer();
 	UFUNCTION(BlueprintCallable)
 	AISCharacter*GetCharacterLocal() const;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AISCharacter> CharacterClass;
 };

@@ -206,6 +206,20 @@ void AISPlayerController::QuitGameEvent_Implementation()
 	ISGameplayMode->ReturnToMainMenu();
 }
 
+void AISPlayerController::RespawnPlayer_Implementation()
+{
+	check(CharacterClass);
+	UnPossess();  //取消控制器的控制
+	AISPlayerState* SourceAS = GetPlayerState<AISPlayerState>(); //获取角色状态
+
+	AISCharacter* SpawnCharacter = GetWorld()->SpawnActor<AISCharacter>(CharacterClass);
+	if(SpawnCharacter)
+	{
+		SpawnCharacter->SetActorLocation(SourceAS->GetPlayerRespawnLocation());
+		Possess(SpawnCharacter);  //控制器重新控制玩家
+	}
+}
+
 AISCharacter* AISPlayerController::GetCharacterLocal() const
 {
 	return Cast<AISCharacter>(GetPawn());

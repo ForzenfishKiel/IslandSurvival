@@ -72,4 +72,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FString GetPlayerName() const;
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetPlayerRespawnLocation(const FVector& InLocation);
 };

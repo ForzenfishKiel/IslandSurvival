@@ -75,5 +75,5 @@ public:
 	//从存档中加载当前关卡的状态
 	void LoadWorldState(UWorld* World) const;
 
-
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 }; 

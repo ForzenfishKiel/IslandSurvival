@@ -551,9 +551,13 @@ void AISCharacter::SaveProgress_Implementation()
 		
 		SaveGameData->PlayerBackPack = CharacterBackPack->InventoryContainer;  //存储玩家的背包
 		SaveGameData->HotBarItems = CharacterHotBar->InventoryContainer; //存储玩家的物品栏数据
+		
+		SaveGameData->PlayerSaveRespawnLocation = GetPlayerRespawnLocation();  //保存玩家的重生位置
 
-		GamePlayMode->SaveInGameProgressData(SaveGameData);
+		GamePlayMode->SaveInGameProgressData(SaveGameData);  //保存玩家进度
 		GamePlayMode->SaveWorldState(GetWorld());  //保存世界状态
+
+		
 	}
 }
 
@@ -590,6 +594,11 @@ void AISCharacter::LoadProgress()
 		//初始化玩家技能和被动技能
 		AddCharacterActivateAbility(CharacterActivateAbilities);
 		AddCharacterPassiveAbility(CharacterPassiveAbilities);
+		
+		AActor* PlayerDefaultRespawnLocation = ISGameplayMode->ChoosePlayerStart(GetInstigatorController()); //获取玩家默认的重生点
+		IISPlayerInterface::Execute_SetPlayerRespawnLocation(this,PlayerDefaultRespawnLocation->GetActorLocation());  //设置玩家的默认重生点
+
+		ISGameplayMode->SaveInGameProgressData(LocalPlayerSaveGame); //玩家第一次进入游戏的时候，服务器会保存一次游戏的进度
 	}
 	else
 	{
@@ -607,7 +616,9 @@ void AISCharacter::LoadProgress()
 		HotBarItems->InventoryContainer = LocalPlayerSaveGame->HotBarItems;  //导入玩家的物品栏
 		PlayerBackPack->InventoryUpdate.Broadcast();
 		HotBarItems->InventoryUpdate.Broadcast();
-		
+
+		IISPlayerInterface::Execute_SetPlayerRespawnLocation(this,LocalPlayerSaveGame->PlayerSaveRespawnLocation);  //读取玩家设置的重生点
+
 
 		ISGameplayMode->LoadWorldState(GetWorld());  //加载世界状态
 		SetActorTransform(LocalPlayerSaveGame->PlayerTransform);  //将玩家传送到当前保存的位置
@@ -636,5 +647,19 @@ FString AISCharacter::GetPlayerName_Implementation() const
 {
 	AISPlayerState* SourceAS = GetPlayerState<AISPlayerState>();
 	return SourceAS->GetSourcePlayerName();
+}
+
+void AISCharacter::SetPlayerRespawnLocation_Implementation(const FVector& InLocation)
+{
+	IISPlayerInterface::SetPlayerRespawnLocation_Implementation(InLocation);
+	AISPlayerState* SourcePS = GetPlayerState<AISPlayerState>(); //获取角色的状态
+	
+	SourcePS->SetPlayerRespawnLocation(InLocation);  //设置角色的重生点
+}
+
+FVector AISCharacter::GetPlayerRespawnLocation() const
+{
+	AISPlayerState* SourceAS = GetPlayerState<AISPlayerState>();
+	return SourceAS->GetPlayerRespawnLocation();
 }
 

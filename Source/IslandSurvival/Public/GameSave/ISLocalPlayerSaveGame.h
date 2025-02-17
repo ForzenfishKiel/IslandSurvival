@@ -150,4 +150,6 @@ public:
 	//判断存档是否含有对于地图数据
 	bool HasMap(const FString& InMapName);
 
+	/************************保存玩家状态*****************************/
+	FVector PlayerSaveRespawnLocation; //保存玩家的重生位置
 };
