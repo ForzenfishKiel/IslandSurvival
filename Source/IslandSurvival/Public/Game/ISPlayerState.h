@@ -86,5 +86,6 @@ private:
 
 	//服务器出现更改自动同步到本地函数 属性点
 	UFUNCTION()
-	void OnRep_AttributePoints(int32 OldAttributePoints) const; 
+	void OnRep_AttributePoints(int32 OldAttributePoints) const;
+
 };

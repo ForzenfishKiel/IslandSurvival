@@ -32,7 +32,10 @@ void UISAbilitySystemComponent::AddCharacterPassiveAbility(TArray<TSubclassOf<UG
 		for(const TSubclassOf<UGameplayAbility>&AbilityClass:CharacterAbilities)
 		{
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass,1.f);
-			GiveAbilityAndActivateOnce(AbilitySpec);
+			if(!AbilitySpec.IsActive())
+			{
+				GiveAbilityAndActivateOnce(AbilitySpec);
+			}
 		}
 	}
 }

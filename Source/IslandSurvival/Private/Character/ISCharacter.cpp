@@ -89,9 +89,11 @@ void AISCharacter::Tick(float DeltaSeconds)
 void AISCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	AISPlayerState* SourceAS = GetPlayerState<AISPlayerState>();
 	if(HasAuthority())
 	{
 		InitAbilityActorInfo();  //服务器调用初始化操作
+
 	}
 	SetOwner(NewController);
 	
