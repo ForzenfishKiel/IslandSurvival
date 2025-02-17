@@ -94,8 +94,14 @@ void AISCharacter::PossessedBy(AController* NewController)
 		InitAbilityActorInfo();  //服务器调用初始化操作
 	}
 	SetOwner(NewController);
-
+	
+	AISPlayerController* SourcePC = Cast<AISPlayerController>(NewController);
+	//初始化控制器的游戏模式
+	FInputModeGameOnly InputMode;
+	SourcePC->SetInputMode(InputMode);
+	
 	LoadProgress(); //尝试加载角色的进度
+	
 	//AddCharacterActivateAbility(CharacterActivateAbilities);
 	//AddCharacterPassiveAbility(CharacterPassiveAbilities);
 }

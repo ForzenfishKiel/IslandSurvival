@@ -24,9 +24,6 @@ void AISPlayerController::BeginPlay()
 	{
 		InputSubsystem->AddMappingContext(CharacterInputMapping,0);  //添加增强输入到子系统
 	}
-	//初始化控制器的游戏模式
-	FInputModeGameOnly InputMode;
-	SetInputMode(InputMode);
 }
 
 void AISPlayerController::SetupInputComponent()
@@ -208,16 +205,16 @@ void AISPlayerController::QuitGameEvent_Implementation()
 
 void AISPlayerController::RespawnPlayer_Implementation()
 {
-	check(CharacterClass);
-	UnPossess();  //取消控制器的控制
+	UnPossess();
 	AISPlayerState* SourceAS = GetPlayerState<AISPlayerState>(); //获取角色状态
+	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this));
 
-	AISCharacter* SpawnCharacter = GetWorld()->SpawnActor<AISCharacter>(CharacterClass);
-	if(SpawnCharacter)
-	{
-		SpawnCharacter->SetActorLocation(SourceAS->GetPlayerRespawnLocation());
-		Possess(SpawnCharacter);  //控制器重新控制玩家
-	}
+	ISGameplayMode->RestartPlayer(this);
+	
+	bIsOpenStorage = false;
+	InputSubsystem->RemoveMappingContext(CharacterInputMenuMapping);
+	InputSubsystem->AddMappingContext(CharacterInputMapping,0);
+
 }
 
 AISCharacter* AISPlayerController::GetCharacterLocal() const
