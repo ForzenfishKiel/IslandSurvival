@@ -10,6 +10,7 @@
 #include "Game/ISGameplayMode.h"
 #include "Game/ISPlayerMainHUD.h"
 #include "Game/ISPlayerState.h"
+#include "MainMenu/ISMainMenuHUD.h"
 
 AISPlayerController::AISPlayerController()
 {
@@ -42,6 +43,7 @@ void AISPlayerController::SetupInputComponent()
 	ISEnhanceInputComponent->BindAction(IA_DemoBuilding,ETriggerEvent::Triggered,this,&AISPlayerController::OneClickToDemoBuilding);
 	IA_PauseGame->bTriggerWhenPaused = true;
 	ISEnhanceInputComponent->BindAction(IA_PauseGame,ETriggerEvent::Started,this,&AISPlayerController::PauseGame);
+	ISEnhanceInputComponent->BindAction(IA_SendMessage,ETriggerEvent::Started,this,&AISPlayerController::ReadyToSendMassage);
 }
 
 void AISPlayerController::Move(const struct FInputActionValue& InputActionValue)
@@ -196,6 +198,23 @@ void AISPlayerController::PauseGame()
 	PlayerMainHUD->PauseGameUIOpen();  //暂停游戏
 }
 
+void AISPlayerController::ReadyToSendMassage()
+{
+
+	AISPlayerMainHUD* SourceHUD = Cast<AISPlayerMainHUD>(GetHUD());  //获取HUD
+	if(!SourceHUD) return;
+	UISMainUIBase* MainMenuRef = SourceHUD->IsMainUI;
+	if(!MainMenuRef) return;
+
+	if(UISMainUIWidgetController*ISMainMenuWidgetController =  Cast<UISMainUIWidgetController>(MainMenuRef->WidgetController))
+	{
+		ISMainMenuWidgetController->OnReadyToSendMessage.Broadcast();
+		FInputModeGameAndUI InputMode;
+		SetInputMode(InputMode);
+		SetShowMouseCursor(true);
+	}
+}
+
 //返回主菜单选项
 void AISPlayerController::QuitGameEvent_Implementation()
 {
@@ -222,3 +241,12 @@ AISCharacter* AISPlayerController::GetCharacterLocal() const
 	return Cast<AISCharacter>(GetPawn());
 }
 
+
+void AISPlayerController::SendChatMassage_Implementation(const FText& InputText)
+{
+	if(InputText.IsEmpty()) return;  //不支持输入空消息
+	if(AISPlayerState* SourcePS = GetPlayerState<AISPlayerState>())
+	{
+		SourcePS->AddChatMessage(InputText); //发送消息
+	}
+}

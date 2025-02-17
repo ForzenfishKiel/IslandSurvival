@@ -6,6 +6,11 @@
 #include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "Game/ISAbilitySystemComponent.h"
 #include "Game/ISAttributeSet.h"
+#include "Game/ISPlayerController.h"
+#include "Game/ISPlayerMainHUD.h"
+#include "MainMenu/ISMainMenuHUD.h"
+#include "UI/ISMainUIBase.h"
+#include "WidgetController/ISMainUIWidgetController.h"
 
 AISPlayerState::AISPlayerState()
 {
@@ -29,6 +34,7 @@ void AISPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	DOREPLIFETIME(AISPlayerState,CurrentLevel);
 	DOREPLIFETIME(AISPlayerState, CurrentXP);
 	DOREPLIFETIME(AISPlayerState, AttributePoint);
+	DOREPLIFETIME(AISPlayerState, SyncData);
 }
 
 void AISPlayerState::AddToLevel(int32 InLevel)
@@ -122,6 +128,7 @@ void AISPlayerState::OnRep_AttributePoints(int32 OldAttributePoints) const
 {
 	OnPlayerAttributePointChange.Broadcast(AttributePoint);
 }
+
 FVector AISPlayerState::GetPlayerRespawnLocation() const
 {
 	return FVector();  //返回角色重生的位置
@@ -130,4 +137,13 @@ FVector AISPlayerState::GetPlayerRespawnLocation() const
 void AISPlayerState::SetPlayerRespawnLocation(const FVector& InPlayerRespawnLocation)
 {
 	/*设置角色重生的位置*/
+}
+
+void AISPlayerState::AddChatMessage_Implementation(const FText& InputText)
+{
+	SyncData.InputMassage = InputText;
+}
+void AISPlayerState::OnRep_ChatHistory()
+{
+	OnSendMassageEvent.Broadcast(SyncData.InputMassage);
 }

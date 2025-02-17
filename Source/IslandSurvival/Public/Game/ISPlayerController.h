@@ -14,6 +14,7 @@
 /**
  * 
  */
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpenInventoryEvent,APlayerController*,SourceController);
 class AISCharacter;
 UCLASS()
@@ -27,6 +28,7 @@ public:
 	FOnOpenInventoryEvent OnOpenInventoryEvent;
 
 	bool bIsOpenStorage = false;
+
 
 	UPROPERTY()
 	TObjectPtr<UEnhancedInputLocalPlayerSubsystem> InputSubsystem;
@@ -59,6 +61,8 @@ private:
 	TObjectPtr<UInputAction>IA_DemoBuilding;
 	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction>IA_PauseGame;
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputAction>IA_SendMessage;
 	void Move(const struct FInputActionValue&InputActionValue);
 	void LookUp(const struct FInputActionValue&InputActionValue);
 	void PrimaryInteract();
@@ -71,6 +75,9 @@ private:
 	void SecondaryInteract();
 	void OneClickToDemoBuilding();
 	void PauseGame();
+	void ReadyToSendMassage();
+	UFUNCTION(BlueprintCallable,Server,Reliable)
+	void SendChatMassage(const FText& InputText);
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void QuitGameEvent();
 	UFUNCTION(BlueprintCallable,Server,Reliable)

@@ -11,11 +11,36 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendMassageEvent,FText,SendMassage);
 UENUM(BlueprintType)
 enum class EAttributePointType : uint8
 {
 	None = 0 UMETA(DisplayName = "None"),
 	MaxHealth = 1 UMETA(DisplayName = "MaxHealth"),
+};
+// 支持网络同步的自定义结构体
+USTRUCT(BlueprintType)
+struct FPlayerSyncData
+{
+	GENERATED_BODY()
+	
+	FText InputMassage;
+
+	// 必须实现的网络序列化函数
+	bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
+	{
+		// FText序列化
+		Ar << InputMassage;
+		
+		bOutSuccess = true;
+		return true;
+	}
+};
+// 必须添加的模板特化
+template<>
+struct TStructOpsTypeTraits<FPlayerSyncData> : public TStructOpsTypeTraitsBase2<FPlayerSyncData>
+{
+	enum { WithNetSerializer = true };
 };
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -26,6 +51,8 @@ class ISLANDSURVIVAL_API AISPlayerState : public APlayerState,public IAbilitySys
 	GENERATED_BODY()
 public:
 	AISPlayerState();
+	UPROPERTY(BlueprintAssignable)
+	FOnSendMassageEvent OnSendMassageEvent;
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UISLevelUpInformation> ISLevelUpInformation;  //导入角色经验值数据表
 	UPROPERTY(EditDefaultsOnly)
@@ -59,6 +86,15 @@ public:
 	FVector GetPlayerRespawnLocation() const;
 	void SetPlayerRespawnLocation(const FVector& InPlayerRespawnLocation);
 
+
+	// 添加新消息（服务器调用）
+	UFUNCTION(Server,Reliable,Category = "Chat")
+	void AddChatMessage(const FText& InputText);
+
+	// 结构体同步变量
+	UPROPERTY(ReplicatedUsing=OnRep_ChatHistory)
+	FPlayerSyncData SyncData;
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAbilitySystemComponent> ISAbilitySystemComponent;
@@ -88,4 +124,6 @@ private:
 	UFUNCTION()
 	void OnRep_AttributePoints(int32 OldAttributePoints) const;
 
+	UFUNCTION()
+	void OnRep_ChatHistory();
 };

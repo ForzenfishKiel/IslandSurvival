@@ -9,6 +9,7 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReadyToSendMessage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangeSignature,float,NewValue);  //绑定玩家属性变化
 UCLASS(BlueprintType, Blueprintable)
 class ISLANDSURVIVAL_API UISMainUIWidgetController : public UISWidgetController
@@ -17,6 +18,10 @@ class ISLANDSURVIVAL_API UISMainUIWidgetController : public UISWidgetController
 public:
 	virtual void BindCallBackDependencies() override;
 	virtual void BroadcastInitialValues() override;
+	
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnReadyToSendMessage OnReadyToSendMessage;
 
 	UPROPERTY(BlueprintAssignable,Category = "GAS|Attributes")
 	FOnPlayerStateChangeSignature OnMaxHealthChange;  //最大生命值变化绑定
