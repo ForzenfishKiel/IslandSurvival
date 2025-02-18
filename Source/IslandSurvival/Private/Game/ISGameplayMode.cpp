@@ -13,7 +13,7 @@ void AISGameplayMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	LoginPlayerList.Add(NewPlayer);  //当客户端登录服务器时，向数组导入
+	LoginPlayerList.AddUnique(NewPlayer);  //当客户端登录服务器时，向数组导入
 }
 
 APlayerController* AISGameplayMode::FindPlayerControllerFromLocalPlayer(ULocalPlayer* InLocalPlayer) const

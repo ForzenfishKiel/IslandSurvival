@@ -34,7 +34,8 @@ void AISPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	DOREPLIFETIME(AISPlayerState,CurrentLevel);
 	DOREPLIFETIME(AISPlayerState, CurrentXP);
 	DOREPLIFETIME(AISPlayerState, AttributePoint);
-	DOREPLIFETIME(AISPlayerState, SyncData);
+	DOREPLIFETIME(AISPlayerState, InputMassage);
+	DOREPLIFETIME(AISPlayerState, SourcePlayerID);
 }
 
 void AISPlayerState::AddToLevel(int32 InLevel)
@@ -139,11 +140,12 @@ void AISPlayerState::SetPlayerRespawnLocation(const FVector& InPlayerRespawnLoca
 	/*设置角色重生的位置*/
 }
 
-void AISPlayerState::AddChatMessage_Implementation(const FText& InputText)
+void AISPlayerState::AddChatMessage_Implementation(const FText& InputText,const int32 InPlayerID)
 {
-	SyncData.InputMassage = InputText;
+	InputMassage = InputText;
+	SourcePlayerID = InPlayerID;
 }
 void AISPlayerState::OnRep_ChatHistory()
 {
-	OnSendMassageEvent.Broadcast(SyncData.InputMassage);
+	OnSendMassageEvent.Broadcast(InputMassage,SourcePlayerID);
 }

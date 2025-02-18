@@ -40,7 +40,7 @@ public:
 	TObjectPtr<UISTraderSpecialData> ISTraderSpecialData;
 
 	UPROPERTY()
-	TSet<TWeakObjectPtr<APlayerController>> LoginPlayerList;
+	TArray<TWeakObjectPtr<APlayerController>> LoginPlayerList;
 
 	APlayerController* FindPlayerControllerFromLocalPlayer(ULocalPlayer* InLocalPlayer) const;
 

@@ -245,8 +245,16 @@ AISCharacter* AISPlayerController::GetCharacterLocal() const
 void AISPlayerController::SendChatMassage_Implementation(const FText& InputText)
 {
 	if(InputText.IsEmpty()) return;  //不支持输入空消息
-	if(AISPlayerState* SourcePS = GetPlayerState<AISPlayerState>())
+	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this)); //获取游戏模式
+	AISPlayerState* SourcePS = GetPlayerState<AISPlayerState>();
+	for(auto ISPlayerController : ISGameplayMode->LoginPlayerList)
 	{
-		SourcePS->AddChatMessage(InputText); //发送消息
+		AISPlayerState* TargetPS = ISPlayerController->GetPlayerState<AISPlayerState>();
+		if(TargetPS == SourcePS)
+		{
+			SourcePS->AddChatMessage(InputText,SourcePS->GetPlayerId()); //发送消息
+			continue;
+		}
+		TargetPS->AddChatMessage(InputText,SourcePS->GetPlayerId()); //发送消息
 	}
 }

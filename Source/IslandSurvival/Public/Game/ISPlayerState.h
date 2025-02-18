@@ -11,36 +11,12 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendMassageEvent,FText,SendMassage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSendMassageEvent,FText,SendMassage,int32,PlayerID);
 UENUM(BlueprintType)
 enum class EAttributePointType : uint8
 {
 	None = 0 UMETA(DisplayName = "None"),
 	MaxHealth = 1 UMETA(DisplayName = "MaxHealth"),
-};
-// 支持网络同步的自定义结构体
-USTRUCT(BlueprintType)
-struct FPlayerSyncData
-{
-	GENERATED_BODY()
-	
-	FText InputMassage;
-
-	// 必须实现的网络序列化函数
-	bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
-	{
-		// FText序列化
-		Ar << InputMassage;
-		
-		bOutSuccess = true;
-		return true;
-	}
-};
-// 必须添加的模板特化
-template<>
-struct TStructOpsTypeTraits<FPlayerSyncData> : public TStructOpsTypeTraitsBase2<FPlayerSyncData>
-{
-	enum { WithNetSerializer = true };
 };
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -64,6 +40,9 @@ public:
 	FOnPlayerStateChanged OnPlayerLevelChanged;
 	FOnPlayerStateChanged OnPlayerXPChange;
 	FOnPlayerStateChanged OnPlayerAttributePointChange;  //属性点发生变化时
+
+	UPROPERTY(ReplicatedUsing = OnRep_ChatHistory)
+	FText InputMassage;
 
 	FORCEINLINE int32 GetPlayerLevel() const {return CurrentLevel;}  //获取角色当前的等级
 	void AddToLevel(int32 InLevel);
@@ -89,11 +68,8 @@ public:
 
 	// 添加新消息（服务器调用）
 	UFUNCTION(Server,Reliable,Category = "Chat")
-	void AddChatMessage(const FText& InputText);
+	void AddChatMessage(const FText& InputText,const int32 InPlayerID);
 
-	// 结构体同步变量
-	UPROPERTY(ReplicatedUsing=OnRep_ChatHistory)
-	FPlayerSyncData SyncData;
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -109,6 +85,8 @@ private:
 	int32 CurrentLevel = 1;
 	UPROPERTY(VisibleAnywhere,ReplicatedUsing = OnRep_AttributePoints)
 	int32 AttributePoint = 0;
+	UPROPERTY(Replicated)
+	int32 SourcePlayerID = -1;
 	UPROPERTY()
 	FVector PlayerRespawnLocation = FVector();  //角色保存的出生位置
 
