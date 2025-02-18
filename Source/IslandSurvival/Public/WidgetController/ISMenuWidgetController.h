@@ -56,4 +56,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable,Category = "GAS|Attributes")
 	FOnPlayerMenuStateChangeSignature OnCoinsChange;
+
+	UPROPERTY(BlueprintAssignable,Category = "GAS|Attributes")
+	FOnPlayerMenuStateChangeSignature OnDefineChange;
+
+	UPROPERTY(BlueprintAssignable,Category = "GAS|Attributes")
+	FOnPlayerMenuStateChangeSignature OnAttackChange;
 };

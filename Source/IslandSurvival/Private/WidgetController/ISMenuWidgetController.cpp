@@ -60,11 +60,21 @@ void UISMenuWidgetController::BindCallBackDependencies()
 	(const FOnAttributeChangeData& Data)
 	{
 		int NewValue = Data.NewValue;
-		FString NewValueString = FString::Printf(TEXT("金币不足！！！ NewValue: %d"), NewValue);
+		//FString NewValueString = FString::Printf(TEXT("金币不足！！！ NewValue: %d"), NewValue);
 
 		// 显示调试信息
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, NewValueString);
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, NewValueString);
 		OnCoinsChange.Broadcast(Data.NewValue);
+	});
+	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetArmorAttribute()).AddLambda([this]
+	(const FOnAttributeChangeData& Data)
+	{
+		OnDefineChange.Broadcast(Data.NewValue);
+	});
+	ISAbilitySystem->GetGameplayAttributeValueChangeDelegate(GetSourceAttributeSet()->GetAttackAttribute()).AddLambda([this]
+	(const FOnAttributeChangeData& Data)
+	{
+		OnAttackChange.Broadcast(Data.NewValue);
 	});
 }
 
@@ -80,6 +90,8 @@ void UISMenuWidgetController::BroadcastInitialValues()
 	OnMaxThirstChange.Broadcast(GetSourceAttributeSet()->GetMaxThirst());
 	OnThirstChange.Broadcast(GetSourceAttributeSet()->GetThirst());
 	OnCoinsChange.Broadcast(GetSourceAttributeSet()->GetCoins());
+	OnDefineChange.Broadcast(GetSourceAttributeSet()->GetArmor());
+	OnAttackChange.Broadcast(GetSourceAttributeSet()->GetAttack());
 }
 
 //经验值更改广播
