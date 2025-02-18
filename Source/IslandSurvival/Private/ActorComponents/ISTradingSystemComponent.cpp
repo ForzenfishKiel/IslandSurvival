@@ -151,6 +151,7 @@ void UISTradingSystemComponent::SetTradTarget_Implementation(const FItemInformat
 void UISTradingSystemComponent::OnRep_TraCoins_Implementation()
 {
 	OnTradingSucceeded.Broadcast(TradTarget,TargetCoins);
+	
 }
 
 

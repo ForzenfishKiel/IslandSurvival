@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
 #include "AttributeSet.h"
+#include "ActorComponents/ISBGMManagerComponent.h"
 #include "DataAsset/ISLevelUpInformation.h"
 #include "ISPlayerState.generated.h"
 /**
@@ -69,6 +70,13 @@ public:
 	// 添加新消息（服务器调用）
 	UFUNCTION(Server,Reliable,Category = "Chat")
 	void AddChatMessage(const FText& InputText,const int32 InPlayerID);
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UISBGMManagerComponent* BGMManager;
+	
+	// 网络同步函数
+	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
+	void Multicast_PlayBGM(EBGMType Type, float FadeTime);
 
 
 protected:
