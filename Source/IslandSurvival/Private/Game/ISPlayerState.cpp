@@ -141,6 +141,14 @@ void AISPlayerState::SetPlayerRespawnLocation(const FVector& InPlayerRespawnLoca
 	/*设置角色重生的位置*/
 }
 
+void AISPlayerState::Multicast_StopBGM_Implementation(EBGMType Type, float FadeTime)
+{
+	if(BGMManager)
+	{
+		BGMManager->StopBGM(FadeTime);
+	}
+}
+
 void AISPlayerState::Multicast_PlayBGM_Implementation(EBGMType Type, float FadeTime)
 {
 	if(BGMManager)

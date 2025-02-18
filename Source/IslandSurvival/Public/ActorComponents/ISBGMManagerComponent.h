@@ -33,6 +33,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void StopBGM(float FadeTime = 1.0f);
 
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -55,8 +56,15 @@ private:
 	void LoadAndPlayBGM(EBGMType Type, float FadeTime);
 	void OnAssetLoaded(EBGMType Type, float FadeTime);
 
+	//切换音乐
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void SwitchingBGM();
+
 	// 淡出控制
 	void FadeOutCurrent(float FadeTime);
 	FTimerHandle FadeTimerHandle;
+
+	UPROPERTY()
+	EBGMType ISCurrentBgmType;
 		
 };

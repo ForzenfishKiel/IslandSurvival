@@ -40,6 +40,7 @@ void UISBGMManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 //开始播放bgm，异步加载资源以后，创建回调函数加载资产
 void UISBGMManagerComponent::PlayBGM(EBGMType Type, float FadeTime)
 {
+	ISCurrentBgmType = Type;
 	if(!BGMLibrary.Contains(Type)) return;
 
 	// 异步加载资源
@@ -74,13 +75,14 @@ void UISBGMManagerComponent::OnAssetLoaded(EBGMType Type, float FadeTime)
 		CurrentAudioComponent = UGameplayStatics::CreateSound2D(
 			GetWorld(),
 			LoadedSound,
-			1.0f,
+			0.5f,
 			1.0f,
 			0.0f,
 			nullptr,
 			true,
 			true
 		);
+		CurrentAudioComponent->OnAudioFinished.AddDynamic(this,&UISBGMManagerComponent::SwitchingBGM);
 		// 设置淡入
 		if(FadeTime > 0)
 		{
@@ -93,7 +95,7 @@ void UISBGMManagerComponent::OnAssetLoaded(EBGMType Type, float FadeTime)
 	}
 }
 
-//淡出当前的音频播放管理器
+//淡出并关闭当前的音频播放管理器
 void UISBGMManagerComponent::FadeOutCurrent(float FadeTime)
 {
 	if(CurrentAudioComponent&&CurrentAudioComponent->IsPlaying())
@@ -114,5 +116,14 @@ void UISBGMManagerComponent::FadeOutCurrent(float FadeTime)
 			CurrentAudioComponent->Stop();
 			CurrentAudioComponent->DestroyComponent();
 		}
+	}
+}
+
+void UISBGMManagerComponent::SwitchingBGM()
+{
+	if(CurrentAudioComponent)
+	{
+		CurrentAudioComponent->DestroyComponent();  //删除当前播放管理器
+		PlayBGM(ISCurrentBgmType,2.f);
 	}
 }

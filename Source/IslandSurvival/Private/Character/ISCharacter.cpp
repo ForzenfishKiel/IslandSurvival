@@ -177,10 +177,9 @@ void AISCharacter::LevelUp_Implementation()
 	IISPlayerInterface::LevelUp_Implementation();
 }
 
-AISPlayerState* AISCharacter::GetPlayerState_Implementation()
+AISPlayerState* AISCharacter::GetSourcePlayerState_Implementation()
 {
 	AISPlayerState*SourcePlayerState = GetPlayerState<AISPlayerState>();
-	check(SourcePlayerState);
 	return SourcePlayerState;
 }
 

@@ -23,38 +23,38 @@ class ISLANDSURVIVAL_API IISPlayerInterface
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void AddToXP(int32 XP);
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	int32 FindLevelFromXP(int32 InXP);
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	int32 GetXP();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	int32 GetLevel();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	int32 GetAttributePointsReward(int32 Level) const;  //从等级中获取当前技能点
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	int32 GetSpellPointsReward(int32 Level) const; //从等级中获取当前技能点
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void AddToPlayerLevel(int32 InPlayerLevel);  //增加等级
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void AddToAttributePoints(int32 InAttributePoints);//增加属性点
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void AddToSpellPoints(int32 InSpellPoints);
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void LevelUp();
 	
-	UFUNCTION(BlueprintNativeEvent)
-	AISPlayerState*GetPlayerState();
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	AISPlayerState*GetSourcePlayerState();
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	AISCharacter* GetSourceCharacter();

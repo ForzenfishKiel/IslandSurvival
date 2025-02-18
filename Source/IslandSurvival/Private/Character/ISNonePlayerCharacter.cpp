@@ -94,7 +94,7 @@ void AISNonePlayerCharacter::BindCharacterAttirbuteChange(AActor* TargetActor)
 	AISCharacter* SourceCharacter = IISPlayerInterface::Execute_GetSourceCharacter(TargetActor);
 	if(!SourceCharacter) return;
 
-	AISPlayerState* SourcePlayerState = IISPlayerInterface::Execute_GetPlayerState(TargetActor);
+	AISPlayerState* SourcePlayerState = IISPlayerInterface::Execute_GetSourcePlayerState(TargetActor);
 	if(!SourcePlayerState) return;
 
 	UAbilitySystemComponent* SourceASC = SourcePlayerState->GetAbilitySystemComponent();

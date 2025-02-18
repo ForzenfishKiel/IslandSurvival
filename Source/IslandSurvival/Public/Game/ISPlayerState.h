@@ -78,6 +78,8 @@ public:
 	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
 	void Multicast_PlayBGM(EBGMType Type, float FadeTime);
 
+	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
+	void Multicast_StopBGM(EBGMType Type, float FadeTime);
 
 protected:
 	UPROPERTY(BlueprintReadOnly)

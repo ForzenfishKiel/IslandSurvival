@@ -45,7 +45,7 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	//从角色的状态里获取加点的对应乘区值
 	if(Spec.GetContext().GetSourceObject()->Implements<UISPlayerInterface>())
 	{
-		AISPlayerState*SourcePlayerState = IISPlayerInterface::Execute_GetPlayerState(Spec.GetContext().GetSourceObject());
+		AISPlayerState*SourcePlayerState = IISPlayerInterface::Execute_GetSourcePlayerState(Spec.GetContext().GetSourceObject());
 		check(SourcePlayerState);
 		UCurveTable*AttributePointCT = SourcePlayerState->PlayerAttributePointsTable;  //获取对应CT表
 		if(!AttributePointCT) return 0.f;

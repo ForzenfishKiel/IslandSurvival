@@ -190,7 +190,7 @@ FGameplayAbilitySpecHandle AISEnemy::FindActivateAbility_Implementation(const FG
 
 void AISEnemy::ApplyDamageToTarget_Implementation(AActor* Target)
 {
-	AISPlayerState* CharacterState = IISPlayerInterface::Execute_GetPlayerState(Target);
+	AISPlayerState* CharacterState = IISPlayerInterface::Execute_GetSourcePlayerState(Target);
 	if(!CharacterState) return;
 
 	UAbilitySystemComponent* TargetASC = CharacterState->GetAbilitySystemComponent();

@@ -219,6 +219,8 @@ void AISPlayerController::ReadyToSendMassage()
 void AISPlayerController::QuitGameEvent_Implementation()
 {
 	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this));  //获取游戏模式
+	AISPlayerState* SourcePS = GetPlayerState<AISPlayerState>();
+	SourcePS->Multicast_StopBGM(EBGMType::Defeat,0.f);  //停止播放音乐
 	ISGameplayMode->ReturnToMainMenu();
 }
 

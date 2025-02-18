@@ -70,7 +70,7 @@ void UISTradingSystemComponent::TradBegin_Implementation(AActor* TargetActor, co
 	
 	check(NPCTradInComingCoinEffect);  //断言，交易的对象不能是不可购买的
 	
-	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetPlayerState(GetOwner());
+	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetSourcePlayerState(GetOwner());
 	if(!PlayerState) return;  //检查玩家的状态
 
 	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(PlayerState);  //获取自身的ASC
@@ -101,7 +101,7 @@ void UISTradingSystemComponent::SaleBegin_Implementation(AActor* TargetActor, co
 	
 	if(!CheckIsCanBeSale(TargetActor,InTargetID,TargetIndex)) return;  //如果无法出售（对方不购买自己的物品）则当前无法出售
 
-	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetPlayerState(GetOwner());
+	AISPlayerState* PlayerState = IISPlayerInterface::Execute_GetSourcePlayerState(GetOwner());
 	if(!PlayerState) return;  //检查玩家的状态
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
