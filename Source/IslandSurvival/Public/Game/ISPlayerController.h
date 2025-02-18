@@ -63,10 +63,13 @@ private:
 	TObjectPtr<UInputAction>IA_PauseGame;
 	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction>IA_SendMessage;
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputAction> IA_Jump;
 	void Move(const struct FInputActionValue&InputActionValue);
 	void LookUp(const struct FInputActionValue&InputActionValue);
 	void PrimaryInteract();
 	void ChooseHotBar(int32 InputIndex);
+	void PlayerJump();
 	UFUNCTION(Client,Reliable)
 	void OpenUI(); //打开UI应该在客户端完成，因为其他客户端不需要被打开
 	void InputPressedAbility(const FGameplayTag InputTag);

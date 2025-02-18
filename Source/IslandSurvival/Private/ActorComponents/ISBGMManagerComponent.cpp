@@ -68,6 +68,7 @@ void UISBGMManagerComponent::OnAssetLoaded(EBGMType Type, float FadeTime)
 {
 	if(USoundBase* LoadedSound = Cast<USoundBase>(BGMLibrary[Type].Get()))
 	{
+		if(GetOwner()->HasAuthority()) return;
 		// 淡出当前音乐
 		FadeOutCurrent(FadeTime);
 

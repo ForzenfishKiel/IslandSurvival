@@ -44,6 +44,7 @@ void AISPlayerController::SetupInputComponent()
 	IA_PauseGame->bTriggerWhenPaused = true;
 	ISEnhanceInputComponent->BindAction(IA_PauseGame,ETriggerEvent::Started,this,&AISPlayerController::PauseGame);
 	ISEnhanceInputComponent->BindAction(IA_SendMessage,ETriggerEvent::Started,this,&AISPlayerController::ReadyToSendMassage);
+	ISEnhanceInputComponent->BindAction(IA_Jump,ETriggerEvent::Started,this,&AISPlayerController::PlayerJump);
 }
 
 void AISPlayerController::Move(const struct FInputActionValue& InputActionValue)
@@ -102,6 +103,13 @@ void AISPlayerController::ChooseHotBar(int32 InputIndex)
 	AISCharacter*SourceCharacter = Cast<AISCharacter>(GetPawn());
 	UISHotBarInventory*PlayerHotBar = SourceCharacter->CharacterHotBarInventory;  //获取角色的物品栏系统
 	PlayerHotBar->WhenInventoryChange(PlayerHotBar,InputIndex);
+}
+
+void AISPlayerController::PlayerJump()
+{
+	AISCharacter* SourceCharacter = IISPlayerInterface::Execute_GetSourceCharacter(GetPawn());
+	if(!SourceCharacter) return;
+	SourceCharacter->Jump();
 }
 
 void AISPlayerController::OpenUI_Implementation()

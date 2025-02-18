@@ -150,8 +150,10 @@ void UISTradingSystemComponent::SetTradTarget_Implementation(const FItemInformat
 
 void UISTradingSystemComponent::OnRep_TraCoins_Implementation()
 {
-	OnTradingSucceeded.Broadcast(TradTarget,TargetCoins);
-	
+	if (GetOwnerRole() == ROLE_SimulatedProxy || GetOwnerRole() == ROLE_AutonomousProxy)
+	{
+		OnTradingSucceeded.Broadcast(TradTarget, TargetCoins);
+	}
 }
 
 
