@@ -233,7 +233,6 @@ void AISPlayerController::RespawnPlayer_Implementation()
 	bIsOpenStorage = false;
 	InputSubsystem->RemoveMappingContext(CharacterInputMenuMapping);
 	InputSubsystem->AddMappingContext(CharacterInputMapping,0);
-
 }
 
 AISCharacter* AISPlayerController::GetCharacterLocal() const
@@ -241,12 +240,13 @@ AISCharacter* AISPlayerController::GetCharacterLocal() const
 	return Cast<AISCharacter>(GetPawn());
 }
 
-
+//向服务器发送信息
 void AISPlayerController::SendChatMassage_Implementation(const FText& InputText)
 {
 	if(InputText.IsEmpty()) return;  //不支持输入空消息
 	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this)); //获取游戏模式
 	AISPlayerState* SourcePS = GetPlayerState<AISPlayerState>();
+	//从mode获取当前登录的所有玩家，向所有玩家包括自己发送信息
 	for(auto ISPlayerController : ISGameplayMode->LoginPlayerList)
 	{
 		AISPlayerState* TargetPS = ISPlayerController->GetPlayerState<AISPlayerState>();
