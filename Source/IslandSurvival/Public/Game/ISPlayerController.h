@@ -65,6 +65,8 @@ private:
 	TObjectPtr<UInputAction>IA_SendMessage;
 	UPROPERTY(EditAnywhere,Category = "Input")
 	TObjectPtr<UInputAction> IA_Jump;
+	UPROPERTY(EditAnywhere,Category = "Input")
+	TObjectPtr<UInputAction> IA_OpenCheatMenu;
 	void Move(const struct FInputActionValue&InputActionValue);
 	void LookUp(const struct FInputActionValue&InputActionValue);
 	void PrimaryInteract();
@@ -87,6 +89,10 @@ private:
 	void RespawnPlayer();
 	UFUNCTION(BlueprintCallable,Client,Reliable)
 	void RespawnPlayerOnClient();
+	UFUNCTION(BlueprintCallable)
+	void OpenCheatMenuUI();
+	UFUNCTION(BlueprintCallable)
+	void CloseCheatMenuUI(APlayerController* TargetController);
 	UFUNCTION(BlueprintCallable)
 	AISCharacter*GetCharacterLocal() const;
 

@@ -37,7 +37,10 @@ public:
 	TSubclassOf<UISMenuUIBase> ISDieHUDClass;
 	UPROPERTY()
 	TObjectPtr<UISMenuUIBase> ISDieHUD; //角色死亡窗口
-
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> CheatMenuClass;
+	UPROPERTY()
+	TObjectPtr<UISMenuUIBase> CheatMenuRef;
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UISMainUIWidgetController>ISMainUIWidgetControllerClass;

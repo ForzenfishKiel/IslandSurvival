@@ -427,7 +427,7 @@ void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName 
 	if (!TargetGameInstance&&TargetNums<1) return;
 	const UDataTable*UserDT = TargetGameInstance->ItemDataTable;
 	check(UserDT);
-	const FItemInformation*UserInfo = UserDT->FindRow<FItemInformation>(TargetID,TEXT("name"));
+	const FItemInformation* UserInfo = UserDT->FindRow<FItemInformation>(TargetID,TEXT("name"));
 	if (UserInfo)
 	{
 		FItemInformation TargetItemInfo = *UserInfo;

@@ -43,6 +43,8 @@ void AISPlayerMainHUD::InitUserWidget(const FCharacterParams& CharacterParams)
 	ISDieHUD = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),ISDieHUDClass);
 
 	ISPauseGameUIRef = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),ISPauseGameUIClass);
+
+	CheatMenuRef = CreateWidget<UISMenuUIBase>(GetOwningPlayerController(),CheatMenuClass);  //创建开发者模式窗口
 	
 	IsMainUI->SetWidgetController(MainUIWidgetController);
 	ISMenuUI->SetWidgetController(MenuWidgetController);

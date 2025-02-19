@@ -45,6 +45,7 @@ void AISPlayerController::SetupInputComponent()
 	ISEnhanceInputComponent->BindAction(IA_PauseGame,ETriggerEvent::Started,this,&AISPlayerController::PauseGame);
 	ISEnhanceInputComponent->BindAction(IA_SendMessage,ETriggerEvent::Started,this,&AISPlayerController::ReadyToSendMassage);
 	ISEnhanceInputComponent->BindAction(IA_Jump,ETriggerEvent::Started,this,&AISPlayerController::PlayerJump);
+	ISEnhanceInputComponent->BindAction(IA_OpenCheatMenu,ETriggerEvent::Started,this,&AISPlayerController::OpenCheatMenuUI);
 }
 
 void AISPlayerController::Move(const struct FInputActionValue& InputActionValue)
@@ -270,5 +271,48 @@ void AISPlayerController::SendChatMassage_Implementation(const FText& InputText)
 			continue;
 		}
 		TargetPS->AddChatMessage(InputText,SourcePS->GetPlayerId()); //发送消息
+	}
+}
+
+//打开开发者模式面板
+void AISPlayerController::OpenCheatMenuUI()
+{
+	OnOpenInventoryEvent.AddDynamic(this,&AISPlayerController::CloseCheatMenuUI);
+	AISPlayerMainHUD*SourceHUD = Cast<AISPlayerMainHUD>(GetHUD()); //获取角色HUD
+	if(!SourceHUD) return;
+	UISMenuUIBase* CheatMenuUI = SourceHUD->CheatMenuRef; //获取开发者模式面板的UI
+	if(!CheatMenuUI) return;
+	if(!CheatMenuUI->IsVisible())
+	{
+		CheatMenuUI->AddToViewport();
+		SetInputMode(FInputModeGameAndUI());
+		bShowMouseCursor = true;
+		CheatMenuUI->ImportGameItemTableData();  //导入物品表
+		InputSubsystem->RemoveMappingContext(CharacterInputMapping);
+		InputSubsystem->AddMappingContext(CharacterInputMenuMapping,0);
+		bIsOpenStorage = true;
+	}
+	else
+	{
+		CloseCheatMenuUI(this);
+	}
+}
+
+//关闭开发者模式面板
+void AISPlayerController::CloseCheatMenuUI(APlayerController* TargetController)
+{
+	OnOpenInventoryEvent.RemoveDynamic(this,&AISPlayerController::CloseCheatMenuUI);
+	AISPlayerMainHUD*SourceHUD = Cast<AISPlayerMainHUD>(GetHUD()); //获取角色HUD
+	if(!SourceHUD) return;
+	UISMenuUIBase* CheatMenuUI = SourceHUD->CheatMenuRef; //获取开发者模式面板的UI
+	if(!CheatMenuUI) return;
+	if(CheatMenuUI->IsVisible())
+	{
+		CheatMenuUI->RemoveFromParent();  //移除
+		SetInputMode(FInputModeGameOnly());
+		bShowMouseCursor = false;
+		InputSubsystem->RemoveMappingContext(CharacterInputMenuMapping);
+		InputSubsystem->AddMappingContext(CharacterInputMapping,0);
+		bIsOpenStorage = false;
 	}
 }

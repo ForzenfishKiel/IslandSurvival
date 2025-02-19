@@ -48,3 +48,11 @@ void UISMenuUIBase::SetWidgetOwner(UObject* TargetWidgetOwner)
 	WidgetOwner = TargetWidgetOwner;
 	WidgetOwnerWasSet();
 }
+
+void UISMenuUIBase::ImportGameItemTableData()
+{
+	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())); //获取游戏实例
+	UDataTable* PlayerItemDataTable = ISGameInstance->ItemDataTable;
+	CraftingInfo.ItemCraftingInfoDataTable = PlayerItemDataTable;
+	ItemTableDataWasSet();
+}

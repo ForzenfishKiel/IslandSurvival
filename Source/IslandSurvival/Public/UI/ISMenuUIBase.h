@@ -43,4 +43,8 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetOwnerWasSet();
+	
+	void ImportGameItemTableData(); //导入游戏的物品表
+	UFUNCTION(BlueprintImplementableEvent)
+	void ItemTableDataWasSet();
 };
