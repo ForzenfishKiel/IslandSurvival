@@ -131,6 +131,7 @@ void UISEquipmentComponent::SpawnEquipOnClient_Implementation()
 {
 	if(!Equipable) return;
 	USceneComponent*AttachFirstPerson = Equipable->GetAttachTarget(Cast<APawn>(Equipable->GetOwner()));
+	if(!AttachFirstPerson) return;
 	Equipable->SetActorRelativeTransform(FTransform::Identity);
 	Equipable->SetEquipableCollision();
 	Equipable->AttachToComponent(AttachFirstPerson,FAttachmentTransformRules::KeepRelativeTransform,Fp_AttachSocket);

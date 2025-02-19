@@ -574,26 +574,41 @@ void AISCharacter::LoadProgress()
 	UISGameInstance* ISGameInstance = Cast<UISGameInstance>(GetGameInstance());
 
 	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this));
-	
+
+	AISPlayerState* SourceAS = Cast<AISPlayerState>(GetPlayerState<AISPlayerState>());
 
 	if(!ISGameInstance && !ISGameplayMode) return;
 
 	//获取当前游玩的存档
 	UISLocalPlayerSaveGame* LocalPlayerSaveGame = ISGameplayMode->RetrieveInGameSaveData();
+	if(ISGameInstance->bIsMultPlayerMode)
+	{
+		SourceAS->SetLevel(1);  //设置玩家保存的等级
+		SourceAS->SetXP(0);  //设置玩家保存的经验
+		SourceAS->SetAttributePoint(0); //设置玩家保存的属性点
+		//初始化玩家属性
+		InitializePlayerAttribute(SourceASC,PlayerDefaultAttribute);
+		InitializePlayerAttribute(SourceASC,PlayerSecondaryAttribute);
+		
+		//初始化玩家技能和被动技能
+		AddCharacterActivateAbility(CharacterActivateAbilities);
+		AddCharacterPassiveAbility(CharacterPassiveAbilities);
+		
+		AActor* PlayerDefaultRespawnLocation = ISGameplayMode->ChoosePlayerStart(GetInstigatorController()); //获取玩家默认的重生点
+		IISPlayerInterface::Execute_SetPlayerRespawnLocation(this,PlayerDefaultRespawnLocation->GetActorLocation());  //设置玩家的默认重生点
+		return;
+	}
+	
 	if(! LocalPlayerSaveGame) return;
 	
 	SetPlayerName(LocalPlayerSaveGame->PlayerName);
 	
-	//如果玩家是第一次进入游戏
-	if(AISPlayerState* SourceAS = Cast<AISPlayerState>(GetPlayerState<AISPlayerState>()))
+	//玩家是否是第一次进入游戏
+	if(ISGameInstance->bFirstTimeStartGame)
 	{
 		SourceAS->SetLevel(LocalPlayerSaveGame->PlayerLevel);  //设置玩家保存的等级
 		SourceAS->SetXP(LocalPlayerSaveGame->XP);  //设置玩家保存的经验
 		SourceAS->SetAttributePoint(LocalPlayerSaveGame->AttributePoints); //设置玩家保存的属性点
-	}
-	//玩家是否是第一次进入游戏
-	if(ISGameInstance->bFirstTimeStartGame)
-	{
 		//初始化玩家属性
 		InitializePlayerAttribute(SourceASC,PlayerDefaultAttribute);
 		InitializePlayerAttribute(SourceASC,PlayerSecondaryAttribute);

@@ -15,6 +15,7 @@
 
 USceneComponent* AISEquipable::GetAttachTarget(APawn* TargetPawn) const
 {
+	if(!TargetPawn) return nullptr;
 	USceneComponent*AttachTarget = TargetPawn->GetRootComponent();
 	if(AISCharacter*TargetCharacter = Cast<AISCharacter>(TargetPawn))
 	{

@@ -83,6 +83,9 @@ void UISBGMManagerComponent::OnAssetLoaded(EBGMType Type, float FadeTime)
 			true,
 			true
 		);
+
+		if(!CurrentAudioComponent) return;
+		CurrentAudioComponent->SetIsReplicated(true);
 		CurrentAudioComponent->OnAudioFinished.AddDynamic(this,&UISBGMManagerComponent::SwitchingBGM);
 		// 设置淡入
 		if(FadeTime > 0)

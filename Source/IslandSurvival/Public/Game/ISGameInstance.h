@@ -54,6 +54,10 @@ public:
 	//是否为第一次进入游戏
 	bool bFirstTimeStartGame = false;
 
+	//是否为多人模式启动
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool bIsMultPlayerMode = false;
+
 	UPROPERTY()
 	TArray<FISSaveGames> SaveGames;
 };
