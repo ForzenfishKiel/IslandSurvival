@@ -135,7 +135,7 @@ void UISEquipmentComponent::SpawnEquipOnClient_Implementation()
 	Equipable->SetActorRelativeTransform(FTransform::Identity);
 	Equipable->SetEquipableCollision();
 	Equipable->AttachToComponent(AttachFirstPerson,FAttachmentTransformRules::KeepRelativeTransform,Fp_AttachSocket);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("客户端触发！！！"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("客户端触发！！！"));
 }
 
 //UnEquip Run On Server

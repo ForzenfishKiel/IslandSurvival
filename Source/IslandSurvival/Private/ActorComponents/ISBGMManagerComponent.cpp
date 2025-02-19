@@ -47,11 +47,9 @@ void UISBGMManagerComponent::PlayBGM(EBGMType Type, float FadeTime)
 	{
 		FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
 
-		if(ActiveAssetHandle && CurrentAudioComponent)
+		if(ActiveAssetHandle)
 		{
 			ActiveAssetHandle->ReleaseHandle();
-			CurrentAudioComponent->Stop();
-			CurrentAudioComponent->DestroyComponent();
 		}
 		// 创建新句柄并存入容器
 		ActiveAssetHandle = Streamable.RequestAsyncLoad(
@@ -141,6 +139,7 @@ void UISBGMManagerComponent::SwitchingBGM()
 	if(CurrentAudioComponent)
 	{
 		CurrentAudioComponent->DestroyComponent();  //删除当前播放管理器
+		CurrentAudioComponent = nullptr;
 		UnLoadBGM(ISCurrentBgmType);
 		PlayBGM(ISCurrentBgmType,2.f);
 	}

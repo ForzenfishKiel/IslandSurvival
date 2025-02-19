@@ -261,7 +261,7 @@ void UISItemsContainer::DiscardItemFromID_Implementation(const int32 TargetID, c
 
 void UISItemsContainer::OnRep_ContainerChange()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("本地数组更新变化"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("本地数组更新变化"));
 	InventoryUpdate.Broadcast();
 }
 
@@ -443,8 +443,8 @@ void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName 
 			TargetHotBar->ItemPickup.Broadcast(TargetItemInfo,0);
 			ItemPickupOnUI.Broadcast(TargetItemInfo);
 			TargetHotBar->InventoryUpdate.Broadcast();
-			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);
+			//FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);
 			return;
 		}
 		//物品加进角色背包
@@ -453,11 +453,11 @@ void UISItemsContainer::PickUpItemForID_Implementation(APawn* TargetPawn, FName 
 			TargetInventory->ItemPickup.Broadcast(TargetItemInfo,0);
 			ItemPickupOnUI.Broadcast(TargetItemInfo);
 			TargetInventory->InventoryUpdate.Broadcast();
-			FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);
+			//FString ItemNameToPrint = FString::Printf(TEXT("已拾取: %s"), *UserInfo->ItemName.ToString());
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *ItemNameToPrint);
 			return;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("背包已满！！"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("背包已满！！"));
 	}
 }
 

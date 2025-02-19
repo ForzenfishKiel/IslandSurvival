@@ -220,7 +220,7 @@ bool UISBuildingComponent::CheckBuildFloating()
 	FVector HalfSize = StaticExtent/HalfSizeFloat;
 
 	return ( UKismetSystemLibrary::BoxTraceMulti(GetOwner(),StaticOrigin,StaticOrigin,HalfSize,FRotator(0,RootSceneRotation.Yaw,0),
-		TraceTypeQuery18,false,IgnoreActor,EDrawDebugTrace::ForDuration,Hits,true,FLinearColor::Red,FLinearColor::Green,1.f));
+		TraceTypeQuery18,false,IgnoreActor,EDrawDebugTrace::None,Hits,true,FLinearColor::Red,FLinearColor::Green,1.f));
 }
 //检查建筑物是否放置在地基上
 bool UISBuildingComponent::CheckBuildOnFoundation()

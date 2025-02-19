@@ -403,6 +403,8 @@ void AISCharacter::Die()
 
 	ClearPlayerMainHUD();  //删除玩家的主UI
 
+	StopBGM(EBGMType::LevelDefault,0.f);
+
 	MenuWindowOpen(this);  //打开死亡菜单
 
 	MulticastHandleDeath();  //多播死亡画面

@@ -21,7 +21,7 @@ void UWaitCharacterSpeedChangeToZero::TickTask(float DeltaTime)
 	{
 		if(!ISCharacter->CheckIsFastRun())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("STOP"));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("STOP"));
 			OnSpeedChange.Broadcast();
 		}
 	}
