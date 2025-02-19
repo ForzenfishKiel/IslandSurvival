@@ -85,6 +85,8 @@ private:
 	void QuitGameEvent();
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void RespawnPlayer();
+	UFUNCTION(BlueprintCallable,Client,Reliable)
+	void RespawnPlayerOnClient();
 	UFUNCTION(BlueprintCallable)
 	AISCharacter*GetCharacterLocal() const;
 

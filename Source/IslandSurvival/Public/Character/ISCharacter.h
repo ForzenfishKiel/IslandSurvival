@@ -77,6 +77,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CheckIsFastRun();
 
+		
+	// 网络同步函数
+	UFUNCTION(BlueprintCallable)
+	void PlayBGM(EBGMType Type, float FadeTime);
+
+	UFUNCTION(BlueprintCallable)
+	void StopBGM(EBGMType Type, float FadeTime);
+
 
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	bool bIsDead = false;
@@ -85,7 +93,10 @@ public:
 	TSubclassOf<UGameplayEffect>PlayerDefaultAttribute;
 	UPROPERTY(EditAnywhere,Category = "Config")
 	TSubclassOf<UGameplayEffect>PlayerSecondaryAttribute;
+
 	
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<UISBGMManagerComponent> BGMManager;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UCameraComponent> CameraComponent;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)

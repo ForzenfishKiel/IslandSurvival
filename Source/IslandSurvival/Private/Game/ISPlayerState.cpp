@@ -20,8 +20,7 @@ AISPlayerState::AISPlayerState()
 	ISAbilitySystemComponent->SetIsReplicated(true);  //设置复制行为为可复制
 	ISAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);  //设置ASC仅仅被复制到拥有者的客户端
 	ISAttributeSet = CreateDefaultSubobject<UISAttributeSet>(TEXT("ISAttributeSet"));
-	BGMManager = CreateDefaultSubobject<UISBGMManagerComponent>(TEXT("ISBGMManagerComponent"));
-	BGMManager->SetIsReplicated(true);
+
 }
 
 UAbilitySystemComponent* AISPlayerState::GetAbilitySystemComponent() const
@@ -139,22 +138,6 @@ FVector AISPlayerState::GetPlayerRespawnLocation() const
 void AISPlayerState::SetPlayerRespawnLocation(const FVector& InPlayerRespawnLocation)
 {
 	/*设置角色重生的位置*/
-}
-
-void AISPlayerState::Multicast_StopBGM_Implementation(EBGMType Type, float FadeTime)
-{
-	if(BGMManager)
-	{
-		BGMManager->StopBGM(FadeTime);
-	}
-}
-
-void AISPlayerState::Multicast_PlayBGM_Implementation(EBGMType Type, float FadeTime)
-{
-	if(BGMManager)
-	{
-		BGMManager->PlayBGM(Type, FadeTime);
-	}
 }
 
 void AISPlayerState::AddChatMessage_Implementation(const FText& InputText,const int32 InPlayerID)

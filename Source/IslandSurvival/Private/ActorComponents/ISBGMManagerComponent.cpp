@@ -42,14 +42,25 @@ void UISBGMManagerComponent::PlayBGM(EBGMType Type, float FadeTime)
 {
 	ISCurrentBgmType = Type;
 	if(!BGMLibrary.Contains(Type)) return;
-
-	// 异步加载资源
-	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
 	
-	AssetLoaderHandle = Streamable.RequestAsyncLoad(
-		BGMLibrary[Type].ToSoftObjectPath(),
-		FStreamableDelegate::CreateUObject(this, &UISBGMManagerComponent::OnAssetLoaded, Type, FadeTime)
-	);
+	if(!CurrentAudioComponent)
+	{
+		FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+
+		if(ActiveAssetHandle && CurrentAudioComponent)
+		{
+			ActiveAssetHandle->ReleaseHandle();
+			CurrentAudioComponent->Stop();
+			CurrentAudioComponent->DestroyComponent();
+		}
+		// 创建新句柄并存入容器
+		ActiveAssetHandle = Streamable.RequestAsyncLoad(
+			BGMLibrary[Type].ToSoftObjectPath(),
+			FStreamableDelegate::CreateUObject(this, &UISBGMManagerComponent::OnAssetLoaded, Type, FadeTime),
+			FStreamableManager::AsyncLoadHighPriority,
+			true // 不自动释放句柄
+		);
+	}
 }
 
 //停止播放bgm
@@ -68,7 +79,6 @@ void UISBGMManagerComponent::OnAssetLoaded(EBGMType Type, float FadeTime)
 {
 	if(USoundBase* LoadedSound = Cast<USoundBase>(BGMLibrary[Type].Get()))
 	{
-		if(GetOwner()->HasAuthority()) return;
 		// 淡出当前音乐
 		FadeOutCurrent(FadeTime);
 
@@ -107,19 +117,22 @@ void UISBGMManagerComponent::FadeOutCurrent(float FadeTime)
 		if(FadeTime > 0)
 		{
 			CurrentAudioComponent->FadeOut(FadeTime, 0.0f);
-			GetWorld()->GetTimerManager().SetTimer(
-				FadeTimerHandle,
-				[this](){ CurrentAudioComponent->DestroyComponent();},
-				FadeTime,
-				false
-			);
+			CurrentAudioComponent->DestroyComponent();
+			UnLoadBGM(ISCurrentBgmType);
 		}
 		//没有淡出时间则直接停止
 		else
 		{
 			CurrentAudioComponent->Stop();
 			CurrentAudioComponent->DestroyComponent();
+			UnLoadBGM(ISCurrentBgmType);
 		}
+	}
+	else if(CurrentAudioComponent)
+	{
+		CurrentAudioComponent->Stop();
+		UnLoadBGM(ISCurrentBgmType);
+		CurrentAudioComponent->DestroyComponent();
 	}
 }
 
@@ -128,6 +141,19 @@ void UISBGMManagerComponent::SwitchingBGM()
 	if(CurrentAudioComponent)
 	{
 		CurrentAudioComponent->DestroyComponent();  //删除当前播放管理器
+		UnLoadBGM(ISCurrentBgmType);
 		PlayBGM(ISCurrentBgmType,2.f);
 	}
+}
+
+void UISBGMManagerComponent::UnLoadBGM(EBGMType Type)
+{
+
+	if(ActiveAssetHandle)
+	{
+		ActiveAssetHandle->ReleaseHandle();  //释放异步资源
+	}
+    
+	// 强制卸载未被引用的资源
+	UAssetManager::Get().UnloadPrimaryAssetsWithType(FPrimaryAssetType("BGM"));
 }

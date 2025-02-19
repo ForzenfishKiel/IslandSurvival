@@ -71,15 +71,6 @@ public:
 	UFUNCTION(Server,Reliable,Category = "Chat")
 	void AddChatMessage(const FText& InputText,const int32 InPlayerID);
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UISBGMManagerComponent* BGMManager;
-	
-	// 网络同步函数
-	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
-	void Multicast_PlayBGM(EBGMType Type, float FadeTime);
-
-	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
-	void Multicast_StopBGM(EBGMType Type, float FadeTime);
 
 protected:
 	UPROPERTY(BlueprintReadOnly)

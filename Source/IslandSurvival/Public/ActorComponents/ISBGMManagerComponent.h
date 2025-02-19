@@ -60,11 +60,16 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void SwitchingBGM();
 
+	void UnLoadBGM(EBGMType Type);
+
 	// 淡出控制
 	void FadeOutCurrent(float FadeTime);
 	FTimerHandle FadeTimerHandle;
 
 	UPROPERTY()
 	EBGMType ISCurrentBgmType;
+	
+	// 存储所有活动的异步加载句柄
+	TSharedPtr<FStreamableHandle>ActiveAssetHandle;
 		
 };

@@ -227,8 +227,8 @@ void AISPlayerController::ReadyToSendMassage()
 void AISPlayerController::QuitGameEvent_Implementation()
 {
 	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this));  //获取游戏模式
-	AISPlayerState* SourcePS = GetPlayerState<AISPlayerState>();
-	SourcePS->Multicast_StopBGM(EBGMType::Defeat,0.f);  //停止播放音乐
+	AISCharacter* SourceCharacter = Cast<AISCharacter>(GetPawn());
+	SourceCharacter->StopBGM(EBGMType::Defeat,0.f);  //停止播放音乐
 	ISGameplayMode->ReturnToMainMenu();
 }
 
@@ -237,12 +237,16 @@ void AISPlayerController::RespawnPlayer_Implementation()
 	UnPossess();
 	AISPlayerState* SourceAS = GetPlayerState<AISPlayerState>(); //获取角色状态
 	AISGameplayMode* ISGameplayMode = Cast<AISGameplayMode>(UGameplayStatics::GetGameMode(this));
-
+	RespawnPlayerOnClient();
 	ISGameplayMode->RestartPlayer(this);
-	
 	bIsOpenStorage = false;
+}
+
+void AISPlayerController::RespawnPlayerOnClient_Implementation()
+{
 	InputSubsystem->RemoveMappingContext(CharacterInputMenuMapping);
 	InputSubsystem->AddMappingContext(CharacterInputMapping,0);
+	SetShowMouseCursor(false);
 }
 
 AISCharacter* AISPlayerController::GetCharacterLocal() const

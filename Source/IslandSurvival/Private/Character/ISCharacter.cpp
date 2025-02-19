@@ -66,6 +66,9 @@ AISCharacter::AISCharacter()
 
 	ISTradingSystemComponent = CreateDefaultSubobject<UISTradingSystemComponent>(TEXT("TradingSystemComponent"));
 
+	BGMManager = CreateDefaultSubobject<UISBGMManagerComponent>(TEXT("ISBGMManagerComponent"));
+
+	BGMManager->SetIsReplicated(true);
 }
 
 void AISCharacter::BeginPlay()
@@ -205,6 +208,22 @@ bool AISCharacter::CheckIsFastRun()
 		return false;
 	}
 	return false;
+}
+
+void AISCharacter::PlayBGM(EBGMType Type, float FadeTime)
+{
+	if(BGMManager && GetLocalRole() != ROLE_AutonomousProxy)
+	{
+		BGMManager->PlayBGM(Type, FadeTime);
+	}
+}
+
+void AISCharacter::StopBGM(EBGMType Type, float FadeTime)
+{
+	if(BGMManager && GetLocalRole() != ROLE_AutonomousProxy)
+	{
+		BGMManager->StopBGM(FadeTime);
+	}
 }
 
 void AISCharacter::InitAbilityActorInfo()
